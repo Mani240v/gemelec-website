@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with one Vercel serverless function for lead capture. No framework, no build step, no bundler, no npm dependencies (the API function uses Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Jules-how/gemelec-website`, deployed on Vercel.
+Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with one Vercel serverless function for lead capture. No framework, no build step, no bundler, no npm dependencies (the API function uses Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
 
 ## Commands
 
@@ -42,7 +42,7 @@ Single file `css/style.css` (~2350 lines), organized by `/* ─── Section �
 ## Conventions and gotchas
 
 - **Internal links are mixed style.** Root pages link with absolute extensionless paths (`/about`, `/services`). Suburb pages link to parents/siblings with relative `.html` (`../about.html`, `coogee.html`) and to services with absolute extensionless (`/services/emergency-electrician`). `cleanUrls` makes all of these resolve. Match the style already used in the file you are editing rather than normalizing.
-- **Stale canonical domain.** Every page's `canonical`, `og:url`, JSON-LD `url`, plus `sitemap.xml`, `robots.txt`, and `llms.txt` reference `gemelec-website.netlify.app`, even though the site deploys on Vercel. This is a known inconsistency across the whole site. When editing these tags, keep them consistent with the rest of the site unless explicitly asked to migrate the canonical domain (which is a deliberate, all-files change).
+- **Canonical domain is `https://www.gemelec.com.au`.** Every page's `canonical`, `og:url`, JSON-LD `url`, plus `sitemap.xml`, `robots.txt`, and `llms.txt` were migrated off the old `gemelec-website.netlify.app` domain. Keep new pages consistent with this.
 - **Analytics is a placeholder.** gtag uses `G-XXXXXXXXXX` in every page — not a real Measurement ID.
 - **Copy accuracy matters.** The owner is "Mani" (Emmanuel Gemelas), not "Manny" — a prior pass replaced Manny→Mani site-wide. The one intentional exception is the verbatim G A Tigani Google review, which keeps the original "Manny" spelling. Phone `0498 351 351` and the NSW licence numbers in `llms.txt`/schema are real and load-bearing; do not invent or alter them.
 - **JSON-LD schema** (`ElectricalContractor`) is embedded per page in `<head>`. Keep NAP (name/address/phone), licences, and service lists in sync with `llms.txt` and `about.html` when any of them change.
