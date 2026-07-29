@@ -220,7 +220,8 @@ module.exports = async function handler(req, res) {
           : 'AI draft estimate: not available for this one — review manually.',
         '',
         photoLinks.length ? '' : `Photos attached to this email (${photoAttachments.length}).`,
-        'Review: https://www.gemelec.com.au/job-requests'
+        'Review: https://www.gemelec.com.au/job-requests',
+        JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
       ].filter(Boolean).join('\n'),
       attachments: photoLinks.length ? undefined : photoAttachments
     })
