@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/helpmeasap", "destination": "/job-request.html" }
+    { "source": "/helpmeasap", "destination": "/job-request" }
   ],
   "headers": [
     {
