@@ -198,6 +198,15 @@ module.exports = async function handler(req, res) {
       })
     }
 
+    // Photos ride along as email attachments rather than a Drive link — the service
+    // account has no Drive storage quota of its own (see uploadPhotoToDrive above,
+    // best-effort and usually a no-op until that's set up with domain-wide delegation).
+    const photoAttachments = body.photos.map((photo, index) => ({
+      filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
+      content: photo.base64,
+      content_type: photo.mimeType
+    }))
+
     await sendNotification({
       subject: `New job request — ${row.full_name}`,
       text: [
@@ -210,8 +219,10 @@ module.exports = async function handler(req, res) {
           ? `AI draft estimate: $${aiDraft.estimate_low} - $${aiDraft.estimate_high} (review before quoting)`
           : 'AI draft estimate: not available for this one — review manually.',
         '',
+        photoLinks.length ? '' : `Photos attached to this email (${photoAttachments.length}).`,
         'Review: https://www.gemelec.com.au/job-requests'
-      ].join('\n')
+      ].filter(Boolean).join('\n'),
+      attachments: photoLinks.length ? undefined : photoAttachments
     })
 
     return send(res, 200, {

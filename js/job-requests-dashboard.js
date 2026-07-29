@@ -112,9 +112,9 @@ function renderCard(row) {
     ${row.email ? `<p class="job-meta"><strong>Email:</strong> <a href="mailto:${escapeAttr(row.email)}">${escapeHtml(row.email)}</a></p>` : ''}
     ${row.job_address ? `<p class="job-meta"><strong>Address:</strong> ${escapeHtml(row.job_address)}</p>` : ''}
     <div class="job-description">${escapeHtml(row.description || '')}</div>
-    <div class="job-photos">
-      ${photoUrls.map(url => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener"><img src="${escapeAttr(url)}" alt="Job photo" loading="lazy"></a>`).join('')}
-    </div>
+    ${photoUrls.length
+      ? `<div class="job-photos">${photoUrls.map(url => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener"><img src="${escapeAttr(url)}" alt="Job photo" loading="lazy"></a>`).join('')}</div>`
+      : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
     <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
     ${costing?.summary ? `<div class="job-ai-summary">${escapeHtml(costing.summary)}</div>` : ''}
     <div class="job-costing-slot"></div>
