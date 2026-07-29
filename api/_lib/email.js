@@ -7,11 +7,13 @@ async function sendNotification({ subject, text, attachments }) {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.NOTIFY_EMAIL_FROM
   const to = process.env.NOTIFY_EMAIL_TO
+  const cc = process.env.NOTIFY_EMAIL_CC
 
   if (!apiKey || !from || !to) return false
 
   try {
     const body = { from, to, subject, text }
+    if (cc) body.cc = cc
     if (attachments && attachments.length) body.attachments = attachments
 
     const response = await fetch(RESEND_API_URL, {

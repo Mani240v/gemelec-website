@@ -89,6 +89,7 @@ new Sheet and Drive folder.
 | `RESEND_API_KEY` | Key from step 4 |
 | `NOTIFY_EMAIL_FROM` | e.g. `notifications@gemelec.sydney` |
 | `NOTIFY_EMAIL_TO` | `info@gemelec.sydney` |
+| `NOTIFY_EMAIL_CC` | Optional. e.g. `mani@gemelec.sydney` — omit to skip CC |
 | `DASHBOARD_PASSWORD` | Password from step 5 |
 
 Set in both Production and Preview (unlike `N8N_LEAD_WEBHOOK_URL` above) so this can be tested on
