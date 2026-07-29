@@ -2261,7 +2261,7 @@ textarea:focus-visible {
 
   /* ============ 4:11AM EMERGENCY ============ */
   .gx-411 { position: relative; background: #0d0d0d; padding: 110px 0; overflow: hidden; }
-  .gx-411::before { content: ''; position: absolute; inset: 0; background-image: url('images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp'); background-size: cover; background-position: right center; opacity: 0.18; z-index: 0; }
+  .gx-411::before { content: ''; position: absolute; inset: 0; background-image: url('../images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp'); background-size: cover; background-position: right center; opacity: 0.18; z-index: 0; }
   .gx-411::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(13,13,13,0.96) 0%, rgba(13,13,13,0.7) 60%, rgba(13,13,13,0.9) 100%); z-index: 0; }
   .gx-411 .container { position: relative; z-index: 1; max-width: 720px; }
   .gx-411 h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: clamp(40px, 5.4vw, 64px); line-height: 1.0; letter-spacing: -0.01em; margin: 0 0 24px; color: #fff; text-transform: uppercase; }
@@ -2298,7 +2298,7 @@ textarea:focus-visible {
 
   /* ============ COMMERCIAL CTA STRIP ============ */
   .gx-commercial { position: relative; background: #0d0d0d; padding: 100px 0; overflow: hidden; }
-  .gx-commercial::before { content: ''; position: absolute; inset: 0; background-image: url('images/manus/GemelecFactoryCables_931edd4a.webp'); background-size: cover; background-position: center; opacity: 0.22; z-index: 0; }
+  .gx-commercial::before { content: ''; position: absolute; inset: 0; background-image: url('../images/manus/GemelecFactoryCables_931edd4a.webp'); background-size: cover; background-position: center; opacity: 0.22; z-index: 0; }
   .gx-commercial::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,13,13,0.85) 0%, rgba(13,13,13,0.7) 100%); z-index: 0; }
   .gx-commercial .container { position: relative; z-index: 1; max-width: 760px; }
   .gx-commercial h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: clamp(36px, 4.6vw, 56px); line-height: 1.0; margin: 0 0 18px; color: #fff; text-transform: uppercase; }
