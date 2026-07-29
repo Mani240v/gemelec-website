@@ -1,4 +1,5 @@
 const crypto = require('node:crypto')
+const { appendRow } = require('./_lib/sheets')
 
 const HEADERS = [
   'submitted_at',
@@ -66,85 +67,10 @@ function clean(value, maxLength = 1000) {
   return String(value || '').trim().slice(0, maxLength)
 }
 
-function base64url(value) {
-  return Buffer.from(value)
-    .toString('base64')
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-}
-
-function signJwt(serviceAccountEmail, privateKey) {
-  const now = Math.floor(Date.now() / 1000)
-  const header = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
-  const claim = base64url(JSON.stringify({
-    iss: serviceAccountEmail,
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
-  }))
-  const unsigned = `${header}.${claim}`
-  const signer = crypto.createSign('RSA-SHA256')
-  signer.update(unsigned)
-  signer.end()
-  return `${unsigned}.${signer.sign(privateKey, 'base64url')}`
-}
-
-async function getAccessToken() {
-  const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-
-  if (!serviceAccountEmail || !privateKey) {
-    throw new Error('Missing Google Sheets service account environment variables')
-  }
-
-  const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: signJwt(serviceAccountEmail, privateKey)
-    })
-  })
-
-  const tokenPayload = await tokenResponse.json()
-
-  if (!tokenResponse.ok) {
-    throw new Error(tokenPayload.error_description || tokenPayload.error || 'Failed to authorize Google Sheets')
-  }
-
-  return tokenPayload.access_token
-}
-
 async function appendLead(row) {
   const sheetId = process.env.GOOGLE_SHEET_ID || DEFAULT_SHEET_ID
   const sheetTab = process.env.GOOGLE_SHEET_TAB || DEFAULT_SHEET_TAB
-  const range = encodeURIComponent(`'${sheetTab.replace(/'/g, "''")}'!A:Z`)
-  const accessToken = await getAccessToken()
-
-  const appendResponse = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        majorDimension: 'ROWS',
-        values: [HEADERS.map(header => row[header] || '')]
-      })
-    }
-  )
-
-  const appendPayload = await appendResponse.json()
-
-  if (!appendResponse.ok) {
-    throw new Error(appendPayload.error?.message || 'Failed to append lead to Google Sheet')
-  }
-
-  return appendPayload
+  return appendRow(sheetId, sheetTab, HEADERS, row)
 }
 
 async function notifyLeadWebhook(row) {
