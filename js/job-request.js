@@ -35,9 +35,9 @@ function compressImage(file) {
   })
 }
 
-const form = document.getElementById('job-request-form')
+const jobRequestForm = document.getElementById('job-request-form')
 
-if (form) {
+if (jobRequestForm) {
   const successMsg = document.getElementById('form-success')
   const errorMsg = document.getElementById('form-error')
   const photosInput = document.getElementById('photos')
@@ -100,14 +100,14 @@ if (form) {
     })
   }
 
-  form.addEventListener('submit', async (e) => {
+  jobRequestForm.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     if (successMsg) successMsg.style.display = 'none'
     if (errorMsg) errorMsg.style.display = 'none'
 
-    if (form.reportValidity && !form.reportValidity()) {
-      const firstInvalid = form.querySelector(':invalid')
+    if (jobRequestForm.reportValidity && !jobRequestForm.reportValidity()) {
+      const firstInvalid = jobRequestForm.querySelector(':invalid')
       if (firstInvalid && typeof firstInvalid.focus === 'function') firstInvalid.focus()
       return
     }
@@ -121,16 +121,16 @@ if (form) {
       return
     }
 
-    const submitButton = form.querySelector('button[type="submit"]')
+    const submitButton = jobRequestForm.querySelector('button[type="submit"]')
     const originalButtonText = submitButton ? submitButton.textContent : ''
 
     const payload = {
-      company_website: form.company_website.value,
-      full_name: form.full_name.value,
-      phone: form.phone.value,
-      email: form.email.value,
-      job_address: form.job_address.value,
-      description: form.description.value,
+      company_website: jobRequestForm.company_website.value,
+      full_name: jobRequestForm.full_name.value,
+      phone: jobRequestForm.phone.value,
+      email: jobRequestForm.email.value,
+      job_address: jobRequestForm.job_address.value,
+      description: jobRequestForm.description.value,
       photos: compressedPhotos.map(photo => ({ mimeType: photo.mimeType, base64: photo.base64 })),
       source: 'website',
       page_url: window.location.href
@@ -153,10 +153,10 @@ if (form) {
         throw new Error(result.message || 'That could not be sent.')
       }
 
-      form.reset()
+      jobRequestForm.reset()
       compressedPhotos = []
       renderPreviews()
-      form.style.display = 'none'
+      jobRequestForm.style.display = 'none'
       if (successMsg) {
         successMsg.style.display = 'block'
         successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' })
