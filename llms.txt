@@ -20,7 +20,7 @@ Matraville, Botany, Mascot, Eastgardens, Rosebery, Alexandria, Waterloo, Zetland
 ## Key pages
 - [Homepage](https://www.gemelec.com.au/): services overview, reviews, contact
 - [Emergency Electrician](https://www.gemelec.com.au/services/emergency-electrician): 24/7 callouts
-- [Switchboard Upgrades](https://www.gemelec.com.au/services/switchboard-upgrades): pricing typically $800-$2,500
+- [Switchboard Upgrades](https://www.gemelec.com.au/services/switchboard-upgrades): fixed-price quotes, no published price range
 - [EV Charger Installation](https://www.gemelec.com.au/services/ev-charger-installation): all major brands
 - [About](https://www.gemelec.com.au/about): Mani's story, licences, experience
 - [Contact](https://www.gemelec.com.au/contact): phone, email, quote form
