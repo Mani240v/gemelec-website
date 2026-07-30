@@ -25,7 +25,7 @@ const HEADERS = [
   'notes'
 ]
 
-const MAX_PHOTOS = 3
+const MAX_PHOTOS = 5
 const MAX_PHOTO_BYTES = 3 * 1024 * 1024 // decoded size, per photo
 const MAX_BODY_BYTES = 4.5 * 1024 * 1024 // matches Vercel's serverless function request-body ceiling
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']

@@ -77,6 +77,15 @@ new Sheet and Drive folder.
    automated address (e.g. `notifications@gemelec.sydney`) TO the real inbox
    `info@gemelec.sydney` — no new mailbox needed.
 5. **Dashboard password.** Pick a real, non-guessable password for `/job-requests`.
+6. **Google Maps API key (address autocomplete).** In Google Cloud Console, create a project (or
+   reuse one), enable **Maps JavaScript API** and **Places API**, enable billing (Google Maps
+   Platform has a recurring free monthly credit that comfortably covers a small lead-gen form),
+   then create an API key. Restrict it by **HTTP referrer** to `https://www.gemelec.com.au/*` and
+   `https://gemelec.com.au/*` (add your Preview/`*.vercel.app` domain too if testing there). This
+   key is **not** a Vercel env var — the site has no build step, so it's a plain string in
+   `job-request.html`. Replace the placeholder `GOOGLE_MAPS_API_KEY` in the Maps script tag with
+   the real key. It's meant to be public (that's what the referrer restriction is for), same as
+   any client-side Maps JS key.
 
 ### Environment variables (Production + Preview)
 

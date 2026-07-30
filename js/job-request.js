@@ -2,7 +2,7 @@
 // Mirrors main.js's quote-form submit pattern (preventDefault -> validity check ->
 // disable button -> fetch -> success/error swap), with photo handling bolted on.
 
-const MAX_PHOTOS = 3
+const MAX_PHOTOS = 5
 const MAX_DIMENSION = 1600
 const JPEG_QUALITY = 0.7
 
@@ -124,9 +124,11 @@ if (jobRequestForm) {
     const submitButton = jobRequestForm.querySelector('button[type="submit"]')
     const originalButtonText = submitButton ? submitButton.textContent : ''
 
+    const fullName = `${jobRequestForm.first_name.value} ${jobRequestForm.last_name.value}`.trim()
+
     const payload = {
       company_website: jobRequestForm.company_website.value,
-      full_name: jobRequestForm.full_name.value,
+      full_name: fullName,
       phone: jobRequestForm.phone.value,
       email: jobRequestForm.email.value,
       job_address: jobRequestForm.job_address.value,
@@ -175,5 +177,23 @@ if (jobRequestForm) {
         submitButton.textContent = originalButtonText
       }
     }
+  })
+}
+
+// Called by the Google Maps JS API script tag once it's loaded (see job-request.html).
+// Global on purpose — that's how the Maps API's `callback` URL param invokes it.
+function initAddressAutocomplete() {
+  const addressInput = document.getElementById('job_address')
+  if (!addressInput || !window.google?.maps?.places) return
+
+  const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+    componentRestrictions: { country: 'au' },
+    fields: ['formatted_address'],
+    types: ['address']
+  })
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace()
+    if (place?.formatted_address) addressInput.value = place.formatted_address
   })
 }
