@@ -2190,6 +2190,8 @@ textarea:focus-visible {
   .gx-btn-primary:hover { background: #e0d420; border-color: #e0d420; }
   .gx-btn-outline { background: transparent; color: #fff; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; text-decoration: none; transition: border-color 0.15s, color 0.15s; display: inline-block; }
   .gx-btn-outline:hover { border-color: #3cb0b2; color: #3cb0b2; }
+  .gx-btn-whatsapp { background: #25d366; color: #fff; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid #25d366; border-radius: 6px; text-decoration: none; transition: background 0.15s, border-color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+  .gx-btn-whatsapp:hover { background: #1ebd5a; border-color: #1ebd5a; }
 
   /* ============ HERO (image bg) ============ */
   .gx-hero-bg { position: relative; background: #0d0d0d; color: #fff; padding: 120px 0 100px; overflow: hidden; min-height: 80vh; display: flex; align-items: center; }
