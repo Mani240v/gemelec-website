@@ -112,15 +112,6 @@ if (jobRequestForm) {
       return
     }
 
-    if (compressedPhotos.length === 0) {
-      if (errorMsg) {
-        errorMsg.textContent = 'Please attach at least one photo of the job.'
-        errorMsg.style.display = 'block'
-        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-      return
-    }
-
     const submitButton = jobRequestForm.querySelector('button[type="submit"]')
     const originalButtonText = submitButton ? submitButton.textContent : ''
 

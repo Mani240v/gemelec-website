@@ -73,8 +73,11 @@ function estimateBase64Bytes(base64) {
 }
 
 function validatePhotos(photos) {
-  if (!Array.isArray(photos) || photos.length === 0) {
-    return { valid: false, error: 'Please attach at least one photo of the job.' }
+  if (photos == null || (Array.isArray(photos) && photos.length === 0)) {
+    return { valid: true }
+  }
+  if (!Array.isArray(photos)) {
+    return { valid: false, error: 'Photos were not received correctly. Please try again.' }
   }
   if (photos.length > MAX_PHOTOS) {
     return { valid: false, error: `Please attach at most ${MAX_PHOTOS} photos.` }
@@ -126,13 +129,14 @@ module.exports = async function handler(req, res) {
 
     const requestId = `job-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`
     const description = clean(body.description, 3000)
+    const photos = Array.isArray(body.photos) ? body.photos : []
 
     // Photo upload and the AI draft are best-effort — a failure in either must never
     // stop the customer's request from being recorded. Sheet append is the one step
     // that has to succeed for the submission to count.
     const photoLinks = []
-    if (DRIVE_FOLDER_ID) {
-      for (const [index, photo] of body.photos.entries()) {
+    if (DRIVE_FOLDER_ID && photos.length) {
+      for (const [index, photo] of photos.entries()) {
         try {
           const uploaded = await uploadPhotoToDrive(
             DRIVE_FOLDER_ID,
@@ -145,7 +149,7 @@ module.exports = async function handler(req, res) {
           console.error('Photo upload failed:', error)
         }
       }
-    } else {
+    } else if (photos.length && !DRIVE_FOLDER_ID) {
       console.error('DRIVE_FOLDER_ID not configured — skipping photo upload')
     }
 
@@ -155,7 +159,7 @@ module.exports = async function handler(req, res) {
       aiDraft = await draftCosting({
         description,
         priceList,
-        photos: body.photos.map(photo => ({ mimeType: photo.mimeType, base64: photo.base64 }))
+        photos: photos.map(photo => ({ mimeType: photo.mimeType, base64: photo.base64 }))
       })
       aiStatus = 'ok'
     } catch (error) {
@@ -201,7 +205,7 @@ module.exports = async function handler(req, res) {
     // Photos ride along as email attachments rather than a Drive link — the service
     // account has no Drive storage quota of its own (see uploadPhotoToDrive above,
     // best-effort and usually a no-op until that's set up with domain-wide delegation).
-    const photoAttachments = body.photos.map((photo, index) => ({
+    const photoAttachments = photos.map((photo, index) => ({
       filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
       content: photo.base64,
       content_type: photo.mimeType
@@ -219,7 +223,7 @@ module.exports = async function handler(req, res) {
           ? `AI draft estimate: $${aiDraft.estimate_low} - $${aiDraft.estimate_high} (review before quoting)`
           : 'AI draft estimate: not available for this one — review manually.',
         '',
-        photoLinks.length ? '' : `Photos attached to this email (${photoAttachments.length}).`,
+        !photoLinks.length && photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
         'Review: https://www.gemelec.com.au/job-requests',
         JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
       ].filter(Boolean).join('\n'),
