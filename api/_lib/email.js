@@ -2,7 +2,7 @@ const RESEND_API_URL = 'https://api.resend.com/emails'
 
 // Internal-only notification (e.g. "new job request in the dashboard") — never used to
 // email a customer. Missing config degrades gracefully: caller treats a false return as
-// non-fatal, same "best effort" pattern as the existing lead webhook.
+// non-fatal, best-effort only.
 async function sendNotification({ subject, text, attachments }) {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.NOTIFY_EMAIL_FROM

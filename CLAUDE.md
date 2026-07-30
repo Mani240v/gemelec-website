@@ -2,16 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with one Vercel serverless function for lead capture. No framework, no build step, no bundler, no npm dependencies (the API function uses Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
+Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler, no npm dependencies (the API functions use Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
 
 ## Commands
 
 ```bash
-npm run dev         # npx serve . -p 3456 — static preview, does NOT run /api/lead
-npm run dev:vercel  # vercel dev on 3456 — required to exercise the lead form endpoint
+npm run dev         # npx serve . -p 3456 — static preview, does NOT run /api/job-request
+npm run dev:vercel  # vercel dev on 3456 — required to exercise the job-request form endpoint
 ```
 
-There is no build, lint, or test step. "Editing" is editing HTML/CSS/JS directly; "verifying" is loading the page. Use `npm run dev:vercel` whenever a change touches `api/lead.js`, the form, or anything that posts to `/api/lead`.
+There is no build, lint, or test step. "Editing" is editing HTML/CSS/JS directly; "verifying" is loading the page. Use `npm run dev:vercel` whenever a change touches `api/job-request.js`, either form, or anything that posts to `/api/job-request`.
 
 ## Architecture
 
@@ -25,13 +25,14 @@ There are ~38 standalone HTML files and **no shared header/nav/footer partial**.
 
 Adding a page means also updating `sitemap.xml`, the nav block in every page (if it belongs in nav), and `llms.txt`.
 
-### Lead form pipeline
-`form#quote-form` → `js/main.js` serializes fields + UTM params + page context → `POST /api/lead` → `api/lead.js` appends a row to Google Sheets.
+### Job request pipeline (single pipeline for both `/contact` and `/job-request`)
+Both `contact.html` (`form#job-request-form`) and `job-request.html` (same form id) share `js/job-request.js` for photo compression, address autocomplete, and submit handling → `POST /api/job-request` → `api/job-request.js` appends a row to Google Sheets, best-effort uploads photos to Drive, best-effort drafts an AI rough costing (`api/_lib/anthropic.js`), and fires best-effort email (Resend) + WhatsApp (Twilio) alerts. There is no separate lead-capture pipeline — `api/lead.js` and the n8n webhook it used were retired in favor of this one.
 
-- `api/lead.js` is a Vercel serverless function. It mints a Google OAuth token by hand-signing a JWT (RS256 via `node:crypto`) — there is no `googleapis` dependency. Auth + sheet target come from env vars (see `VERCEL_SETUP.md`); it falls back to hard-coded sheet ID/tab constants if unset.
+- `api/job-request.js` is a Vercel serverless function. It mints a Google OAuth token by hand-signing a JWT (RS256 via `node:crypto`) — there is no `googleapis` dependency. Sheet target comes from env vars (see `VERCEL_SETUP.md`).
 - Honeypot field: `company_website`. If filled, the function returns `200 ok` without writing (silent bot drop).
-- Required fields: `full_name`, `phone`, `suburb`, `service_required`.
-- The `HEADERS` array in `api/lead.js` defines the exact sheet column order. **To add a form field you must touch three places**: the form HTML, the payload object in `js/main.js`, and both `HEADERS` + the `row` object in `api/lead.js`.
+- Required fields: `full_name` (sent as `first_name`/`last_name` from the form, combined client-side), `phone`, `description`. Photos are optional (up to 5) — a submission with none still gets an AI summary attempt from the description text alone.
+- The `HEADERS` array in `api/job-request.js` defines the exact sheet column order. **To add a form field you must touch three places**: the form HTML (both `contact.html` and `job-request.html` if it applies to both), the payload object in `js/job-request.js`, and both `HEADERS` + the `row` object in `api/job-request.js`.
+- Dashboard at `/job-requests` (password-gated, see `DASHBOARD_PASSWORD`) is where every submission — general enquiry or job-with-photos — gets reviewed, AI costing edited, and status tracked.
 
 ### CSS
 Single file `css/style.css` (~2350 lines), organized by `/* ─── Section ─── */` comment banners. New component groups are appended at the bottom under a dated comment (e.g. `/* === ADDED 2026-05-14 ... === */`) rather than edited inline. Follow that convention. Client brand fonts are **Barlow Condensed + DM Sans** (this is Gemelec's brand, not switchflow's — do not apply switchflow brand fonts/colours here).

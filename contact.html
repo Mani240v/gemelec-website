@@ -131,6 +131,10 @@
   .form-card .eyebrow { color: #3cb0b2; font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 12px; }
   .form-card h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: clamp(26px, 3vw, 32px); line-height: 1.2; color: #0d0d0d; margin: 0 0 28px; letter-spacing: -0.01em; }
 
+  /* Google Places autocomplete dropdown (appended to <body> by the Maps JS API) */
+  .pac-container { font-family: 'DM Sans', sans-serif; z-index: 10000; margin-top: 4px; border: 1px solid #e6e4dd; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+  .pac-item { padding: 8px 12px; font-size: 14px; }
+
   .info-stack { display: flex; flex-direction: column; gap: 16px; }
   .info-card { background: #fff; border: 1px solid #e6e4dd; border-radius: 16px; padding: 24px; }
   .info-card .label { color: #3cb0b2; font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 8px; }
@@ -254,45 +258,45 @@
 
         <div class="form-error" id="form-error" role="alert"></div>
 
-        <form id="quote-form">
+        <form id="job-request-form">
           <div class="lead-honeypot" aria-hidden="true">
             <label for="company_website">Company website</label>
             <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="full_name">Full Name *</label>
-              <input type="text" id="full_name" name="full_name" placeholder="John Smith" autocomplete="name" required>
+              <label for="first_name">First Name *</label>
+              <input type="text" id="first_name" name="first_name" placeholder="John" autocomplete="given-name" required>
             </div>
+            <div class="form-group">
+              <label for="last_name">Last Name *</label>
+              <input type="text" id="last_name" name="last_name" placeholder="Smith" autocomplete="family-name" required>
+            </div>
+          </div>
+          <div class="form-row">
             <div class="form-group">
               <label for="phone">Phone Number *</label>
               <input type="tel" id="phone" name="phone" placeholder="0400 000 000" autocomplete="tel" inputmode="tel" aria-describedby="phone-help" required>
               <div id="phone-help" class="form-help">We will call you to confirm details. Mobile preferred.</div>
             </div>
-          </div>
-          <div class="form-row">
             <div class="form-group">
-              <label for="suburb">Suburb *</label>
-              <input type="text" id="suburb" name="suburb" placeholder="Randwick" autocomplete="address-level2" required>
-            </div>
-            <div class="form-group">
-              <label for="service">Service Required *</label>
-              <select id="service" name="service_required" required>
-                <option value="" disabled selected>Select a service...</option>
-                <option value="switchboard">Switchboard Upgrade</option>
-                <option value="lighting">LED Lighting / Downlights</option>
-                <option value="ev">EV Charger Installation</option>
-                <option value="emergency">Emergency Electrician</option>
-                <option value="commercial">Commercial Electrical</option>
-                <option value="security">Security &amp; Access Control</option>
-                <option value="ceiling-fan">Ceiling Fan Installation</option>
-                <option value="other">Other / General Enquiry</option>
-              </select>
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email">
             </div>
           </div>
           <div class="form-group">
-            <label for="message">Tell Us More</label>
-            <textarea id="message" name="message" placeholder="Describe the job — what's the issue, when did it start, any other useful detail..."></textarea>
+            <label for="job_address">Job Address</label>
+            <input type="text" id="job_address" name="job_address" placeholder="Start typing your address..." autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="description">Tell Us What's Going On *</label>
+            <textarea id="description" name="description" placeholder="What's the issue or job? When did it start? Any other useful detail..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="photos">Photos (optional, up to 5)</label>
+            <input type="file" id="photos" name="photos" accept="image/*" multiple>
+            <div id="photos-help" class="form-help">Optional, but a photo or two helps us give a more accurate quote. Take new ones or choose from your gallery. We compress these automatically before sending.</div>
+            <div class="job-photo-preview" id="photo-preview"></div>
           </div>
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">Send Enquiry</button>
           <p class="form-submit-note">We'll respond within 2 hours during business hours (Mon–Fri 7am–6pm, Sat 8am–4pm).</p>
@@ -449,6 +453,10 @@
 </a>
 
 <script src="js/main.js"></script>
+<script src="js/job-request.js?v=20260730b"></script>
+<!-- Replace GOOGLE_MAPS_API_KEY with a real key restricted (HTTP referrer) to gemelec.com.au,
+     with the Maps JavaScript API + Places API enabled in Google Cloud Console. -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&libraries=places&callback=initAddressAutocomplete"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>

@@ -117,6 +117,7 @@ function renderCard(row) {
       : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
     <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
     ${costing?.summary ? `<div class="job-ai-summary">${escapeHtml(costing.summary)}</div>` : ''}
+    ${costing?.line_items?.length ? `<div class="job-ai-range">AI draft range: $${money(costing.estimate_low)}${costing.estimate_high !== costing.estimate_low ? ` – $${money(costing.estimate_high)}` : ''}</div>` : ''}
     <div class="job-costing-slot"></div>
     ${costing?.flagged_items?.length ? `
       <div class="job-flagged">
