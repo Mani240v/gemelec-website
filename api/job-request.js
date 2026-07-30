@@ -3,6 +3,7 @@ const { appendRow } = require('./_lib/sheets')
 const { uploadPhotoToDrive } = require('./_lib/google-drive')
 const { draftCosting } = require('./_lib/anthropic')
 const { sendNotification } = require('./_lib/email')
+const { sendWhatsAppNotification } = require('./_lib/whatsapp')
 const priceList = require('./price-list.json')
 
 const HEADERS = [
@@ -211,29 +212,41 @@ module.exports = async function handler(req, res) {
       content_type: photo.mimeType
     }))
 
-    await sendNotification({
-      subject: `New job request — ${row.full_name}`,
-      text: [
-        `${row.full_name} (${row.phone}) sent a new job request.`,
-        '',
-        `Address: ${row.job_address || 'not given'}`,
-        `Description: ${description}`,
-        '',
-        aiDraft
-          ? `AI draft estimate: $${aiDraft.estimate_low} - $${aiDraft.estimate_high} (review before quoting)`
-          : 'AI draft estimate: not available for this one — review manually.',
-        '',
-        !photoLinks.length && photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
-        'Review: https://www.gemelec.com.au/job-requests',
-        JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
-      ].filter(Boolean).join('\n'),
-      attachments: photoLinks.length ? undefined : photoAttachments
-    })
+    const estimateLine = aiDraft
+      ? `AI draft estimate: $${aiDraft.estimate_low} - $${aiDraft.estimate_high} (review before quoting)`
+      : 'AI draft estimate: not available for this one — review manually.'
+
+    await Promise.all([
+      sendNotification({
+        subject: `New job request — ${row.full_name}`,
+        text: [
+          `${row.full_name} (${row.phone}) sent a new job request.`,
+          '',
+          `Address: ${row.job_address || 'not given'}`,
+          `Description: ${description}`,
+          '',
+          estimateLine,
+          '',
+          !photoLinks.length && photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
+          'Review: https://www.gemelec.com.au/job-requests',
+          JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
+        ].filter(Boolean).join('\n'),
+        attachments: photoLinks.length ? undefined : photoAttachments
+      }),
+      sendWhatsAppNotification(
+        [
+          `New job request — ${row.full_name} (${row.phone})`,
+          row.job_address ? `Address: ${row.job_address}` : '',
+          estimateLine,
+          'Review: https://www.gemelec.com.au/job-requests'
+        ].filter(Boolean).join('\n')
+      )
+    ])
 
     return send(res, 200, {
       ok: true,
       requestId,
-      message: "Thanks — we've received your photos and details. We'll be in touch with a quote shortly."
+      message: "Thanks — we've received your details. We'll be in touch with a quote shortly."
     })
   } catch (error) {
     console.error('Job request submit failed:', error)

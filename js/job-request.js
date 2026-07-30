@@ -1,6 +1,5 @@
 // Job request form: photo compression + submit handler.
-// Mirrors main.js's quote-form submit pattern (preventDefault -> validity check ->
-// disable button -> fetch -> success/error swap), with photo handling bolted on.
+// Shared by both contact.html and job-request.html — same form id, same fields.
 
 const MAX_PHOTOS = 5
 const MAX_DIMENSION = 1600
