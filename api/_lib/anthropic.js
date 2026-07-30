@@ -14,25 +14,28 @@ Hard rules:
   flagged_items instead with a short reason (e.g. "not in price list — price manually").
 - If you cannot tell what's needed from the description/photos, say so in "summary" rather than
   guessing at line items.
-- For each line item, give "qty" (your best guess) plus "qty_low" and "qty_high" — the smallest
-  and largest quantity genuinely plausible given the description/photos. Set qty_low = qty =
-  qty_high when the quantity is clear and not in question (e.g. "replace one broken GPO", one
-  photo of one fixture). Widen qty_low/qty_high only when the actual scope is genuinely unclear
-  from what's supplied — an unmeasured cable run, an uncounted number of points, a switchboard
-  whose pole count you can't confirm from the photo. Do not widen out of habit or as a hedge;
-  most straightforward jobs should have no spread at all.
-- Do not compute or report a total yourself — omit estimate_low/estimate_high entirely, they are
-  derived automatically from qty_low/qty_high.
 - Respond with ONLY raw JSON matching this exact shape, no markdown fences, no commentary:
 {
   "summary": "one or two sentence read of what the job likely involves",
   "line_items": [
-    { "item_code": "string", "description": "string", "sell_price": 0, "qty": 1, "qty_low": 1, "qty_high": 1, "note": "string or empty" }
+    { "item_code": "string", "description": "string", "sell_price": 0, "qty": 1, "note": "string or empty" }
   ],
   "flagged_items": [
     { "description": "string", "reason": "string" }
-  ]
-}`
+  ],
+  "uncertainty_pct": 0
+}
+uncertainty_pct reflects how much the final price could realistically grow past the sum of
+line_items, based on labour-time variability, scope not fully visible in photos, hidden wiring/
+access issues, or ambiguity about which item/tier actually applies (e.g. which switchboard
+upgrade size) — NOT a made-up number. Pick honestly:
+- 0 only for a genuinely flat-rate, fixed-scope callout with no variability (e.g. a single
+  like-for-like safety switch swap).
+- 0.15-0.25 for a typical job where the parts are clear but labour time could reasonably vary.
+- 0.3-0.5 when photos don't show the full scope, access/wiring condition is unknown, the item/tier
+  is ambiguous, or the description is vague about quantity/extent.
+Do not compute a dollar range yourself — the app derives estimate_low/estimate_high from
+line_items and uncertainty_pct.`
 
 async function draftCosting({ description, priceList, photos = [] }) {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -77,14 +80,15 @@ async function draftCosting({ description, priceList, photos = [] }) {
   const parsed = parseModelJson(rawText)
 
   const lineItems = Array.isArray(parsed.line_items) ? parsed.line_items : []
-  const { low, high } = computeEstimateRange(lineItems)
+  const base = lineItems.reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.sell_price) || 0), 0)
+  const uncertaintyPct = Math.min(Math.max(Number(parsed.uncertainty_pct) || 0, 0), 0.75)
 
   return {
     summary: parsed.summary || '',
     line_items: lineItems,
     flagged_items: Array.isArray(parsed.flagged_items) ? parsed.flagged_items : [],
-    estimate_low: round2(low),
-    estimate_high: round2(high)
+    estimate_low: round2(base),
+    estimate_high: round2(base * (1 + uncertaintyPct))
   }
 }
 
@@ -102,20 +106,6 @@ function parseModelJson(rawText) {
     }
     throw new Error('Anthropic response was not valid JSON')
   }
-}
-
-// The model is asked for qty_low/qty_high per line so a real range is possible; the totals
-// are computed here rather than trusted from the model's own arithmetic.
-function computeEstimateRange(lineItems) {
-  return lineItems.reduce((totals, item) => {
-    const price = Number(item.sell_price) || 0
-    const qty = Number(item.qty) || 0
-    const qtyLow = item.qty_low != null ? Number(item.qty_low) : qty
-    const qtyHigh = item.qty_high != null ? Number(item.qty_high) : qty
-    totals.low += price * Math.min(qtyLow, qtyHigh)
-    totals.high += price * Math.max(qtyLow, qtyHigh)
-    return totals
-  }, { low: 0, high: 0 })
 }
 
 function round2(value) {

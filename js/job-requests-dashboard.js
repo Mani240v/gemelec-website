@@ -66,11 +66,10 @@ function buildCostingTable(costing) {
 
   function addRow(item = { description: '', item_code: '', qty: 1, sell_price: 0 }) {
     const tr = document.createElement('tr')
-    const hasRange = item.qty_low != null && item.qty_high != null && Number(item.qty_low) !== Number(item.qty_high)
     tr.innerHTML = `
       <td><input type="text" class="desc" value="${escapeAttr(item.description || '')}"></td>
       <td><input type="text" class="code" value="${escapeAttr(item.item_code || '')}"></td>
-      <td><input type="number" class="qty" min="0" step="1" value="${Number(item.qty) || 1}" ${hasRange ? `title="AI suggested range: ${Number(item.qty_low)}–${Number(item.qty_high)}"` : ''}></td>
+      <td><input type="number" class="qty" min="0" step="1" value="${Number(item.qty) || 1}"></td>
       <td><input type="number" class="price" min="0" step="0.01" value="${Number(item.sell_price) || 0}"></td>
       <td><button type="button" class="job-line-remove" aria-label="Remove line">Remove</button></td>
     `
