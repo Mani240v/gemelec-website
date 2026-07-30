@@ -23,11 +23,18 @@ Hard rules:
   "flagged_items": [
     { "description": "string", "reason": "string" }
   ],
-  "estimate_low": 0,
-  "estimate_high": 0
+  "uncertainty_pct": 0
 }
-estimate_low/estimate_high are simply the sum of line_items (qty * sell_price), given as a range
-only if quantity or scope is uncertain from the description — otherwise low and high can match.`
+uncertainty_pct reflects how much the final price could realistically grow past the sum of
+line_items, based on labour-time variability, scope not fully visible in photos, or hidden wiring/
+access issues — NOT a made-up number. Pick honestly:
+- 0 only for a genuinely flat-rate, fixed-scope callout with no labour variability (e.g. a single
+  like-for-like safety switch swap).
+- 0.15-0.25 for a typical job where the parts are clear but labour time could reasonably vary.
+- 0.3-0.5 when photos don't show the full scope, access/wiring condition is unknown, or the
+  description is vague about quantity/extent.
+Do not compute a dollar range yourself — the app derives estimate_low/estimate_high from
+line_items and uncertainty_pct. Just return an honest uncertainty_pct.`
 
 async function draftCosting({ description, priceList, photos = [] }) {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -70,18 +77,36 @@ async function draftCosting({ description, priceList, photos = [] }) {
 
   const rawText = payload.content?.[0]?.text || ''
 
+  let draft
   try {
-    return JSON.parse(rawText)
+    draft = JSON.parse(rawText)
   } catch {
     const match = rawText.match(/\{[\s\S]*\}/)
     if (match) {
       try {
-        return JSON.parse(match[0])
+        draft = JSON.parse(match[0])
       } catch {
         // fall through
       }
     }
-    throw new Error('Anthropic response was not valid JSON')
+    if (!draft) throw new Error('Anthropic response was not valid JSON')
+  }
+
+  return withComputedEstimate(draft)
+}
+
+// The model doesn't compute the dollar range itself (it has no reliable way to produce two
+// different sums from one line_items list) — it just reports how uncertain the job is, and we
+// derive estimate_low/estimate_high from that here so the range is always real, not repeated.
+function withComputedEstimate(draft) {
+  const lineItems = Array.isArray(draft.line_items) ? draft.line_items : []
+  const base = lineItems.reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.sell_price) || 0), 0)
+  const uncertaintyPct = Math.min(Math.max(Number(draft.uncertainty_pct) || 0, 0), 0.75)
+
+  return {
+    ...draft,
+    estimate_low: Math.round(base),
+    estimate_high: Math.round(base * (1 + uncertaintyPct))
   }
 }
 
