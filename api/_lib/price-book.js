@@ -249,6 +249,21 @@ const CALLOUT_CODE = 'Travel / Callout'
 // one of these, the callout is already covered.
 const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR DIAG + C/O'])
 
+// Items that cannot be installed without another item, at matching quantity. Same reasoning
+// as the callout: this is Mani's trade knowledge, it is the same on every job, and a model
+// that has to remember it will eventually not. Owner-confirmed 2026-08-31.
+//
+// Only DL-CONVERSION. An MR16 conversion swaps an old halogen fitting for LED and needs a
+// new plug base each time. DL-REPLACE, DL-INSTALL<12 and the two cabling codes were
+// explicitly excluded by the owner — those either already have a base or include one.
+const COMPANION_ITEMS = [
+  {
+    trigger: 'DL-CONVERSION',
+    companion: '3PIN-PLUG',
+    note: 'Added automatically — an MR16 downlight conversion needs a 3 pin plug base, one per fitting.'
+  }
+]
+
 // Drift guard. The tables above are hand-maintained against business data Mani owns and
 // edits, and this repo has no build or test step to catch a mismatch. This WARNS rather
 // than throws on purpose: price-book is required transitively by api/job-request.js, so a
@@ -527,6 +542,45 @@ function priceSelections(selections, confidence) {
       addFlag(
         hits.join(' + '),
         `these ${set.label} items overlap, so the same work may be counted twice — keep whichever one applies.`
+      )
+    }
+  }
+
+  // Companion items, before the callout so the callout reads last on the invoice.
+  // Tops the companion up to match the trigger's quantity; never reduces one the model
+  // picked deliberately, and never exceeds the companion's own quantity cap.
+  for (const rule of COMPANION_ITEMS) {
+    const trigger = lineItems.find(line => line.item_code === rule.trigger)
+    if (!trigger) continue
+    const companionItem = BY_CODE.get(rule.companion)
+    if (!companionItem) continue
+
+    const cap = UNITS[rule.companion]?.max ?? DEFAULT_QTY_MAX
+    const needed = Math.min(trigger.qty, cap)
+    const existing = lineItems.find(line => line.item_code === rule.companion)
+
+    if (existing) {
+      if (existing.qty < needed) {
+        existing.qty = needed
+        existing.auto_added = true
+        addNote(rule.companion, rule.note)
+      }
+      continue
+    }
+
+    lineItems.push({
+      item_code: companionItem.item_code,
+      description: companionItem.description,
+      qty: needed,
+      sell_price: companionItem.sell_price,
+      discounted_price: round2(companionItem.sell_price * (1 - DISCOUNT_PCT)),
+      auto_added: true
+    })
+    addNote(rule.companion, rule.note)
+    if (trigger.qty > cap) {
+      addFlag(
+        companionItem.item_code,
+        `${trigger.qty} x ${rule.trigger} would need ${trigger.qty} of these, but the most this system will add without review is ${cap} — check the count.`
       )
     }
   }
