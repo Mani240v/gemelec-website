@@ -258,9 +258,22 @@ const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR
 // explicitly excluded by the owner — those either already have a base or include one.
 const COMPANION_ITEMS = [
   {
-    trigger: 'DL-CONVERSION',
+    // Every downlight, of every kind, gets a plug base. Owner's call 2026-08-31: assume one
+    // and delete it after a human has verified the job, on site or from the photos.
+    //
+    // Deliberately the over-inclusive direction. A base that turns out to be unnecessary is
+    // one line removed on the dashboard before quoting; a base that was needed and never
+    // appeared is money quoted away, and it is invisible — nothing on the card says an item
+    // is absent. Cheap to undo, expensive to miss.
+    triggers: [
+      'DL-CONVERSION',
+      'DL-REPLACE',
+      'DL-INSTALL<12',
+      'DL-INSTALL-CBL-F',
+      'DL-INSTALL-CBL-R'
+    ],
     companion: '3PIN-PLUG',
-    note: 'Added automatically — an MR16 downlight conversion needs a 3 pin plug base, one per fitting.'
+    note: 'Added automatically — one 3 pin plug base per downlight, assumed. Remove any the job does not need once you have eyes on it.'
   }
 ]
 
@@ -550,40 +563,47 @@ function priceSelections(selections, confidence) {
   // Tops the companion up to match the trigger's quantity; never reduces one the model
   // picked deliberately, and never exceeds the companion's own quantity cap.
   for (const rule of COMPANION_ITEMS) {
-    const trigger = lineItems.find(line => line.item_code === rule.trigger)
-    if (!trigger) continue
+    // Sum across every trigger present. A job with 4 conversions and 2 cabled installs
+    // needs 6 bases, not 4 and not 2.
+    const needed = lineItems
+      .filter(line => rule.triggers.includes(line.item_code))
+      .reduce((sum, line) => sum + line.qty, 0)
+    if (!needed) continue
+
     const companionItem = BY_CODE.get(rule.companion)
     if (!companionItem) continue
 
     const cap = UNITS[rule.companion]?.max ?? DEFAULT_QTY_MAX
-    const needed = Math.min(trigger.qty, cap)
+    const capped = Math.min(needed, cap)
     const existing = lineItems.find(line => line.item_code === rule.companion)
 
     if (existing) {
-      if (existing.qty < needed) {
-        existing.qty = needed
+      if (existing.qty < capped) {
+        existing.qty = capped
         existing.auto_added = true
         addNote(rule.companion, rule.note)
       }
-      continue
+    } else {
+      lineItems.push({
+        item_code: companionItem.item_code,
+        description: companionItem.description,
+        qty: capped,
+        sell_price: companionItem.sell_price,
+        discounted_price: round2(companionItem.sell_price * (1 - DISCOUNT_PCT)),
+        auto_added: true
+      })
+      addNote(rule.companion, rule.note)
     }
 
-    lineItems.push({
-      item_code: companionItem.item_code,
-      description: companionItem.description,
-      qty: needed,
-      sell_price: companionItem.sell_price,
-      discounted_price: round2(companionItem.sell_price * (1 - DISCOUNT_PCT)),
-      auto_added: true
-    })
-    addNote(rule.companion, rule.note)
-    if (trigger.qty > cap) {
+    if (needed > cap) {
       addFlag(
         companionItem.item_code,
-        `${trigger.qty} x ${rule.trigger} would need ${trigger.qty} of these, but the most this system will add without review is ${cap} — check the count.`
+        `this job needs ${needed} of these, but the most the system will add without review is ${cap} — check the count.`
       )
     }
   }
+
+
 
   // Every job Mani attends carries a callout, so it is appended here rather than left to
   // the model to remember. Placed BEFORE the subtotal below so it is counted like any other
