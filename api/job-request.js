@@ -222,6 +222,9 @@ module.exports = async function handler(req, res) {
         text: [
           `${row.full_name} (${row.phone}) sent a new job request.`,
           '',
+          row.email
+            ? `Email: ${row.email}  (replying to this alert goes straight to them)`
+            : 'Email: not given — reply goes to the office inbox, so call them instead.',
           `Address: ${row.job_address || 'not given'}`,
           `Description: ${description}`,
           '',
@@ -231,7 +234,8 @@ module.exports = async function handler(req, res) {
           'Review: https://www.gemelec.com.au/job-requests',
           JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
         ].filter(Boolean).join('\n'),
-        attachments: photoLinks.length ? undefined : photoAttachments
+        attachments: photoLinks.length ? undefined : photoAttachments,
+        replyTo: row.email
       }),
       sendWhatsAppNotification(
         [
