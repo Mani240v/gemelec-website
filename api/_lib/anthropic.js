@@ -577,6 +577,13 @@ async function draftCosting({ description, photos = [], budgetMs }) {
     subtotal: priced.subtotal,
     band_down_pct: priced.band_down_pct,
     band_up_pct: priced.band_up_pct,
+    // The discount and the confidence figure are computed in price-book.js and have to be
+    // forwarded explicitly: this object is built key by key, so anything added there and
+    // not listed here is silently dropped before it reaches the alert or the dashboard.
+    discount_pct: priced.discount_pct,
+    typical_subtotal: priced.typical_subtotal,
+    confidence: priced.confidence,
+    confidence_pct: priced.confidence_pct,
     model: payload.model || MODEL
   }
 }
