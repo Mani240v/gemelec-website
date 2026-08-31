@@ -38,6 +38,8 @@ function parseCosting(row) {
     const parsed = JSON.parse(row.ai_draft_costing)
     parsed.line_items = Array.isArray(parsed.line_items) ? parsed.line_items : []
     parsed.flagged_items = Array.isArray(parsed.flagged_items) ? parsed.flagged_items : []
+    parsed.notes = Array.isArray(parsed.notes) ? parsed.notes : []
+    parsed.unpriced_items = Array.isArray(parsed.unpriced_items) ? parsed.unpriced_items : []
     return parsed
   } catch {
     return null
@@ -47,6 +49,21 @@ function parseCosting(row) {
 function money(value) {
   const num = Number(value)
   return Number.isFinite(num) ? num.toFixed(2) : '0.00'
+}
+
+// Number(null), Number('') and Number(false) are all 0, and Number.isFinite(0) is true, so
+// a plain finite check would render a withheld estimate as a confident "$0.00".
+function hasNumber(value) {
+  return value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value))
+}
+
+function listBlock(className, heading, entries) {
+  if (!entries.length) return ''
+  return `
+    <div class="${className}">
+      ${escapeHtml(heading)}
+      <ul>${entries.map(e => `<li>${escapeHtml(e.description || '')}${e.reason ? ` — ${escapeHtml(e.reason)}` : ''}</li>`).join('')}</ul>
+    </div>`
 }
 
 function computeTotal(lineItems) {
@@ -117,13 +134,16 @@ function renderCard(row) {
       : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
     <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
     ${costing?.summary ? `<div class="job-ai-summary">${escapeHtml(costing.summary)}</div>` : ''}
-    ${costing?.line_items?.length ? `<div class="job-ai-range">AI draft range: $${money(costing.estimate_low)}${costing.estimate_high !== costing.estimate_low ? ` – $${money(costing.estimate_high)}` : ''}</div>` : ''}
-    <div class="job-costing-slot"></div>
-    ${costing?.flagged_items?.length ? `
-      <div class="job-flagged">
-        Not in price list — price manually:
-        <ul>${costing.flagged_items.map(f => `<li>${escapeHtml(f.description)}${f.reason ? ` — ${escapeHtml(f.reason)}` : ''}</li>`).join('')}</ul>
+    ${hasNumber(costing?.estimate_low) && hasNumber(costing?.estimate_high) ? `
+      <div class="job-ai-range">AI draft range: $${money(costing.estimate_low)}${Number(costing.estimate_high) !== Number(costing.estimate_low) ? ` – $${money(costing.estimate_high)}` : ''}
+        ${costing.range_note ? `<span class="job-ai-range-note">${escapeHtml(costing.range_note)}</span>` : ''}
       </div>` : ''}
+    ${costing && costing.line_items.length && !hasNumber(costing.estimate_low) ? `
+      <div class="job-ai-range">No AI range for this one — the items below are priced from your list, but the total is above the ceiling this system will put a number on. Total it yourself.</div>` : ''}
+    <div class="job-costing-slot"></div>
+    ${listBlock('job-flagged', 'Check these before you quote:', costing?.flagged_items || [])}
+    ${listBlock('job-notes', "Your own price-list rulings that applied here:", costing?.notes || [])}
+    ${listBlock('job-unpriced', "The AI's own notes — not from your price list, and not checked by this system:", costing?.unpriced_items || [])}
     <div class="job-total-slot"></div>
     <div class="job-actions">
       <button type="button" class="btn btn-sm job-add-line">+ Add line</button>
@@ -175,12 +195,24 @@ function renderCard(row) {
       sell_price: Number(tr.querySelector('.price').value) || 0
     }))
     const total = computeTotal(rows)
+    // Spread first, then override. Without this the save rebuilds the costing from a
+    // fixed set of keys and silently drops everything else the draft carried, with a
+    // "Saved." confirmation on top.
     const updatedCosting = {
+      ...(costing || {}),
       summary: costing?.summary || '',
       line_items: rows,
       flagged_items: costing?.flagged_items || [],
       estimate_low: total,
-      estimate_high: total
+      estimate_high: total,
+      // These all describe the AI's ORIGINAL figures. Once the table has been edited they
+      // are stale, and carrying them through meant the card came back showing the old AI
+      // range and subtotal directly above the number that had just replaced them.
+      range_note: '',
+      subtotal: total,
+      band_down_pct: 0,
+      band_up_pct: 0,
+      over_cap: false
     }
 
     statusEl.textContent = 'Saving...'
