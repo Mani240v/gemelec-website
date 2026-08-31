@@ -220,6 +220,25 @@ const CONFIDENCE_BAND = new Map([
 ])
 const WIDEST_BAND = CONFIDENCE_BAND.get('low')
 
+// Mani's standing discount off list. The price list is the worst case, not the usual
+// charge, so every line carries both figures: the list price as the ceiling and this as
+// what he normally quotes. Change this one number to change the whole site's discount.
+const DISCOUNT_PCT = 0.30
+
+// A percentage put on the model's own confidence, decided HERE rather than asked of the
+// model. A model that reports "40% confident" is inventing a calibrated-looking number it
+// has no way to calibrate, which is the same false precision this module exists to stop.
+// These are fixed labels for the three states the model can actually distinguish, so the
+// same job always reads the same way and Mani owns what each one means.
+const CONFIDENCE_PCT = new Map([
+  ['high', 85],
+  ['medium', 60],
+  ['low', 35]
+])
+// Anything the server had to reject, clamp or flag drops confidence to this regardless of
+// what the model claimed, matching the band override below.
+const OVERRIDDEN_CONFIDENCE_PCT = 35
+
 // Drift guard. The tables above are hand-maintained against business data Mani owns and
 // edits, and this repo has no build or test step to catch a mismatch. This WARNS rather
 // than throws on purpose: price-book is required transitively by api/job-request.js, so a
@@ -436,7 +455,11 @@ function priceSelections(selections, confidence) {
       item_code: item.item_code,
       description: item.description,
       qty,
-      sell_price: item.sell_price
+      sell_price: item.sell_price,
+      // Derived, never model-supplied, and never an operand — the totals below are built
+      // from sell_price and discounted independently, so a rounded line can't drift the
+      // total. Recomputed live in the dashboard whenever Mani edits a price.
+      discounted_price: round2(item.sell_price * (1 - DISCOUNT_PCT))
     }
     byCode.set(item.item_code, line)
     lineItems.push(line)
@@ -520,7 +543,11 @@ function priceSelections(selections, confidence) {
   // flagged forces the widest band regardless of what the model claimed. `notes` are
   // deliberately NOT in that test — see addNote above.
   let band = CONFIDENCE_BAND.get(confidence) || WIDEST_BAND
-  if (clamped || rejected || flagged.length) band = WIDEST_BAND
+  let confidencePct = CONFIDENCE_PCT.get(confidence) ?? OVERRIDDEN_CONFIDENCE_PCT
+  if (clamped || rejected || flagged.length) {
+    band = WIDEST_BAND
+    confidencePct = OVERRIDDEN_CONFIDENCE_PCT
+  }
 
   const showRange = lineItems.length > 0 && !overCap
 
@@ -538,6 +565,13 @@ function priceSelections(selections, confidence) {
     estimate_high: showRange ? round2(subtotal * (1 + band.up)) : null,
     band_down_pct: showRange ? band.down : 0,
     band_up_pct: showRange ? band.up : 0,
+    // The discount is a pricing decision and the band is a scope warning. They are kept
+    // apart on purpose: multiplying them together would hide "I am not sure what this job
+    // is" inside "we usually charge less than list".
+    discount_pct: DISCOUNT_PCT,
+    typical_subtotal: overCap ? null : round2(subtotal * (1 - DISCOUNT_PCT)),
+    confidence: confidence || 'low',
+    confidence_pct: confidencePct,
     rejected_count: rejected,
     clamped_count: clamped
   }
@@ -553,6 +587,8 @@ module.exports = {
   BY_CODE,
   CATALOGUE_TEXT,
   DEFAULT_QTY_MAX,
+  DISCOUNT_PCT,
+  CONFIDENCE_PCT,
   LINE_VALUE_CAP,
   SUBTOTAL_CAP,
   MAX_LINES

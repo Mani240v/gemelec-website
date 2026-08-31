@@ -378,9 +378,23 @@ module.exports = async function handler(req, res) {
     if (!aiDraft) {
       estimateLine = 'AI draft estimate: not available for this one — review manually.'
     } else if (hasRange) {
-      estimateLine = `AI draft estimate: $${money(aiDraft.estimate_low)} - $${money(aiDraft.estimate_high)}` +
-        ' (from your price list, review before quoting' +
-        `${flaggedCount ? `; ${flaggedCount} item${flaggedCount === 1 ? '' : 's'} flagged` : ''})`
+      // Two figures on purpose. The list total is the worst case; the discounted one is
+      // what Mani normally charges, and it is the number he actually wants at a glance on
+      // his phone. confidence_pct is about the item picks, not the prices.
+      const discountLabel = Number.isFinite(aiDraft.discount_pct)
+        ? ` (${Math.round(aiDraft.discount_pct * 100)}% off list)`
+        : ''
+      estimateLine = [
+        `AI draft estimate: $${money(aiDraft.estimate_low)} - $${money(aiDraft.estimate_high)}` +
+          ' (from your price list, review before quoting' +
+          `${flaggedCount ? `; ${flaggedCount} item${flaggedCount === 1 ? '' : 's'} flagged` : ''})`,
+        Number.isFinite(aiDraft.subtotal) && Number.isFinite(aiDraft.typical_subtotal)
+          ? `  List total $${money(aiDraft.subtotal)} / your price $${money(aiDraft.typical_subtotal)}${discountLabel}`
+          : '',
+        Number.isFinite(aiDraft.confidence_pct)
+          ? `  AI confidence in the item picks: ${aiDraft.confidence_pct}%`
+          : ''
+      ].filter(Boolean).join('\n')
     } else if (hasLines) {
       estimateLine = `AI draft estimate: the items come to more than $${money(SUBTOTAL_CAP)}, which is ` +
         'above the ceiling this system will put a number on — the itemisation is on the dashboard, total it yourself.'

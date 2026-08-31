@@ -70,16 +70,26 @@ function computeTotal(lineItems) {
   return lineItems.reduce((sum, item) => sum + (Number(item.qty) || 0) * (Number(item.sell_price) || 0), 0)
 }
 
+// Mirrors DISCOUNT_PCT in api/_lib/price-book.js. The server sends discount_pct on every
+// draft, so this is only the fallback for older rows saved before the field existed.
+const FALLBACK_DISCOUNT_PCT = 0.30
+
+function discountOf(costing) {
+  const d = Number(costing?.discount_pct)
+  return Number.isFinite(d) && d >= 0 && d < 1 ? d : FALLBACK_DISCOUNT_PCT
+}
+
 function buildCostingTable(costing) {
   const table = document.createElement('table')
   table.className = 'job-costing-table'
   table.innerHTML = `
     <thead>
-      <tr><th>Item</th><th>Code</th><th>Qty</th><th>Sell price</th><th></th></tr>
+      <tr><th>Item</th><th>Code</th><th>Qty</th><th>List price</th><th>Your price</th><th></th></tr>
     </thead>
     <tbody></tbody>
   `
   const tbody = table.querySelector('tbody')
+  const discount = discountOf(costing)
 
   function addRow(item = { description: '', item_code: '', qty: 1, sell_price: 0 }) {
     const tr = document.createElement('tr')
@@ -88,6 +98,7 @@ function buildCostingTable(costing) {
       <td><input type="text" class="code" value="${escapeAttr(item.item_code || '')}"></td>
       <td><input type="number" class="qty" min="0" step="1" value="${Number(item.qty) || 1}"></td>
       <td><input type="number" class="price" min="0" step="0.01" value="${Number(item.sell_price) || 0}"></td>
+      <td class="job-line-discounted">$${money((Number(item.sell_price) || 0) * (1 - discount))}</td>
       <td><button type="button" class="job-line-remove" aria-label="Remove line">Remove</button></td>
     `
     tr.querySelector('.job-line-remove').addEventListener('click', () => tr.remove())
@@ -176,7 +187,29 @@ function renderCard(row) {
       const price = Number(tr.querySelector('.price').value) || 0
       return sum + qty * price
     }, 0)
-    totalSlot.innerHTML = `<div class="job-total">Total: $${money(total)}</div>`
+    const discount = discountOf(costing)
+    // Recompute the derived column from the price column on every keystroke, so the two
+    // can never drift apart while Mani is editing.
+    rows.forEach(tr => {
+      const cell = tr.querySelector('.job-line-discounted')
+      if (!cell) return
+      const qty = Number(tr.querySelector('.qty').value) || 0
+      const price = Number(tr.querySelector('.price').value) || 0
+      cell.textContent = `$${money(price * (1 - discount))}`
+      cell.title = `${qty} x $${money(price * (1 - discount))} = $${money(qty * price * (1 - discount))}`
+    })
+    const pct = Number(costing?.confidence_pct)
+    const confidenceLine = Number.isFinite(pct)
+      ? `<div class="job-confidence">AI confidence in these picks: ${pct}%${costing?.confidence ? ` (${escapeHtml(costing.confidence)})` : ''} — how likely the right items in the right quantities, not the prices.</div>`
+      : ''
+    totalSlot.innerHTML = `
+      <div class="job-total">
+        <span class="job-total-rrp">List total: $${money(total)}</span>
+        <span class="job-total-sep">/</span>
+        <span class="job-total-yours">Your price: $${money(total * (1 - discount))}</span>
+        <span class="job-total-note">list is the worst case; your price is ${Math.round(discount * 100)}% off it</span>
+      </div>
+      ${confidenceLine}`
   }
 
   card.addEventListener('input', (e) => {
@@ -242,7 +275,11 @@ function renderCard(row) {
       sell_price: Number(tr.querySelector('.price').value) || 0
     }))
     const total = computeTotal(rows)
-    const lines = rows.map(r => `${r.qty} x ${r.description} — $${money(r.sell_price)}`)
+    // Mani's price, not the list ceiling: the list is a worst case he rarely charges, and
+    // this text goes to a customer. Editing the List price column moves this with it, so
+    // there is no way to discount twice.
+    const discount = discountOf(costing)
+    const lines = rows.map(r => `${r.qty} x ${r.description} — $${money(r.sell_price * (1 - discount))}`)
     const text = [
       `Quote for ${row.full_name}`,
       row.job_address ? `Address: ${row.job_address}` : '',
