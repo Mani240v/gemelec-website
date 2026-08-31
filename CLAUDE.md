@@ -4,6 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler, no npm dependencies (the API functions use Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
 
+## How to work with Mani
+
+- Talking to Mani: he likes seeing the nuts and bolts, so keep the technical detail,
+  the evidence and the reasoning. Then finish anything non-trivial with a short
+  plain-English wrap-up, pitched at a 40-year-old with general IT knowledge: what
+  changed, what it means for him, and what he needs to do next (often nothing). No
+  jargon in that part, and no file paths, commands or code unless he has to type
+  them himself.
+
 ## Commands
 
 ```bash
