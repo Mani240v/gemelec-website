@@ -239,6 +239,16 @@ const CONFIDENCE_PCT = new Map([
 // what the model claimed, matching the band override below.
 const OVERRIDDEN_CONFIDENCE_PCT = 35
 
+// Every job Mani attends carries a callout. The model is not asked to remember this and is
+// not trusted to: it is appended here, after pricing, so it cannot be forgotten, argued out
+// of the draft by a customer's description, or dropped when the model has an off day.
+const CALLOUT_CODE = 'Travel / Callout'
+
+// ...except where travel is already inside the item. Both diagnostic codes are priced
+// "+ Travel", so adding the callout on top would bill the trip twice. If the model picked
+// one of these, the callout is already covered.
+const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR DIAG + C/O'])
+
 // Drift guard. The tables above are hand-maintained against business data Mani owns and
 // edits, and this repo has no build or test step to catch a mismatch. This WARNS rather
 // than throws on purpose: price-book is required transitively by api/job-request.js, so a
@@ -517,6 +527,31 @@ function priceSelections(selections, confidence) {
       addFlag(
         hits.join(' + '),
         `these ${set.label} items overlap, so the same work may be counted twice — keep whichever one applies.`
+      )
+    }
+  }
+
+  // Every job Mani attends carries a callout, so it is appended here rather than left to
+  // the model to remember. Placed BEFORE the subtotal below so it is counted like any other
+  // line, with no second arithmetic path to keep in step.
+  //
+  // Only alongside real work: on a draft that priced nothing — a vague enquiry, or every
+  // code rejected — a lone $150 line would read as "this job costs $150" rather than as
+  // "we could not price this", which is the one reading that must never happen.
+  if (lineItems.length && !lineItems.some(line => TRAVEL_INCLUSIVE_CODES.has(line.item_code))) {
+    const callout = BY_CODE.get(CALLOUT_CODE)
+    if (callout) {
+      lineItems.push({
+        item_code: callout.item_code,
+        description: callout.description,
+        qty: 1,
+        sell_price: callout.sell_price,
+        discounted_price: round2(callout.sell_price * (1 - DISCOUNT_PCT)),
+        auto_added: true
+      })
+      addNote(
+        callout.item_code,
+        'Added automatically — every job carries a callout. Remove the line if this one does not.'
       )
     }
   }
