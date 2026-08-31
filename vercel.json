@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/job-request.js": { "maxDuration": 60 }
+  },
   "rewrites": [
     { "source": "/helpmeasap", "destination": "/job-request" }
   ],
