@@ -2408,3 +2408,6 @@ textarea:focus-visible {
 }
 .job-photo-remove:hover { background: #0d0d0d; }
 .job-photo-remove:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* === ADDED 2026-08-31: review timestamps render from datetime attr === */
+  .gx-rcard-when { display: block; }
