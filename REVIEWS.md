@@ -47,6 +47,25 @@ duplicated across all 25 pages, so a count change is always a find-and-replace.
    Review ages must read "3 weeks ago", not "Aug 2026". If they show the
    fallback, the timestamp script did not run.
 
+## Where new reviews come from
+
+Google emails `businessprofile-noreply@google.com` on every new review. As of
+2026-08-31 these reach `mani@gemelec.sydney` — before that date the Business
+Profile was owned by a different Google account, so no review mail existed in
+this mailbox. Alerts are not retroactive: reviews posted before 2026-08-31 have
+no email, and that absence is expected, not a fault.
+
+That sender also carries profile admin mail (ownership invitations, performance
+summaries, verification notices). Filter to actual review notifications.
+
+The email's received date is the review date, and it is exact — better than the
+approximate dates reconstructed for the nine cards already on the site.
+
+A "Weekly Gemelec review check" Routine runs Mondays 8am Sydney against this
+mailbox and stages new reviews on a `claude/reviews-<date>` branch for approval.
+A new-review email does not establish a new review *total* — reviews get removed
+too — so the count only changes on a trustworthy figure from the profile itself.
+
 ## Rules
 
 - **Never invent a review, a name, or a date.** Only publish what came from the
