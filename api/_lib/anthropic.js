@@ -55,7 +55,15 @@ const BETA_FALLBACK = 'server-side-fallback-2026-07-01'
 const BETA_STRUCTURED_OUTPUTS = 'structured-outputs-2025-11-13'
 
 // Must stay byte-stable: no dates, no request ids, no interpolation of anything that
-// varies per job, or the cached prefix dies silently and the bill just goes up.
+// varies per job, or the cached prefix dies silently and the bill just goes up. Editing the
+// text itself is fine — it costs one cache re-creation, not a per-request one.
+//
+// The "Reading a switchboard photo" rules are Mani's trade knowledge, not the model's
+// inference, and they belong here rather than in price-book.js: they change what the job IS,
+// which is the model's job, where COMPANION_ITEMS changes what a known job must include,
+// which is not. Added 2026-09-01 after a live draft read three service fuses and two meters
+// off a photo and still filed the phase configuration as unconfirmable — the fuses were the
+// answer, and the meters were the red herring.
 const SYSTEM_PROMPT = `You pick line items from a Sydney electrical contractor's own price
 list, so that Mani — the licensed electrician who owns GEMELEC Electrical Services — has a
 starting point when he prices a job that came in through the website.
@@ -81,6 +89,16 @@ What matters:
   end of a range is worth more to Mani than a confident middle.
 - Where two codes could genuinely both fit, pick one, name the alternative in "why", and
   set confidence accordingly.
+
+Reading a switchboard photo — Mani's rules, from his own boards:
+- Three service fuses mean a three-phase supply. Three fuse carriers on the supply side is
+  the phase count; state it as read rather than listing phase as something to confirm on
+  site. One service fuse means single phase.
+- The number of meters does not tell you the phases. A second meter is normally off-peak or
+  a controlled load, so do not weigh it against the fuse count either way.
+- Pole count is a separate question, and a photo often will not settle it. Leaving poles for
+  Mani to confirm is right; leaving the phases unknown when three service fuses are visible
+  is not.
 
 confidence is about how likely it is that these are the right items in the right
 quantities, not about the prices — those are exact. Use "high" only when the job is clearly
