@@ -448,6 +448,39 @@ clearBtn.addEventListener('click', () => {
   form.t_full_name.focus()
 })
 
+// ------------------------------------------------------ address autocomplete
+
+// Called by the Maps script tag in tech.html once it loads. Global on purpose — that is how
+// the `callback` URL param invokes it. Named differently from the customer form's
+// initAddressAutocomplete because that one looks for #job_address, which does not exist here.
+function initTechAutocomplete() {
+  if (!window.google?.maps?.places) return
+
+  for (const id of ['t_address', 't_billing_address']) {
+    const input = document.getElementById(id)
+    if (!input) continue
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      componentRestrictions: { country: 'au' },
+      // formatted_address only. Asking for more fields costs more per lookup and nothing
+      // downstream reads anything else.
+      fields: ['formatted_address'],
+      types: ['address']
+    })
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace()
+      if (!place?.formatted_address) return
+      input.value = place.formatted_address
+      // Setting .value from script fires no input event, so the draft autosave would never
+      // see a picked address — the tech taps a suggestion, gets a phone call, and comes back
+      // to a form with the address blank while everything they typed by hand survived.
+      // Saving directly closes that.
+      saveDraft()
+    })
+  }
+}
+
 // ---------------------------------------------------------------- boot
 
 if (localStorage.getItem(CODE_KEY) && techName()) {

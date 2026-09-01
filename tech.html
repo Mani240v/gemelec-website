@@ -138,6 +138,9 @@
 </main>
 
 <script src="/js/tech-portal.js"></script>
+<!-- Same key and the same AU-only Places setup as the customer form. Loaded after
+     tech-portal.js so the callback below is defined by the time Maps calls it. -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqpQOGjoHUGCe1EJeJVBETvXI1Y02yVYM&libraries=places&callback=initTechAutocomplete"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
