@@ -30,6 +30,7 @@ const clearBtn = document.getElementById('tech-clear')
 const review = document.getElementById('tech-review')
 const reviewSend = document.getElementById('tech-review-send')
 const reviewBack = document.getElementById('tech-review-back')
+const reviewMore = document.getElementById('rv-more')
 const photoInput = document.getElementById('t_photos')
 const photoPreview = document.getElementById('t_photo_preview')
 const descInput = document.getElementById('t_description')
@@ -316,10 +317,21 @@ function openReview(job) {
   flags.push(job.commercial ? 'Commercial' : 'Residential')
   if (job.returning) flags.push('returning — do not duplicate the contact')
   document.getElementById('rv-client').textContent = flags.join(' · ')
-  document.getElementById('rv-description').textContent = job.description
+  const desc = document.getElementById('rv-description')
+  desc.textContent = job.description
   review.hidden = false
   // Stop the form scrolling underneath the overlay on iOS.
   document.body.style.overflow = 'hidden'
+
+  // Measured AFTER the overlay is shown: a hidden element reports zero height, so doing this
+  // any earlier decides every description is short. Clamped rather than left as a scroll box
+  // because a scrollable panel inside a modal gives no sign there is more to read, and the
+  // whole point of this screen is that the tech reads all of it.
+  desc.classList.remove('is-expanded')
+  const clipped = desc.scrollHeight > desc.clientHeight + 4
+  reviewMore.hidden = !clipped
+  reviewMore.textContent = 'Read all of it'
+
   reviewSend.focus()
 }
 
@@ -335,6 +347,12 @@ form.addEventListener('submit', (e) => {
   e.preventDefault()
   const job = collect()
   if (job) openReview(job)
+})
+
+reviewMore.addEventListener('click', () => {
+  const desc = document.getElementById('rv-description')
+  const expanded = desc.classList.toggle('is-expanded')
+  reviewMore.textContent = expanded ? 'Show less' : 'Read all of it'
 })
 
 reviewBack.addEventListener('click', () => {

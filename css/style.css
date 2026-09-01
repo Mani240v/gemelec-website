@@ -2609,11 +2609,14 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
-/* MUST come with the [hidden] rule below. `display: flex` here outranks the browser's own
-   `[hidden] { display: none }`, so without it the overlay covers the whole page from load
-   and nothing underneath can be tapped — the portal looks dead. Caught by a click timing
-   out in a real browser; reading the CSS would not have shown it. */
-.tech-review[hidden] { display: none; }
+/* Every element on this page that carries an explicit `display` outranks the browser's own
+   `[hidden] { display: none }`, so `el.hidden = true` stops hiding it. That has now bitten
+   twice — the review overlay covered the whole page from load and swallowed every tap, and
+   the read-more button showed on descriptions short enough not to need it. Both times the
+   CSS looked right in isolation and only a real browser found it. This one rule closes the
+   class for the whole portal; do not remove it when adding a `display` below.
+   Scoped to .tech-body so the dashboard and marketing pages are untouched. */
+.tech-body [hidden] { display: none !important; }
 
 .tech-review {
   position: fixed;
@@ -2672,8 +2675,32 @@ textarea:focus-visible {
   /* Dictation produces long unbroken runs; keep them inside the card. */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  max-height: 34vh;
-  overflow-y: auto;
+  /* Collapsed to roughly six lines with the last one fading, so it is obvious at a glance
+     that the text continues. Expanding is handled by .is-expanded, and the card itself
+     scrolls once it does. */
+  max-height: 9.6em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+}
+.tech-review-desc.is-expanded {
+  max-height: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.tech-review-more {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: #f4f4f2;
+  border: 1.5px solid #d8d8d2;
+  border-radius: 8px;
+  padding: 11px 0;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  cursor: pointer;
 }
 .tech-review-back {
   display: block;
