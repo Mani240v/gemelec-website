@@ -79,7 +79,12 @@ function discountOf(costing) {
   return Number.isFinite(d) && d >= 0 && d < 1 ? d : FALLBACK_DISCOUNT_PCT
 }
 
-function buildCostingTable(costing) {
+// onChange fires when a row is ADDED or REMOVED. Typing was already covered by the card's
+// input listener, but structural edits fired no input event, so the total silently kept the
+// old figure: removing the $250 line off a $400 job left "Your price: $280.00" on screen.
+// The notes on these drafts actively tell Mani to remove lines the job does not need, so
+// this was a documented path to quoting a number that was never recalculated.
+function buildCostingTable(costing, onChange = () => {}) {
   const table = document.createElement('table')
   table.className = 'job-costing-table'
   table.innerHTML = `
@@ -91,7 +96,7 @@ function buildCostingTable(costing) {
   const tbody = table.querySelector('tbody')
   const discount = discountOf(costing)
 
-  function addRow(item = { description: '', item_code: '', qty: 1, sell_price: 0 }) {
+  function addRow(item = { description: '', item_code: '', qty: 1, sell_price: 0 }, notify = false) {
     const tr = document.createElement('tr')
     tr.innerHTML = `
       <td><input type="text" class="desc" value="${escapeAttr(item.description || '')}"></td>
@@ -101,8 +106,9 @@ function buildCostingTable(costing) {
       <td class="job-line-discounted">$${money((Number(item.sell_price) || 0) * (1 - discount))}</td>
       <td><button type="button" class="job-line-remove" aria-label="Remove line">Remove</button></td>
     `
-    tr.querySelector('.job-line-remove').addEventListener('click', () => tr.remove())
+    tr.querySelector('.job-line-remove').addEventListener('click', () => { tr.remove(); onChange() })
     tbody.appendChild(tr)
+    if (notify) onChange()
   }
 
   costing.line_items.forEach(item => addRow(item))
@@ -176,18 +182,83 @@ function hydratePhotos(card) {
   refs.forEach(ref => { loadPhotoInto(container, ref) })
 }
 
+// The summary arrives as one string that already carries its own structure: a standing
+// notice, then "The AI's own summary: ...", then "Why these items:" and a "- CODE: reason"
+// line per item. It was being dropped into a <div>, where every newline collapses and the
+// whole thing reads as one wall — which is what it looked like on screen, not the model
+// being long-winded.
+//
+// Deliberately tolerant: anything that does not match the expected shape falls through to
+// plain paragraphs with the line breaks kept, so a change to the server-side wording
+// degrades to "slightly less pretty" rather than "blank block where the summary was".
+// The sheet stores an ISO timestamp. Rendering it raw put "2026-09-01T12:53:05.086Z" at the
+// top of every card, which nobody reads as a time. Converted in the viewer's own timezone,
+// which for this office is Sydney.
+function niceDate(iso) {
+  const d = new Date(iso)
+  if (!iso || Number.isNaN(d.getTime())) return String(iso || '')
+  const today = new Date()
+  const sameDay = d.toDateString() === today.toDateString()
+  const time = d.toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' })
+  if (sameDay) return `Today, ${time}`
+  return `${d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}, ${time}`
+}
+
+function renderSummary(summary) {
+  const lines = String(summary || '').split('\n').map(l => l.trim())
+  const out = []
+  let list = null
+
+  const closeList = () => {
+    if (list) { out.push(`<ul class="job-why">${list}</ul>`); list = null }
+  }
+
+  for (const line of lines) {
+    if (!line) { closeList(); continue }
+
+    // "- CODE: reason" — the per-item reasoning, the part worth scanning.
+    const item = line.match(/^[-•]\s*([A-Z0-9][A-Z0-9+/<>._-]*)\s*:\s*(.+)$/)
+    if (item) {
+      list = (list || '') + `<li><code>${escapeHtml(item[1])}</code> ${escapeHtml(item[2])}</li>`
+      continue
+    }
+    // A bullet that is not code-prefixed still belongs in the list.
+    if (/^[-•]\s+/.test(line)) {
+      list = (list || '') + `<li>${escapeHtml(line.replace(/^[-•]\s+/, ''))}</li>`
+      continue
+    }
+
+    closeList()
+
+    if (/^Why these items:?$/i.test(line)) {
+      out.push('<h4 class="job-sub">Why these items</h4>')
+    } else if (/^The AI's own summary:/i.test(line)) {
+      out.push(`<p class="job-ai-para">${escapeHtml(line.replace(/^The AI's own summary:\s*/i, ''))}</p>`)
+    } else if (/come from your price list/i.test(line)) {
+      // Same sentence on every draft, and the badge above already says it. Kept, but out of
+      // the way of the words that actually differ job to job.
+      out.push(`<p class="job-standing-note">${escapeHtml(line)}</p>`)
+    } else {
+      out.push(`<p class="job-ai-para">${escapeHtml(line)}</p>`)
+    }
+  }
+  closeList()
+  return out.join('')
+}
+
 function renderCard(row) {
   const costing = parseCosting(row)
   const card = document.createElement('div')
   card.className = 'job-card'
   card.dataset.requestId = row.request_id
+  card.dataset.status = row.status || 'new'
 
   const photoRefs = (row.photo_links || '').split(',').map(s => s.trim()).filter(Boolean)
 
   card.innerHTML = `
     <div class="job-card-head">
       <h3>${escapeHtml(row.full_name || 'Unnamed')}</h3>
-      <span class="job-card-date">${escapeHtml(row.submitted_at || '')}</span>
+      <span class="job-card-date" title="${escapeAttr(row.submitted_at || '')}">${escapeHtml(niceDate(row.submitted_at))}</span>
       <select class="job-status">
         ${['new', 'quoted', 'won', 'lost'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
       </select>
@@ -201,7 +272,7 @@ function renderCard(row) {
       ? `<div class="job-photos" data-photos="${escapeAttr(photoRefs.join(','))}"></div>`
       : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
     <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
-    ${costing?.summary ? `<div class="job-ai-summary">${escapeHtml(costing.summary)}</div>` : ''}
+    ${costing?.summary ? `<div class="job-ai-summary">${renderSummary(costing.summary)}</div>` : ''}
     ${hasNumber(costing?.estimate_low) && hasNumber(costing?.estimate_high) ? `
       <div class="job-ai-range">AI draft range: $${money(costing.estimate_low)}${Number(costing.estimate_high) !== Number(costing.estimate_low) ? ` – $${money(costing.estimate_high)}` : ''}
         ${costing.range_note ? `<span class="job-ai-range-note">${escapeHtml(costing.range_note)}</span>` : ''}
@@ -227,12 +298,12 @@ function renderCard(row) {
   let tableRef
 
   if (costing) {
-    const built = buildCostingTable(costing)
+    const built = buildCostingTable(costing, () => refreshTotal())
     tableRef = built
     costingSlot.appendChild(built.table)
   } else {
     costingSlot.innerHTML = '<p class="job-no-costing">No AI draft available for this one — price manually.</p>'
-    const built = buildCostingTable({ line_items: [] })
+    const built = buildCostingTable({ line_items: [] }, () => refreshTotal())
     tableRef = built
     costingSlot.appendChild(built.table)
   }
@@ -259,6 +330,10 @@ function renderCard(row) {
     const confidenceLine = Number.isFinite(pct)
       ? `<div class="job-confidence">AI confidence in these picks: ${pct}%${costing?.confidence ? ` (${escapeHtml(costing.confidence)})` : ''} — how likely the right items in the right quantities, not the prices.</div>`
       : ''
+    if (!rows.length) {
+      totalSlot.innerHTML = ''
+      return
+    }
     totalSlot.innerHTML = `
       <div class="job-total">
         <span class="job-total-rrp">List total: $${money(total)}</span>
@@ -272,9 +347,13 @@ function renderCard(row) {
   card.addEventListener('input', (e) => {
     if (e.target.matches('.qty, .price')) refreshTotal()
   })
+
+  card.querySelector('.job-status').addEventListener('change', (e) => {
+    card.dataset.status = e.target.value
+  })
   refreshTotal()
 
-  card.querySelector('.job-add-line').addEventListener('click', () => tableRef.addRow())
+  card.querySelector('.job-add-line').addEventListener('click', () => tableRef.addRow(undefined, true))
 
   card.querySelector('.job-save').addEventListener('click', async () => {
     const statusEl = card.querySelector('.job-save-status')
@@ -359,6 +438,19 @@ function renderCard(row) {
   return card
 }
 
+// Counts by status. Twenty cards down the page it is not obvious how many are still
+// waiting on someone, and that is the only question worth answering on arrival.
+function renderCounts(requests) {
+  const bar = document.getElementById('dash-counts')
+  if (!bar) return
+  const tally = { new: 0, quoted: 0, won: 0, lost: 0 }
+  requests.forEach(r => { const k = r.status || 'new'; if (k in tally) tally[k] += 1 })
+  bar.innerHTML = Object.entries(tally)
+    .map(([k, n]) => `<span class="dash-count" data-status="${k}"><strong>${n}</strong> ${k}</span>`)
+    .join('')
+  bar.hidden = false
+}
+
 async function loadRequests() {
   loadError.style.display = 'none'
   loginError.style.display = 'none'
@@ -391,6 +483,7 @@ async function loadRequests() {
     }
 
     emptyState.style.display = 'none'
+    renderCounts(result.requests)
     result.requests.forEach(row => {
       const card = renderCard(row)
       jobList.appendChild(card)
