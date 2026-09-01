@@ -120,13 +120,69 @@ function escapeHtml(value) {
   return div.innerHTML
 }
 
+// Job photos are private blobs: their bytes only come out of /api/job-photo, which needs
+// the dashboard password in a header. An <img src> cannot send one, so each photo is
+// fetched here and handed to the <img> as an object URL.
+//
+// Rows written before 2026-09-01 hold Google Drive URLs instead of blob pathnames. Those
+// are rendered as plain links exactly as before — no migration, because Drive uploads never
+// actually succeeded, so in practice there are none.
+function isBlobPathname(ref) {
+  return ref.startsWith('job-photos/')
+}
+
+async function loadPhotoInto(container, ref) {
+  const link = document.createElement('a')
+  link.target = '_blank'
+  link.rel = 'noopener'
+  const img = document.createElement('img')
+  img.alt = 'Job photo'
+  img.loading = 'lazy'
+  link.appendChild(img)
+  container.appendChild(link)
+
+  if (!isBlobPathname(ref)) {
+    link.href = ref
+    img.src = ref
+    return
+  }
+
+  try {
+    const response = await apiFetch(`/api/job-photo?pathname=${encodeURIComponent(ref)}`)
+    if (!response.ok) throw new Error(`photo ${response.status}`)
+    // Object URLs are never revoked: the page holds every card until it reloads, so
+    // revoking would blank thumbnails that are still on screen. They die with the page.
+    const url = URL.createObjectURL(await response.blob())
+    img.src = url
+    link.href = url
+  } catch (error) {
+    console.error('Could not load job photo:', error)
+    link.remove()
+    if (!container.querySelector('a') && !container.dataset.failed) {
+      container.dataset.failed = '1'
+      const note = document.createElement('p')
+      note.className = 'job-photos-note'
+      // A purged photo and a broken one look identical from here, so say both.
+      note.textContent = 'Photos for this job are no longer stored (they are kept for 14 days) — they are attached to the notification email in your inbox.'
+      container.replaceWith(note)
+    }
+  }
+}
+
+function hydratePhotos(card) {
+  const container = card.querySelector('.job-photos')
+  if (!container) return
+  const refs = (container.dataset.photos || '').split(',').map(s => s.trim()).filter(Boolean)
+  refs.forEach(ref => { loadPhotoInto(container, ref) })
+}
+
 function renderCard(row) {
   const costing = parseCosting(row)
   const card = document.createElement('div')
   card.className = 'job-card'
   card.dataset.requestId = row.request_id
 
-  const photoUrls = (row.photo_links || '').split(',').map(s => s.trim()).filter(Boolean)
+  const photoRefs = (row.photo_links || '').split(',').map(s => s.trim()).filter(Boolean)
 
   card.innerHTML = `
     <div class="job-card-head">
@@ -140,8 +196,8 @@ function renderCard(row) {
     ${row.email ? `<p class="job-meta"><strong>Email:</strong> <a href="mailto:${escapeAttr(row.email)}">${escapeHtml(row.email)}</a></p>` : ''}
     ${row.job_address ? `<p class="job-meta"><strong>Address:</strong> ${escapeHtml(row.job_address)}</p>` : ''}
     <div class="job-description">${escapeHtml(row.description || '')}</div>
-    ${photoUrls.length
-      ? `<div class="job-photos">${photoUrls.map(url => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener"><img src="${escapeAttr(url)}" alt="Job photo" loading="lazy"></a>`).join('')}</div>`
+    ${photoRefs.length
+      ? `<div class="job-photos" data-photos="${escapeAttr(photoRefs.join(','))}"></div>`
       : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
     <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
     ${costing?.summary ? `<div class="job-ai-summary">${escapeHtml(costing.summary)}</div>` : ''}
@@ -334,7 +390,11 @@ async function loadRequests() {
     }
 
     emptyState.style.display = 'none'
-    result.requests.forEach(row => jobList.appendChild(renderCard(row)))
+    result.requests.forEach(row => {
+      const card = renderCard(row)
+      jobList.appendChild(card)
+      hydratePhotos(card)
+    })
   } catch (error) {
     const message = error.message || 'Could not load job requests.'
     // A thrown network error (as opposed to a handled 401/non-ok response) means we
