@@ -1,0 +1,15 @@
+{
+  "name": "GEMELEC Field Portal",
+  "short_name": "GEMELEC",
+  "description": "Log a job from site — customer details, description and photos straight to the office.",
+  "start_url": "/tech",
+  "scope": "/tech",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    { "src": "/images/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "/images/favicon.png", "sizes": "32x32", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -29,6 +29,8 @@ There are ~38 standalone HTML files and **no shared header/nav/footer partial**.
 
 ### Page taxonomy
 - Root pages: `index`, `services`, `about`, `contact`, `blog`, `privacy-policy`.
+- `tech.html` — the **field portal** (`/tech`), added 2026-09-01. Staff-only, `noindex`, installable to a phone home screen via `manifest.webmanifest` + `sw.js`. A technician on site enters the customer, dictates the description with the phone keyboard's mic, attaches photos, and posts to the **same** `/api/job-request` as the customer form — one pipeline, one price book, one dashboard. Gated by `api/tech-auth.js`, which checks `TECH_ACCESS_CODE` if set and otherwise falls back to `DASHBOARD_PASSWORD` (Mani's techs are trusted with pricing; the separate code exists for subcontractors). The technician's name rides in the existing `source` column as `On site — <name>`, so no `HEADERS` change was needed; the dashboard renders that as a badge whenever `source !== 'website'`.
+- The service worker caches only the `/tech` shell, network-first, and never `/api/`. It does **not** queue offline submissions — see the comment in `sw.js` before adding that.
 - `electrician/<suburb>.html` — 24 suburb landing pages (Matraville, Bondi, Coogee, etc.). These share component blocks: breadcrumb, suburb hero, area grid, FAQ, related services, nearby suburbs.
 - `services/<slug>.html` — 6 service detail pages (emergency, switchboard upgrades, EV charger, lighting, commercial, security). Share: service detail hero, included grid, process steps, FAQ, related services.
 
