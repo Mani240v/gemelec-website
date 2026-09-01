@@ -1,209 +1,1250 @@
 [
-  { "item_code": "1.5-LTS-CCT-RUN-PM", "description": "Supply & Install 1.5mm Cabling To Lighting Point - Per Meter", "unit_of_measure": "", "sell_price": 47.85 },
-  { "item_code": "100-FLOOD-INSTALL", "description": "Supply & Install 100w Flood Light", "unit_of_measure": "", "sell_price": 350.00 },
-  { "item_code": "10-PWR-RUN-PM", "description": "Supply & Install 10mm Power Circuit Per Metre", "unit_of_measure": "", "sell_price": 90.83 },
-  { "item_code": "12VBUB", "description": "Supply & Install 1 x 12V 7.0AH Back Up Battery", "unit_of_measure": "", "sell_price": 180.00 },
-  { "item_code": "150-FLOOD-INSTALL", "description": "Supply & Install 150w Flood Light", "unit_of_measure": "", "sell_price": 440.00 },
-  { "item_code": "16-XLPE-PM", "description": "Supply & Install 16mm XLPE - Per Meter (PAIR)", "unit_of_measure": "", "sell_price": 93.58 },
-  { "item_code": "1GANG-CLIPSAL-SWITCH", "description": "Supply & Install 1 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 165.00 },
-  { "item_code": "1PHISO", "description": "Supply & Install 1 Phase Isolator", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "2.5-4C+E-PWR-CCT-RUN-PM", "description": "Supply & Install 2.5-4C+E 3 Phase Power Cable Orange Circ", "unit_of_measure": "", "sell_price": 67.44 },
-  { "item_code": "2.5-PWR-CCT-RUN-PM", "description": "Supply & Install 2.5mm Power Circuit Per Metre", "unit_of_measure": "", "sell_price": 49.04 },
-  { "item_code": "2.5-PWR-RUN <5M", "description": "Supply & Install 2.5mm Circuit <5m", "unit_of_measure": "", "sell_price": 715.00 },
-  { "item_code": "2.5-PWR-RUN >5M", "description": "Supply & Install 2.5mm Circuit >5m", "unit_of_measure": "", "sell_price": 400.00 },
-  { "item_code": "2.5-PWR-RUN 10/20M", "description": "Supply & Install 2.5mm Circuit <10m", "unit_of_measure": "", "sell_price": 990.00 },
-  { "item_code": "2.5-PWR-RUN 20/30M", "description": "Supply & Install 2.5mm Circuit <20m", "unit_of_measure": "", "sell_price": 1550.00 },
-  { "item_code": "200-FLOOD-INSTALL", "description": "Supply & Install 200w Flood Light", "unit_of_measure": "", "sell_price": 580.00 },
-  { "item_code": "25/20-CONDUIT+FIXINGS", "description": "20/25mm Supply & Install Conduit 4 Meters", "unit_of_measure": "", "sell_price": 45.00 },
-  { "item_code": "2GANG-CLIPSAL-SWITCH", "description": "Supply & Install 2 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "2IN1", "description": "Supply + Fit 2 in 1 Bathroom Fitting 2 Heat", "unit_of_measure": "", "sell_price": 430.00 },
-  { "item_code": "2IN1CS", "description": "Fit Customer Supplied 2 in 1 Bathroom Fitting 2 Heat", "unit_of_measure": "", "sell_price": 330.00 },
-  { "item_code": "2LAB", "description": "Labor 1 x Tradesman 1 x Apprenice", "unit_of_measure": "", "sell_price": 225.00 },
-  { "item_code": "32/40 CONDUIT+FIXINGS", "description": "32/40mm Supply & Install Conduit 4 Meters", "unit_of_measure": "", "sell_price": 55.00 },
-  { "item_code": "3GANG-CLIPSAL-SWITCH", "description": "Supply & Install 3 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 235.00 },
-  { "item_code": "3IN1", "description": "Supply + Fit 3 in 1 Bathroom Fitting 4 Heat", "unit_of_measure": "", "sell_price": 675.00 },
-  { "item_code": "3IN1CS", "description": "Fit customer supplied 3 in 1 Bathroom Fitting 4 Heat", "unit_of_measure": "", "sell_price": 475.00 },
-  { "item_code": "3PH-BOARD-CHANGEOVER", "description": "Three-Phase Board Changeover", "unit_of_measure": "", "sell_price": 1221.00 },
-  { "item_code": "3PHCB", "description": "Replace CB/Fuse to RCBO | Parts & Labor 3 PHASE", "unit_of_measure": "", "sell_price": 560.00 },
-  { "item_code": "3PHISO", "description": "Supply & Install 3 Phase Isolator", "unit_of_measure": "", "sell_price": 345.00 },
-  { "item_code": "3PIN-PLUG", "description": "Supply & Install 3 Pin Plug - 240v 10A", "unit_of_measure": "", "sell_price": 100.00 },
-  { "item_code": "4/5-PIN-OUTLET", "description": "Install 4/5 Pin Outlet w/ Neutral -", "unit_of_measure": "", "sell_price": 350.00 },
-  { "item_code": "4/5PIN-PLUG-415V", "description": "Install 4/5 Pin Plug With Neutral -", "unit_of_measure": "", "sell_price": 350.00 },
-  { "item_code": "4GANG-CLIPSAL-SWITCH", "description": "Supply & Install 4 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 300.00 },
-  { "item_code": "4-PWR-RUN-PM", "description": "Supply & Install 4mm Cable Per Meter", "unit_of_measure": "", "sell_price": 67.37 },
-  { "item_code": "5GANG-CLIPSAL-SWITCH", "description": "Supply & Install 5 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 335.00 },
-  { "item_code": "6GANG-CLIPSAL-SWITCH", "description": "Supply & Install 6 Gang Switch - Clipsal", "unit_of_measure": "", "sell_price": 410.00 },
-  { "item_code": "6-PWR-RUN-PM", "description": "Supply & Install 6mm Cable Per Meter", "unit_of_measure": "", "sell_price": 69.92 },
-  { "item_code": "ACCESS-READER-SI", "description": "Access Control Reader Supply & Install (Single Door)", "unit_of_measure": "", "sell_price": 775.25 },
-  { "item_code": "ALARM-KEYPAD-SI", "description": "Alarm Keypad Supply & Install", "unit_of_measure": "", "sell_price": 308.70 },
-  { "item_code": "ALARM-PANEL-SI", "description": "Alarm Panel Supply & Install (Bosch Solution etc.) 4 Zones 1 x K/P No Wiring", "unit_of_measure": "", "sell_price": 1036.50 },
-  { "item_code": "ANTENNA-SI-TUNE", "description": "Antenna Supply & Install + Tune", "unit_of_measure": "", "sell_price": 452.92 },
-  { "item_code": "APPISO", "description": "Appliance Isolator Supply + Install up to 32A", "unit_of_measure": "", "sell_price": 510.00 },
-  { "item_code": "APPL-CCT-DEDICATED", "description": "Dedicated Appliance Circuit (Oven / Cooktop / Aircon)", "unit_of_measure": "", "sell_price": 545.01 },
-  { "item_code": "APPLIN", "description": "Appliance Install/changover - no cutting", "unit_of_measure": "", "sell_price": 550.00 },
-  { "item_code": "APPLINC", "description": "Appliance Install/changover - Cutting Req", "unit_of_measure": "", "sell_price": 650.00 },
-  { "item_code": "AWNING-1", "description": "Supply & Install power to Awning - 1 Awning only", "unit_of_measure": "", "sell_price": 550.00 },
-  { "item_code": "AWNING-2", "description": "Supply Power to Awning - PER AWNING (more than one)", "unit_of_measure": "", "sell_price": 450.00 },
-  { "item_code": "BATH-HEATLAMP-ELEMENT", "description": "Bathroom Heat Lamp Element Replacement", "unit_of_measure": "", "sell_price": 245.32 },
-  { "item_code": "BATT2FTWP", "description": "Supply & Install W/P 2 Foot Batten", "unit_of_measure": "", "sell_price": 300.00 },
-  { "item_code": "BATT4FTWP", "description": "Supply & Install 4 Foot Batten W/P", "unit_of_measure": "", "sell_price": 450.00 },
-  { "item_code": "BOARD-THERMAL-TEST", "description": "Load Testing / Thermal Imaging Of Switchboard", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "BOLLARD-LIGHT-SI", "description": "Bollard Light Supply & Install", "unit_of_measure": "", "sell_price": 366.34 },
-  { "item_code": "BRICK-CHASE-CONDUIT-PM", "description": "Supply & Install Brick Chase + Conduit - Per Metre (Excludes Cable)", "unit_of_measure": "", "sell_price": 15.00 },
-  { "item_code": "BUSBAR-RUN-PM", "description": "Supply & Install Busbar/Busway - Per Metre", "unit_of_measure": "", "sell_price": 178.53 },
-  { "item_code": "CABLE-TRAY-RUN-PM", "description": "Supply & Install Cable Tray/Ladder - Per Metre", "unit_of_measure": "", "sell_price": 100.15 },
-  { "item_code": "CABREP", "description": "Cable Repair + Heat-shrink/Solder per core + Testing", "unit_of_measure": "", "sell_price": 145.00 },
-  { "item_code": "CAT6-CABLE-RUN-PM", "description": "Supply & Install 1 x CAT-6 Cable P.M", "unit_of_measure": "", "sell_price": 20.00 },
-  { "item_code": "CCEW", "description": "Attend Site - Conduct an Electrical Safety Inspection, provide a CCEW for works inspected.", "unit_of_measure": "", "sell_price": 550.00 },
-  { "item_code": "CCTV-CABLE-RUN-PM", "description": "CCTV Cable Run - Per Metre - CAT 6 + 2 x RJ45 Male Terminations", "unit_of_measure": "", "sell_price": 66.16 },
-  { "item_code": "CCTV-CAM-BULLET", "description": "Install CCTV Camera - Bullet (Camera Supplied Separately)", "unit_of_measure": "", "sell_price": 205.66 },
-  { "item_code": "CCTV-CAM-DOME", "description": "Install CCTV Camera - Dome (Camera Supplied Separately)", "unit_of_measure": "", "sell_price": 205.66 },
-  { "item_code": "CCTV-CAM-TURRET", "description": "Install CCTV Camera - Turret (Camera Supplied Separately)", "unit_of_measure": "", "sell_price": 205.66 },
-  { "item_code": "CCTV-KIT-16", "description": "Supply & Install 1 x 16 Channel NVR + 16 x 8MP Turrets", "unit_of_measure": "", "sell_price": 12800.00 },
-  { "item_code": "CCTV-KIT-4", "description": "Supply & Install 1 x 4 Channel NVR + 4 x 8MP Turrets", "unit_of_measure": "", "sell_price": 3200.00 },
-  { "item_code": "CCTV-KIT-8", "description": "Supply & Install 1 x 8 Channel NVR + 8 x 8MP Turrets", "unit_of_measure": "", "sell_price": 6400.00 },
-  { "item_code": "CHOVR", "description": "4G Monitoring Module - Changover P/L", "unit_of_measure": "", "sell_price": 399.00 },
-  { "item_code": "COAX", "description": "Relocate Coax point - cable not modified", "unit_of_measure": "", "sell_price": 60.00 },
-  { "item_code": "COMMS-CAB-SW", "description": "Supply & Install Data Cabinet / Comms Rack (Small Wall-Mount)", "unit_of_measure": "", "sell_price": 713.65 },
-  { "item_code": "DC-FAN-NO-LIGHT", "description": "Supply & Install DC Fan - No Light", "unit_of_measure": "", "sell_price": 435.00 },
-  { "item_code": "DC-FAN-W-LIGHT", "description": "Supply & Install DC Ceiling Fan W/ Light", "unit_of_measure": "", "sell_price": 470.00 },
-  { "item_code": "DIM-ROTARY", "description": "Supply & Install LED Rotary Dimmer", "unit_of_measure": "", "sell_price": 300.00 },
-  { "item_code": "DIN-CONTACTOR-TIMER", "description": "Din Rail Contactor / Timer Supply & Install", "unit_of_measure": "", "sell_price": 357.49 },
-  { "item_code": "DISCO-MAKESAFE<5", "description": "Disconnect / Make Safe Outlet <5", "unit_of_measure": "", "sell_price": 150.00 },
-  { "item_code": "DISCO-MAKESAFE->5", "description": "Disconnect / Make Safe Outlet >5", "unit_of_measure": "", "sell_price": 200.00 },
-  { "item_code": "DL-CONVERSION", "description": "Supply & Install 90mm Downlight (mr16 conversion)", "unit_of_measure": "", "sell_price": 115.00 },
-  { "item_code": "DL-INSTALL<12", "description": "Supply & Install 90mm LED Downlight from closest point - Discounted Price (more than 12)", "unit_of_measure": "", "sell_price": 135.00 },
-  { "item_code": "DL-INSTALL-CBL-F", "description": "Supply & Install 90mm LED Downlight FLUSH W/ Cabling from nearest light", "unit_of_measure": "", "sell_price": 150.00 },
-  { "item_code": "DL-INSTALL-CBL-R", "description": "Supply & Install 90mm LED Downlight RECESSED W/ Cabling from nearest light", "unit_of_measure": "", "sell_price": 160.00 },
-  { "item_code": "DL-REPLACE", "description": "Supply & Replace Downlight - LED 90mm", "unit_of_measure": "", "sell_price": 85.00 },
-  { "item_code": "DOL-SOFT-STARTER-SI", "description": "Supply & Install DOL / Soft Starter", "unit_of_measure": "", "sell_price": 804.40 },
-  { "item_code": "DUCTED-AC-POWER", "description": "Supply Power To Ducted Aircon Unit", "unit_of_measure": "", "sell_price": 678.72 },
-  { "item_code": "EARTH-STAKE", "description": "Supply & Install Earth Stake + Earthing Clamp", "unit_of_measure": "", "sell_price": 440.00 },
-  { "item_code": "EMG EX", "description": "Supply & Fit Emergency Exit Light", "unit_of_measure": "", "sell_price": 310.00 },
-  { "item_code": "EMG-90MIN-DISCHARGE", "description": "Exit / Emergency Light 90-Minute Discharge Test", "unit_of_measure": "", "sell_price": 55.50 },
-  { "item_code": "EMGBAT2", "description": "Supply & Fit 2 Foot Emergency Batten", "unit_of_measure": "", "sell_price": 385.00 },
-  { "item_code": "EMGBAT4", "description": "Supply & Fit Emergency 4 Foot Batten", "unit_of_measure": "", "sell_price": 425.00 },
-  { "item_code": "EMG-EXIT-TEST", "description": "Emergency & Exit Light Testing (6-Monthly)", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "ENC-PLASTIC-16P", "description": "Supply & Install 1 x 16 Pole Plastic Enclosure", "unit_of_measure": "", "sell_price": 316.79 },
-  { "item_code": "ENC-PLASTIC-24P", "description": "Supply & Install 1 x 24 Pole Plastic Enclosure", "unit_of_measure": "", "sell_price": 420.87 },
-  { "item_code": "ENC-PLASTIC-32P", "description": "Supply & Install 1 x 32 Pole Plastic Enclosure", "unit_of_measure": "", "sell_price": 522.83 },
-  { "item_code": "ENC-PLASTIC-4P", "description": "Supply & Install 1 x 4 Pole Plastic Enclosure", "unit_of_measure": "", "sell_price": 209.84 },
-  { "item_code": "ENC-PLASTIC-8P", "description": "Supply & Install 1 x 8 Pole Plastic Enclosure", "unit_of_measure": "", "sell_price": 263.49 },
-  { "item_code": "EV-22KW-3P-SI", "description": "Supply & Install 22kW Three-Phase EV Charger", "unit_of_measure": "", "sell_price": 2972.72 },
-  { "item_code": "EV-7KW-1P-SI", "description": "Supply & Install 7kW Single-Phase EV Charger (Zappi/Ocular/Tesla)", "unit_of_measure": "", "sell_price": 2601.14 },
-  { "item_code": "EV-CCT-RUN-PM", "description": "Supply & Install Dedicated EV Circuit - Per Metre", "unit_of_measure": "", "sell_price": 78.18 },
-  { "item_code": "EV-CS-INSTALL", "description": "Install Customer-Supplied EV Charger", "unit_of_measure": "", "sell_price": 517.44 },
-  { "item_code": "EV-CT-CLAMP", "description": "EV Charger Load Management / CT Clamp Add-On", "unit_of_measure": "", "sell_price": 391.20 },
-  { "item_code": "EX-FAN-INLINE-W/RELAY", "description": "Supply & Install Inline Extraction Fan with Timer - Existing Cabling", "unit_of_measure": "", "sell_price": 790.00 },
-  { "item_code": "EX-FAN-SURFACE", "description": "Supply & Install Surface Mount Exhaust Fan - Existing Cabling", "unit_of_measure": "", "sell_price": 480.00 },
-  { "item_code": "EXHAUST-DUCTING", "description": "Install fan ducting to external dwelling with cover", "unit_of_measure": "", "sell_price": 660.00 },
-  { "item_code": "FAN-CUS-SUPPLIED", "description": "Install Customer Supplied Fan", "unit_of_measure": "", "sell_price": 245.00 },
-  { "item_code": "FIBRE-TERM", "description": "Fibre Lead-In / Termination", "unit_of_measure": "", "sell_price": 360.04 },
-  { "item_code": "FLOOR-BOX-SI", "description": "Floor Box / Floor Outlet Supply & Install", "unit_of_measure": "", "sell_price": 669.68 },
-  { "item_code": "FUSE-80A-CART", "description": "Supply & Install 80A Service Fuse (Cartridge Only)", "unit_of_measure": "", "sell_price": 150.00 },
-  { "item_code": "FUSE-80-WHOLE", "description": "Supply & Install 80A Service Fuse", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "GEN-STANDBY-ATS", "description": "Supply & Install Standby Generator + ATS (Automatic Transfer Switch)", "unit_of_measure": "", "sell_price": 6290.70 },
-  { "item_code": "GPO-DOUBLE-NEW", "description": "Supply & Install New Double GPO (New Point)", "unit_of_measure": "", "sell_price": 390.00 },
-  { "item_code": "GPO-QUAD-NEW", "description": "Supply & Install New Quad GPO (New Point)", "unit_of_measure": "", "sell_price": 484.25 },
-  { "item_code": "GPO-REPLACE-STANDARD", "description": "Supply & Replace 1 x GPO", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "GPO-SINGLE-NEW", "description": "Supply & Install New Single GPO (New Point)", "unit_of_measure": "", "sell_price": 351.05 },
-  { "item_code": "GPO-USB-COMBO", "description": "Supply & Install USB GPO (USB-A/C Combo)", "unit_of_measure": "", "sell_price": 410.00 },
-  { "item_code": "GRDN-KIT-1", "description": "Supply & Install Spike Light + Driver >10 Lights", "unit_of_measure": "", "sell_price": 200.00 },
-  { "item_code": "GRDN-KIT-2", "description": "Supply & Install Garden Spike Lights <10-20", "unit_of_measure": "", "sell_price": 230.00 },
-  { "item_code": "HDMI-RUN-PM", "description": "Supply & Install HDMI / AV Cable Run - Per Metre", "unit_of_measure": "", "sell_price": 69.91 },
-  { "item_code": "HIGHBAY-LED-SI", "description": "High Bay LED Supply & Install (Commercial Warehouse)", "unit_of_measure": "", "sell_price": 499.37 },
-  { "item_code": "HW-240V", "description": "Supply & Install / Fit-Off Hardwired Power to Appliance/Fixture", "unit_of_measure": "", "sell_price": 490.00 },
-  { "item_code": "HWS-SERVICE", "description": "Supply & Install 1 x Thermostat 1 x Element", "unit_of_measure": "", "sell_price": 550.00 },
-  { "item_code": "HYDRONIC-HEATER-CCT", "description": "Hydronic / Panel Heater Circuit", "unit_of_measure": "", "sell_price": 466.31 },
-  { "item_code": "IND-PLUG-1P-WP", "description": "Supply & Install Industrial Plug/Socket Outlet - Single Phase (Weatherproof)", "unit_of_measure": "", "sell_price": 373.81 },
-  { "item_code": "IND-PLUG-3P-WP", "description": "Supply & Install Industrial Plug/Socket Outlet - Three Phase (Weatherproof)", "unit_of_measure": "", "sell_price": 574.48 },
-  { "item_code": "INTERCOM-DOORBELL-SI", "description": "Intercom / Video Doorbell Supply & Install", "unit_of_measure": "", "sell_price": 700.06 },
-  { "item_code": "L2", "description": "Labour 2 x Tradesman", "unit_of_measure": "", "sell_price": 360.00 },
-  { "item_code": "L2-ASP-WORKS", "description": "Level 2 ASP Works (Accredited Service Provider) Per Hour", "unit_of_measure": "", "sell_price": 370.00 },
-  { "item_code": "LABOUR", "description": "1 X Tradesman", "unit_of_measure": "", "sell_price": 165.00 },
-  { "item_code": "LAH", "description": "Labor (Afterhours)", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "LED5M", "description": "Supply & Fit LED Strip + driver (colour pending) High CRI SAL Led Strip 5M", "unit_of_measure": "", "sell_price": 680.00 },
-  { "item_code": "LED-BATT-2FT", "description": "Supply & Install 2 Foot LED Batten (Non-Emergency)", "unit_of_measure": "", "sell_price": 295.53 },
-  { "item_code": "LED-BATT-4FT", "description": "Supply & Install 4 Foot LED Batten (Non-Emergency)", "unit_of_measure": "", "sell_price": 335.44 },
-  { "item_code": "MAINS-UPG-1P-PM", "description": "Consumer Mains Upgrade - Single Phase - Per Metre", "unit_of_measure": "", "sell_price": 72.34 },
-  { "item_code": "MAINS-UPG-3P-PM", "description": "Consumer Mains Upgrade - Three Phase - Per Metre", "unit_of_measure": "", "sell_price": 112.34 },
-  { "item_code": "MAJOR DIAG + C/O", "description": "Major Diagnostic - Fault Find + Travel", "unit_of_measure": "", "sell_price": 915.00 },
-  { "item_code": "METER-1P-SI", "description": "Supply & Install Single-Phase Meter (Type Approved)", "unit_of_measure": "", "sell_price": 630.68 },
-  { "item_code": "METER-3P-SI", "description": "Supply & Install Three-Phase Meter", "unit_of_measure": "", "sell_price": 755.06 },
-  { "item_code": "METER-BOX-SI", "description": "Meter Panel / Meter Box Supply & Install", "unit_of_measure": "", "sell_price": 683.02 },
-  { "item_code": "MINOR DIAG + C/O", "description": "Minor Diagnostic + Travel", "unit_of_measure": "", "sell_price": 415.00 },
-  { "item_code": "MISC-LIGHTING-CS", "description": "Install customer supplied light", "unit_of_measure": "", "sell_price": 220.00 },
-  { "item_code": "MISC-LIGHTING-SUPPLY", "description": "Supply & Fit Light - Light Changeover", "unit_of_measure": "", "sell_price": 310.00 },
-  { "item_code": "MS-80/100A-3POLE", "description": "Supply & Install 3 Pole Main Switch + CB", "unit_of_measure": "", "sell_price": 450.00 },
-  { "item_code": "NET-SWITCH-SI", "description": "Network Switch Supply & Install", "unit_of_measure": "", "sell_price": 499.61 },
-  { "item_code": "NVR-STANDALONE", "description": "Install Standalone NVR + Programming", "unit_of_measure": "", "sell_price": 305.04 },
-  { "item_code": "OH-UG-CONVERSION", "description": "Overhead To Underground Conversion", "unit_of_measure": "", "sell_price": 1728.75 },
-  { "item_code": "OYSTER-LRG", "description": "Supply + Fit Large Sealed LED Oyster - TriColour", "unit_of_measure": "", "sell_price": 385.00 },
-  { "item_code": "OYSTER-MED", "description": "Supply + Fit Med Sealed LED Oyster - TriColour", "unit_of_measure": "", "sell_price": 295.00 },
-  { "item_code": "PAN-240V-", "description": "Supply & Install LED Panel Light 1200 x 300mm 33W CCT Tricolour", "unit_of_measure": "", "sell_price": 165.00 },
-  { "item_code": "PATCH-PANEL-FULL", "description": "Patch Panel Supply & Terminate - Per Panel", "unit_of_measure": "", "sell_price": 530.38 },
-  { "item_code": "PATCH-PANEL-PORT", "description": "Patch Panel Supply & Terminate - Per Port", "unit_of_measure": "", "sell_price": 54.49 },
-  { "item_code": "PERIODIC-INSPECTION", "description": "Periodic Safety Inspection (Commercial)", "unit_of_measure": "", "sell_price": 462.50 },
-  { "item_code": "PFC-UNIT-SI", "description": "Supply & Install Power Factor Correction Unit", "unit_of_measure": "", "sell_price": 2575.20 },
-  { "item_code": "PHOTOCELL-SI", "description": "Photocell / Daylight Sensor Supply & Install", "unit_of_measure": "", "sell_price": 298.57 },
-  { "item_code": "PIR-ALARM-SI", "description": "PIR Detector (Alarm) Supply & Install", "unit_of_measure": "", "sell_price": 294.40 },
-  { "item_code": "PIR-STANDALONE-SI", "description": "Motion Sensor Standalone (PIR) Supply & Install", "unit_of_measure": "", "sell_price": 288.74 },
-  { "item_code": "PLUGTOP-REPAIR", "description": "Supply & Fit Rewireable Plug Top / Repair Power Cord (10A/15A)", "unit_of_measure": "", "sell_price": 200.66 },
-  { "item_code": "POA-REPAIR", "description": "Point Of Attachment / Service Line Repair", "unit_of_measure": "", "sell_price": 452.48 },
-  { "item_code": "POOL-BONDING-CCT", "description": "Pool/Spa Equipment Bonding & Pump Circuit", "unit_of_measure": "", "sell_price": 487.29 },
-  { "item_code": "POOL-SAFETY-SWITCH-CERT", "description": "Pool/Spa Safety Switch (RCD) Compliance Certificate", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "RCBO-FAULT", "description": "Investigate, Supply & Install Single Pole RCBO", "unit_of_measure": "", "sell_price": 305.00 },
-  { "item_code": "RCBO-REPLACE", "description": "Supply & Replace Existing RCBO - Faulty", "unit_of_measure": "", "sell_price": 300.00 },
-  { "item_code": "RCD/RCBO", "description": "Replace CB/Fuse to RCBO | Parts & Labor", "unit_of_measure": "", "sell_price": 330.00 },
-  { "item_code": "RCD-TEST-BOARD", "description": "RCD Push-Button Test - Per Board", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "RCD-TEST-EACH", "description": "RCD Push-Button Test - Per RCD", "unit_of_measure": "", "sell_price": 27.75 },
-  { "item_code": "REED-SWITCH-SI", "description": "Reed Switch / Door Contact Supply & Install", "unit_of_measure": "", "sell_price": 219.38 },
-  { "item_code": "REX-BREAKGLASS-SI", "description": "REX Button / Break Glass Supply & Install", "unit_of_measure": "", "sell_price": 216.45 },
-  { "item_code": "RJ45", "description": "Supply & Install 1 x RJ45 Female Jack", "unit_of_measure": "", "sell_price": 150.00 },
-  { "item_code": "RJ45M", "description": "Supply & Install 1 x RJ45 Male Jack", "unit_of_measure": "", "sell_price": 60.00 },
-  { "item_code": "SAFETY-SWITCH-ADD", "description": "Supply & Install Standalone Safety Switch (RCD) To Existing Board", "unit_of_measure": "", "sell_price": 241.42 },
-  { "item_code": "SB-600X600", "description": "Supply & Install 600x600mm Steel Enclosure", "unit_of_measure": "", "sell_price": 665.00 },
-  { "item_code": "SBOARD-INS", "description": "Supply & Install 8/24 Pole Switchboard Enclosure", "unit_of_measure": "", "sell_price": 350.00 },
-  { "item_code": "SBOARD-INS-3P-415V-CB", "description": "Supply & Install 3P CB <32A", "unit_of_measure": "", "sell_price": 480.00 },
-  { "item_code": "SBOARD-INS-3P-415V-RCBO", "description": "Supply & Install 3P RCBO >32A", "unit_of_measure": "", "sell_price": 665.00 },
-  { "item_code": "SBOARD-INS-CB", "description": "Supply & Install 1 Pole CB 240v >63a", "unit_of_measure": "", "sell_price": 215.00 },
-  { "item_code": "SBOARD-INS-RCBO", "description": "Supply & Install RCBO 1Pole 240v", "unit_of_measure": "", "sell_price": 315.00 },
-  { "item_code": "SBOARD-UPG-12P", "description": "Full Switchboard Upgrade - Domestic (Up To 12 Pole)", "unit_of_measure": "", "sell_price": 2640.30 },
-  { "item_code": "SBOARD-UPG-24P", "description": "Full Switchboard Upgrade - Domestic (13-24 Pole)", "unit_of_measure": "", "sell_price": 5280.00 },
-  { "item_code": "SBOARD-UPG-24P+", "description": "Full Switchboard Upgrade - Domestic (>24 Pole)", "unit_of_measure": "", "sell_price": 7040.25 },
-  { "item_code": "SB-REPLACE-PP", "description": "Switchboard Replacement per pole", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "SENS-INFRASCAN", "description": "Supply & Install 3 Wire Sensor INFRASCAN", "unit_of_measure": "", "sell_price": 370.00 },
-  { "item_code": "SIREN-STROBE-SI", "description": "Siren + Strobe Supply & Install", "unit_of_measure": "", "sell_price": 281.28 },
-  { "item_code": "SMART-GPO-SI", "description": "Smart Switch / Smart GPO Supply & Install", "unit_of_measure": "", "sell_price": 407.90 },
-  { "item_code": "SMOKE-COMPLIANCE-CHECK", "description": "Smoke Alarm Annual Compliance Check - Per Alarm", "unit_of_measure": "", "sell_price": 37.00 },
-  { "item_code": "SMOKE-WIRED", "description": "Supply & Install Smoke Alarm With WIRED Interconnect", "unit_of_measure": "", "sell_price": 520.00 },
-  { "item_code": "SMOKE-WIRED W/L Interconnect", "description": "Supply & Fit 240v Smoke Alarm with Wireless Interconnect", "unit_of_measure": "", "sell_price": 480.00 },
-  { "item_code": "SPD-SI", "description": "Surge Protection Device (SPD) Supply & Install", "unit_of_measure": "", "sell_price": 874.79 },
-  { "item_code": "SPEAKER-POINT-SI", "description": "Speaker Point / Ceiling Speaker Supply & Install", "unit_of_measure": "", "sell_price": 325.09 },
-  { "item_code": "SPITEMG", "description": "Supply & Install Spitfire Emergency Light", "unit_of_measure": "", "sell_price": 352.00 },
-  { "item_code": "SPLIT-AC-POWER", "description": "Supply Power To Split System (Back To Back)", "unit_of_measure": "", "sell_price": 452.48 },
-  { "item_code": "SPOT-INSTALL", "description": "Supply & Install Twin Spot W/Sensor", "unit_of_measure": "", "sell_price": 390.00 },
-  { "item_code": "STEP-STAIR-LIGHT-SI", "description": "Step / Stair Light Supply & Install", "unit_of_measure": "", "sell_price": 260.61 },
-  { "item_code": "STRIKE-MAGLOCK-SI", "description": "Electric Strike / Mag Lock Supply & Install", "unit_of_measure": "", "sell_price": 686.26 },
-  { "item_code": "STRIP-LIGHT-PM", "description": "Supply & Install Strip Light - Per Metre", "unit_of_measure": "", "sell_price": 125.86 },
-  { "item_code": "STRUT-CHANNEL-PM", "description": "Supply & Install Strut Channel (Unistrut) - Per Metre", "unit_of_measure": "", "sell_price": 79.10 },
-  { "item_code": "SUBC", "description": "Tradesman Labour *Subcontracting Rate*", "unit_of_measure": "", "sell_price": 90.00 },
-  { "item_code": "SUBMAIN-RUN-PM", "description": "Meter Board To Sub-Board Submain Run - Per Metre", "unit_of_measure": "", "sell_price": 80.98 },
-  { "item_code": "T+A", "description": "Tradesmen + Assistant", "unit_of_measure": "", "sell_price": 145.00 },
-  { "item_code": "TAILS-RENEWAL", "description": "Tails Renewal / Re-Tail Meter", "unit_of_measure": "", "sell_price": 373.81 },
-  { "item_code": "TANDT", "description": "Test & Tag", "unit_of_measure": "", "sell_price": 7.50 },
-  { "item_code": "TANDTESTAB", "description": "Test & Tag Site Establishment Fee", "unit_of_measure": "", "sell_price": 250.00 },
-  { "item_code": "THERMO-SCAN-BOARD", "description": "Thermographic Switchboard Scan", "unit_of_measure": "", "sell_price": 185.00 },
-  { "item_code": "TRACK-HEAD-SI", "description": "Track Lighting - Head Supply & Install", "unit_of_measure": "", "sell_price": 260.92 },
-  { "item_code": "TRACK-RAIL-PM", "description": "Track Lighting - Track - Per Metre", "unit_of_measure": "", "sell_price": 101.00 },
-  { "item_code": "Travel / Callout", "description": "Callout + Travel + Diag", "unit_of_measure": "", "sell_price": 150.00 },
-  { "item_code": "TV-MOUNT", "description": "Mount & Fit C/S TV Mount", "unit_of_measure": "", "sell_price": 330.00 },
-  { "item_code": "TV-MOUNT-SUPPLY", "description": "Supply & Fit TV Mount + Locate Studs", "unit_of_measure": "", "sell_price": 840.00 },
-  { "item_code": "UPS-SI", "description": "Supply & Install UPS (Uninterruptible Power Supply)", "unit_of_measure": "", "sell_price": 2244.76 },
-  { "item_code": "VSD-VFD-SI", "description": "Supply & Install VSD/VFD (Variable Speed Drive)", "unit_of_measure": "", "sell_price": 1404.12 },
-  { "item_code": "W/L SMOKEY", "description": "Supply & Install 1 x Wireless 10yr smokey with w/l interconnect", "unit_of_measure": "", "sell_price": 610.00 },
-  { "item_code": "WALLPACK-BUNKER-SI", "description": "Wall Pack / Bunker Light Supply & Install", "unit_of_measure": "", "sell_price": 250.17 },
-  { "item_code": "WAP-SI", "description": "WAP (Wireless Access Point) Supply & Install", "unit_of_measure": "", "sell_price": 469.28 },
-  { "item_code": "WP-GPO-NEW", "description": "Supply & Install New Weatherproof GPO (New Point)", "unit_of_measure": "", "sell_price": 360.71 },
-  { "item_code": "WP-GPO-REPLACE", "description": "Supply & Replace 1 x GPO Weatherproof", "unit_of_measure": "", "sell_price": 350.00 }
+  {
+    "item_code": "1.5-LTS-CCT-RUN-PM",
+    "description": "Supply & Install 1.5mm Cabling To Lighting Point - Per Meter",
+    "unit_of_measure": "",
+    "sell_price": 47.85
+  },
+  {
+    "item_code": "100-FLOOD-INSTALL",
+    "description": "Supply & Install 100w Flood Light",
+    "unit_of_measure": "",
+    "sell_price": 350.0
+  },
+  {
+    "item_code": "10-PWR-RUN-PM",
+    "description": "Supply & Install 10mm Power Circuit Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 90.83
+  },
+  {
+    "item_code": "12VBUB",
+    "description": "Supply & Install 1 x 12V 7.0AH Back Up Battery",
+    "unit_of_measure": "",
+    "sell_price": 180.0
+  },
+  {
+    "item_code": "150-FLOOD-INSTALL",
+    "description": "Supply & Install 150w Flood Light",
+    "unit_of_measure": "",
+    "sell_price": 440.0
+  },
+  {
+    "item_code": "16-XLPE-PM",
+    "description": "Supply & Install 16mm XLPE - Per Meter (PAIR)",
+    "unit_of_measure": "",
+    "sell_price": 93.58
+  },
+  {
+    "item_code": "1GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 1 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 165.0
+  },
+  {
+    "item_code": "1PHISO",
+    "description": "Supply & Install 1 Phase Isolator",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "2.5-4C+E-PWR-CCT-RUN-PM",
+    "description": "Supply & Install 2.5-4C+E 3 Phase Power Cable Orange Circ",
+    "unit_of_measure": "",
+    "sell_price": 67.44
+  },
+  {
+    "item_code": "2.5-PWR-CCT-RUN-PM",
+    "description": "Supply & Install 2.5mm Power Circuit Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 49.04
+  },
+  {
+    "item_code": "2.5-PWR-RUN <5M",
+    "description": "Supply & Install 2.5mm Circuit <5m",
+    "unit_of_measure": "",
+    "sell_price": 715.0
+  },
+  {
+    "item_code": "2.5-PWR-RUN >5M",
+    "description": "Supply & Install 2.5mm Circuit >5m",
+    "unit_of_measure": "",
+    "sell_price": 400.0
+  },
+  {
+    "item_code": "2.5-PWR-RUN 10/20M",
+    "description": "Supply & Install 2.5mm Circuit <10m",
+    "unit_of_measure": "",
+    "sell_price": 990.0
+  },
+  {
+    "item_code": "2.5-PWR-RUN 20/30M",
+    "description": "Supply & Install 2.5mm Circuit <20m",
+    "unit_of_measure": "",
+    "sell_price": 1550.0
+  },
+  {
+    "item_code": "200-FLOOD-INSTALL",
+    "description": "Supply & Install 200w Flood Light",
+    "unit_of_measure": "",
+    "sell_price": 580.0
+  },
+  {
+    "item_code": "25/20-CONDUIT+FIXINGS",
+    "description": "20/25mm Supply & Install Conduit 4 Meters",
+    "unit_of_measure": "",
+    "sell_price": 45.0
+  },
+  {
+    "item_code": "2GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 2 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "2IN1",
+    "description": "Supply + Fit 2 in 1 Bathroom Fitting 2 Heat",
+    "unit_of_measure": "",
+    "sell_price": 430.0
+  },
+  {
+    "item_code": "2IN1CS",
+    "description": "Fit Customer Supplied 2 in 1 Bathroom Fitting 2 Heat",
+    "unit_of_measure": "",
+    "sell_price": 330.0
+  },
+  {
+    "item_code": "2LAB",
+    "description": "Labor 1 x Tradesman 1 x Apprenice",
+    "unit_of_measure": "",
+    "sell_price": 225.0
+  },
+  {
+    "item_code": "32/40 CONDUIT+FIXINGS",
+    "description": "32/40mm Supply & Install Conduit 4 Meters",
+    "unit_of_measure": "",
+    "sell_price": 55.0
+  },
+  {
+    "item_code": "3GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 3 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 235.0
+  },
+  {
+    "item_code": "3IN1",
+    "description": "Supply + Fit 3 in 1 Bathroom Fitting 4 Heat",
+    "unit_of_measure": "",
+    "sell_price": 675.0
+  },
+  {
+    "item_code": "3IN1CS",
+    "description": "Fit customer supplied 3 in 1 Bathroom Fitting 4 Heat",
+    "unit_of_measure": "",
+    "sell_price": 475.0
+  },
+  {
+    "item_code": "3PH-BOARD-CHANGEOVER",
+    "description": "Three-Phase Board Changeover",
+    "unit_of_measure": "",
+    "sell_price": 1221.0
+  },
+  {
+    "item_code": "3PHCB",
+    "description": "Replace CB/Fuse to RCBO | Parts & Labor 3 PHASE",
+    "unit_of_measure": "",
+    "sell_price": 560.0
+  },
+  {
+    "item_code": "3PHISO",
+    "description": "Supply & Install 3 Phase Isolator",
+    "unit_of_measure": "",
+    "sell_price": 345.0
+  },
+  {
+    "item_code": "3PIN-PLUG",
+    "description": "Supply & Install 3 Pin Plug - 240v 10A",
+    "unit_of_measure": "",
+    "sell_price": 100.0
+  },
+  {
+    "item_code": "4/5-PIN-OUTLET",
+    "description": "Install 4/5 Pin Outlet w/ Neutral -",
+    "unit_of_measure": "",
+    "sell_price": 350.0
+  },
+  {
+    "item_code": "4/5PIN-PLUG-415V",
+    "description": "Install 4/5 Pin Plug With Neutral -",
+    "unit_of_measure": "",
+    "sell_price": 350.0
+  },
+  {
+    "item_code": "4GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 4 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 300.0
+  },
+  {
+    "item_code": "4-PWR-RUN-PM",
+    "description": "Supply & Install 4mm Cable Per Meter",
+    "unit_of_measure": "",
+    "sell_price": 67.37
+  },
+  {
+    "item_code": "5GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 5 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 335.0
+  },
+  {
+    "item_code": "6GANG-CLIPSAL-SWITCH",
+    "description": "Supply & Install 6 Gang Switch - Clipsal",
+    "unit_of_measure": "",
+    "sell_price": 410.0
+  },
+  {
+    "item_code": "6-PWR-RUN-PM",
+    "description": "Supply & Install 6mm Cable Per Meter",
+    "unit_of_measure": "",
+    "sell_price": 69.92
+  },
+  {
+    "item_code": "ACCESS-READER-SI",
+    "description": "Access Control Reader Supply & Install (Single Door)",
+    "unit_of_measure": "",
+    "sell_price": 775.25
+  },
+  {
+    "item_code": "ALARM-KEYPAD-SI",
+    "description": "Alarm Keypad Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 308.7
+  },
+  {
+    "item_code": "ALARM-PANEL-SI",
+    "description": "Alarm Panel Supply & Install (Bosch Solution etc.) 4 Zones 1 x K/P No Wiring",
+    "unit_of_measure": "",
+    "sell_price": 1036.5
+  },
+  {
+    "item_code": "ANTENNA-SI-TUNE",
+    "description": "Antenna Supply & Install + Tune",
+    "unit_of_measure": "",
+    "sell_price": 452.92
+  },
+  {
+    "item_code": "APPISO",
+    "description": "Appliance Isolator Supply + Install up to 32A",
+    "unit_of_measure": "",
+    "sell_price": 510.0
+  },
+  {
+    "item_code": "APPL-CCT-DEDICATED",
+    "description": "Dedicated Appliance Circuit (Oven / Cooktop / Aircon)",
+    "unit_of_measure": "",
+    "sell_price": 545.01
+  },
+  {
+    "item_code": "APPLIN",
+    "description": "Appliance Install/changover - no cutting",
+    "unit_of_measure": "",
+    "sell_price": 550.0
+  },
+  {
+    "item_code": "APPLINC",
+    "description": "Appliance Install/changover - Cutting Req",
+    "unit_of_measure": "",
+    "sell_price": 650.0
+  },
+  {
+    "item_code": "AWNING-1",
+    "description": "Supply & Install power to Awning - 1 Awning only",
+    "unit_of_measure": "",
+    "sell_price": 550.0
+  },
+  {
+    "item_code": "AWNING-2",
+    "description": "Supply Power to Awning - PER AWNING (more than one)",
+    "unit_of_measure": "",
+    "sell_price": 450.0
+  },
+  {
+    "item_code": "BATH-HEATLAMP-ELEMENT",
+    "description": "Bathroom Heat Lamp Element Replacement",
+    "unit_of_measure": "",
+    "sell_price": 245.32
+  },
+  {
+    "item_code": "BATT2FTWP",
+    "description": "Supply & Install W/P 2 Foot Batten",
+    "unit_of_measure": "",
+    "sell_price": 300.0
+  },
+  {
+    "item_code": "BATT4FTWP",
+    "description": "Supply & Install 4 Foot Batten W/P",
+    "unit_of_measure": "",
+    "sell_price": 450.0
+  },
+  {
+    "item_code": "BOARD-THERMAL-TEST",
+    "description": "Load Testing / Thermal Imaging Of Switchboard",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "BOLLARD-LIGHT-SI",
+    "description": "Bollard Light Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 366.34
+  },
+  {
+    "item_code": "BRICK-CHASE-CONDUIT-PM",
+    "description": "Supply & Install Brick Chase + Conduit - Per Metre (Excludes Cable)",
+    "unit_of_measure": "",
+    "sell_price": 15.0
+  },
+  {
+    "item_code": "BUSBAR-RUN-PM",
+    "description": "Supply & Install Busbar/Busway - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 178.53
+  },
+  {
+    "item_code": "CABLE-TRAY-RUN-PM",
+    "description": "Supply & Install Cable Tray/Ladder - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 100.15
+  },
+  {
+    "item_code": "CABREP",
+    "description": "Cable Repair + Heat-shrink/Solder per core + Testing",
+    "unit_of_measure": "",
+    "sell_price": 145.0
+  },
+  {
+    "item_code": "CAT6-CABLE-RUN-PM",
+    "description": "Supply & Install 1 x CAT-6 Cable P.M",
+    "unit_of_measure": "",
+    "sell_price": 20.0
+  },
+  {
+    "item_code": "CCEW",
+    "description": "Attend Site - Conduct an Electrical Safety Inspection, provide a CCEW for works inspected.",
+    "unit_of_measure": "",
+    "sell_price": 550.0
+  },
+  {
+    "item_code": "CCTV-CABLE-RUN-PM",
+    "description": "CCTV Cable Run - Per Metre - CAT 6 + 2 x RJ45 Male Terminations",
+    "unit_of_measure": "",
+    "sell_price": 66.16
+  },
+  {
+    "item_code": "CCTV-CAM-BULLET",
+    "description": "Install CCTV Camera - Bullet (Camera Supplied Separately)",
+    "unit_of_measure": "",
+    "sell_price": 205.66
+  },
+  {
+    "item_code": "CCTV-CAM-DOME",
+    "description": "Install CCTV Camera - Dome (Camera Supplied Separately)",
+    "unit_of_measure": "",
+    "sell_price": 205.66
+  },
+  {
+    "item_code": "CCTV-CAM-TURRET",
+    "description": "Install CCTV Camera - Turret (Camera Supplied Separately)",
+    "unit_of_measure": "",
+    "sell_price": 205.66
+  },
+  {
+    "item_code": "CCTV-KIT-16",
+    "description": "Supply & Install 1 x 16 Channel NVR + 16 x 8MP Turrets",
+    "unit_of_measure": "",
+    "sell_price": 12800.0
+  },
+  {
+    "item_code": "CCTV-KIT-4",
+    "description": "Supply & Install 1 x 4 Channel NVR + 4 x 8MP Turrets",
+    "unit_of_measure": "",
+    "sell_price": 3200.0
+  },
+  {
+    "item_code": "CCTV-KIT-8",
+    "description": "Supply & Install 1 x 8 Channel NVR + 8 x 8MP Turrets",
+    "unit_of_measure": "",
+    "sell_price": 6400.0
+  },
+  {
+    "item_code": "CHOVR",
+    "description": "4G Monitoring Module - Changover P/L",
+    "unit_of_measure": "",
+    "sell_price": 399.0
+  },
+  {
+    "item_code": "COAX",
+    "description": "Relocate Coax point - cable not modified",
+    "unit_of_measure": "",
+    "sell_price": 60.0
+  },
+  {
+    "item_code": "COMMS-CAB-SW",
+    "description": "Supply & Install Data Cabinet / Comms Rack (Small Wall-Mount)",
+    "unit_of_measure": "",
+    "sell_price": 713.65
+  },
+  {
+    "item_code": "DC-FAN-NO-LIGHT",
+    "description": "Supply & Install DC Fan - No Light",
+    "unit_of_measure": "",
+    "sell_price": 435.0
+  },
+  {
+    "item_code": "DC-FAN-W-LIGHT",
+    "description": "Supply & Install DC Ceiling Fan W/ Light",
+    "unit_of_measure": "",
+    "sell_price": 470.0
+  },
+  {
+    "item_code": "DIM-ROTARY",
+    "description": "Supply & Install LED Rotary Dimmer",
+    "unit_of_measure": "",
+    "sell_price": 300.0
+  },
+  {
+    "item_code": "DIN-CONTACTOR-TIMER",
+    "description": "Din Rail Contactor / Timer Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 357.49
+  },
+  {
+    "item_code": "DISCO-MAKESAFE<5",
+    "description": "Disconnect / Make Safe Outlet <5",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "DISCO-MAKESAFE->5",
+    "description": "Disconnect / Make Safe Outlet >5",
+    "unit_of_measure": "",
+    "sell_price": 200.0
+  },
+  {
+    "item_code": "DL-CONVERSION",
+    "description": "Supply & Install 90mm Downlight (mr16 conversion)",
+    "unit_of_measure": "",
+    "sell_price": 115.0
+  },
+  {
+    "item_code": "DL-INSTALL<12",
+    "description": "Supply & Install 90mm LED Downlight from closest point - Discounted Price (more than 12)",
+    "unit_of_measure": "",
+    "sell_price": 135.0
+  },
+  {
+    "item_code": "DL-INSTALL-CBL-F",
+    "description": "Supply & Install 90mm LED Downlight FLUSH W/ Cabling from nearest light",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "DL-INSTALL-CBL-R",
+    "description": "Supply & Install 90mm LED Downlight RECESSED W/ Cabling from nearest light",
+    "unit_of_measure": "",
+    "sell_price": 160.0
+  },
+  {
+    "item_code": "DL-REPLACE",
+    "description": "Supply & Replace Downlight - LED 90mm",
+    "unit_of_measure": "",
+    "sell_price": 85.0
+  },
+  {
+    "item_code": "DOL-SOFT-STARTER-SI",
+    "description": "Supply & Install DOL / Soft Starter",
+    "unit_of_measure": "",
+    "sell_price": 804.4
+  },
+  {
+    "item_code": "DUCTED-AC-POWER",
+    "description": "Supply Power To Ducted Aircon Unit",
+    "unit_of_measure": "",
+    "sell_price": 678.72
+  },
+  {
+    "item_code": "EARTH-STAKE",
+    "description": "Supply & Install Earth Stake + Earthing Clamp",
+    "unit_of_measure": "",
+    "sell_price": 440.0
+  },
+  {
+    "item_code": "EMG EX",
+    "description": "Supply & Fit Emergency Exit Light",
+    "unit_of_measure": "",
+    "sell_price": 310.0
+  },
+  {
+    "item_code": "EMG-90MIN-DISCHARGE",
+    "description": "Exit / Emergency Light 90-Minute Discharge Test",
+    "unit_of_measure": "",
+    "sell_price": 55.5
+  },
+  {
+    "item_code": "EMGBAT2",
+    "description": "Supply & Fit 2 Foot Emergency Batten",
+    "unit_of_measure": "",
+    "sell_price": 385.0
+  },
+  {
+    "item_code": "EMGBAT4",
+    "description": "Supply & Fit Emergency 4 Foot Batten",
+    "unit_of_measure": "",
+    "sell_price": 425.0
+  },
+  {
+    "item_code": "EMG-EXIT-TEST",
+    "description": "Emergency & Exit Light Testing (6-Monthly)",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "ENC-PLASTIC-16P",
+    "description": "Supply & Install 1 x 16 Pole Plastic Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 316.79
+  },
+  {
+    "item_code": "ENC-PLASTIC-24P",
+    "description": "Supply & Install 1 x 24 Pole Plastic Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 420.87
+  },
+  {
+    "item_code": "ENC-PLASTIC-32P",
+    "description": "Supply & Install 1 x 32 Pole Plastic Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 522.83
+  },
+  {
+    "item_code": "ENC-PLASTIC-4P",
+    "description": "Supply & Install 1 x 4 Pole Plastic Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 209.84
+  },
+  {
+    "item_code": "ENC-PLASTIC-8P",
+    "description": "Supply & Install 1 x 8 Pole Plastic Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 263.49
+  },
+  {
+    "item_code": "EV-22KW-3P-SI",
+    "description": "Supply & Install 22kW Three-Phase EV Charger",
+    "unit_of_measure": "",
+    "sell_price": 2972.72
+  },
+  {
+    "item_code": "EV-7KW-1P-SI",
+    "description": "Supply & Install 7kW Single-Phase EV Charger (Zappi/Ocular/Tesla)",
+    "unit_of_measure": "",
+    "sell_price": 2601.14
+  },
+  {
+    "item_code": "EV-CCT-RUN-PM",
+    "description": "Supply & Install Dedicated EV Circuit - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 78.18
+  },
+  {
+    "item_code": "EV-CS-INSTALL",
+    "description": "Install Customer-Supplied EV Charger",
+    "unit_of_measure": "",
+    "sell_price": 517.44
+  },
+  {
+    "item_code": "EV-CT-CLAMP",
+    "description": "EV Charger Load Management / CT Clamp Add-On",
+    "unit_of_measure": "",
+    "sell_price": 391.2
+  },
+  {
+    "item_code": "EX-FAN-INLINE-W/RELAY",
+    "description": "Supply & Install Inline Extraction Fan with Timer - Existing Cabling",
+    "unit_of_measure": "",
+    "sell_price": 790.0
+  },
+  {
+    "item_code": "EX-FAN-SURFACE",
+    "description": "Supply & Install Surface Mount Exhaust Fan - Existing Cabling",
+    "unit_of_measure": "",
+    "sell_price": 480.0
+  },
+  {
+    "item_code": "EXHAUST-DUCTING",
+    "description": "Install fan ducting to external dwelling with cover",
+    "unit_of_measure": "",
+    "sell_price": 660.0
+  },
+  {
+    "item_code": "FAN-CUS-SUPPLIED",
+    "description": "Install Customer Supplied Fan",
+    "unit_of_measure": "",
+    "sell_price": 245.0
+  },
+  {
+    "item_code": "FIBRE-TERM",
+    "description": "Fibre Lead-In / Termination",
+    "unit_of_measure": "",
+    "sell_price": 360.04
+  },
+  {
+    "item_code": "FLOOR-BOX-SI",
+    "description": "Floor Box / Floor Outlet Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 669.68
+  },
+  {
+    "item_code": "FUSE-80A-CART",
+    "description": "Supply & Install 80A Service Fuse (Cartridge Only)",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "FUSE-80-WHOLE",
+    "description": "Supply & Install 80A Service Fuse",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "GEN-STANDBY-ATS",
+    "description": "Supply & Install Standby Generator + ATS (Automatic Transfer Switch)",
+    "unit_of_measure": "",
+    "sell_price": 6290.7
+  },
+  {
+    "item_code": "GPO-DOUBLE-NEW",
+    "description": "Supply & Install New Double GPO (New Point)",
+    "unit_of_measure": "",
+    "sell_price": 390.0
+  },
+  {
+    "item_code": "GPO-QUAD-NEW",
+    "description": "Supply & Install New Quad GPO (New Point)",
+    "unit_of_measure": "",
+    "sell_price": 484.25
+  },
+  {
+    "item_code": "GPO-REPLACE-STANDARD",
+    "description": "Supply & Replace 1 x GPO",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "GPO-SINGLE-NEW",
+    "description": "Supply & Install New Single GPO (New Point)",
+    "unit_of_measure": "",
+    "sell_price": 351.05
+  },
+  {
+    "item_code": "GPO-USB-COMBO",
+    "description": "Supply & Install USB GPO (USB-A/C Combo)",
+    "unit_of_measure": "",
+    "sell_price": 410.0
+  },
+  {
+    "item_code": "GRDN-KIT-1",
+    "description": "Supply & Install Spike Light + Driver >10 Lights",
+    "unit_of_measure": "",
+    "sell_price": 200.0
+  },
+  {
+    "item_code": "GRDN-KIT-2",
+    "description": "Supply & Install Garden Spike Lights <10-20",
+    "unit_of_measure": "",
+    "sell_price": 230.0
+  },
+  {
+    "item_code": "HDMI-RUN-PM",
+    "description": "Supply & Install HDMI / AV Cable Run - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 69.91
+  },
+  {
+    "item_code": "HIGHBAY-LED-SI",
+    "description": "High Bay LED Supply & Install (Commercial Warehouse)",
+    "unit_of_measure": "",
+    "sell_price": 499.37
+  },
+  {
+    "item_code": "HW-240V",
+    "description": "Supply & Install / Fit-Off Hardwired Power to Appliance/Fixture",
+    "unit_of_measure": "",
+    "sell_price": 490.0
+  },
+  {
+    "item_code": "HWS-SERVICE",
+    "description": "Supply & Install 1 x Thermostat 1 x Element",
+    "unit_of_measure": "",
+    "sell_price": 550.0
+  },
+  {
+    "item_code": "HYDRONIC-HEATER-CCT",
+    "description": "Hydronic / Panel Heater Circuit",
+    "unit_of_measure": "",
+    "sell_price": 466.31
+  },
+  {
+    "item_code": "IND-PLUG-1P-WP",
+    "description": "Supply & Install Industrial Plug/Socket Outlet - Single Phase (Weatherproof)",
+    "unit_of_measure": "",
+    "sell_price": 373.81
+  },
+  {
+    "item_code": "IND-PLUG-3P-WP",
+    "description": "Supply & Install Industrial Plug/Socket Outlet - Three Phase (Weatherproof)",
+    "unit_of_measure": "",
+    "sell_price": 574.48
+  },
+  {
+    "item_code": "INTERCOM-DOORBELL-SI",
+    "description": "Intercom / Video Doorbell Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 700.06
+  },
+  {
+    "item_code": "L2",
+    "description": "Labour 2 x Tradesman",
+    "unit_of_measure": "",
+    "sell_price": 360.0
+  },
+  {
+    "item_code": "L2-ASP-WORKS",
+    "description": "Level 2 ASP Works (Accredited Service Provider) Per Hour",
+    "unit_of_measure": "",
+    "sell_price": 370.0
+  },
+  {
+    "item_code": "LABOUR",
+    "description": "1 X Tradesman",
+    "unit_of_measure": "",
+    "sell_price": 165.0
+  },
+  {
+    "item_code": "LAH",
+    "description": "Labor (Afterhours)",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "LED5M",
+    "description": "Supply & Fit LED Strip + driver (colour pending) High CRI SAL Led Strip 5M",
+    "unit_of_measure": "",
+    "sell_price": 680.0
+  },
+  {
+    "item_code": "LED-BATT-2FT",
+    "description": "Supply & Install 2 Foot LED Batten (Non-Emergency)",
+    "unit_of_measure": "",
+    "sell_price": 295.53
+  },
+  {
+    "item_code": "LED-BATT-4FT",
+    "description": "Supply & Install 4 Foot LED Batten (Non-Emergency)",
+    "unit_of_measure": "",
+    "sell_price": 335.44
+  },
+  {
+    "item_code": "MAINS-UPG-1P-PM",
+    "description": "Consumer Mains Upgrade - Single Phase - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 72.34
+  },
+  {
+    "item_code": "MAINS-UPG-3P-PM",
+    "description": "Consumer Mains Upgrade - Three Phase - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 112.34
+  },
+  {
+    "item_code": "MAJOR DIAG + C/O",
+    "description": "Major Diagnostic - Fault Find + Travel",
+    "unit_of_measure": "",
+    "sell_price": 915.0
+  },
+  {
+    "item_code": "METER-1P-SI",
+    "description": "Supply & Install Single-Phase Meter (Type Approved)",
+    "unit_of_measure": "",
+    "sell_price": 630.68
+  },
+  {
+    "item_code": "METER-3P-SI",
+    "description": "Supply & Install Three-Phase Meter",
+    "unit_of_measure": "",
+    "sell_price": 755.06
+  },
+  {
+    "item_code": "METER-BOX-SI",
+    "description": "Meter Panel / Meter Box Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 683.02
+  },
+  {
+    "item_code": "MINOR DIAG + C/O",
+    "description": "Minor Diagnostic + Travel",
+    "unit_of_measure": "",
+    "sell_price": 415.0
+  },
+  {
+    "item_code": "MISC-LIGHTING-CS",
+    "description": "Install customer supplied light",
+    "unit_of_measure": "",
+    "sell_price": 220.0
+  },
+  {
+    "item_code": "MISC-LIGHTING-SUPPLY",
+    "description": "Supply & Fit Light - Light Changeover",
+    "unit_of_measure": "",
+    "sell_price": 310.0
+  },
+  {
+    "item_code": "MS-80/100A-3POLE",
+    "description": "Supply & Install 3 Pole Main Switch + CB",
+    "unit_of_measure": "",
+    "sell_price": 450.0
+  },
+  {
+    "item_code": "NET-SWITCH-SI",
+    "description": "Network Switch Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 499.61
+  },
+  {
+    "item_code": "NVR-STANDALONE",
+    "description": "Install Standalone NVR + Programming",
+    "unit_of_measure": "",
+    "sell_price": 305.04
+  },
+  {
+    "item_code": "OH-UG-CONVERSION",
+    "description": "Overhead To Underground Conversion",
+    "unit_of_measure": "",
+    "sell_price": 1728.75
+  },
+  {
+    "item_code": "OYSTER-LRG",
+    "description": "Supply + Fit Large Sealed LED Oyster - TriColour",
+    "unit_of_measure": "",
+    "sell_price": 385.0
+  },
+  {
+    "item_code": "OYSTER-MED",
+    "description": "Supply + Fit Med Sealed LED Oyster - TriColour",
+    "unit_of_measure": "",
+    "sell_price": 295.0
+  },
+  {
+    "item_code": "PAN-240V-",
+    "description": "Supply & Install LED Panel Light 1200 x 300mm 33W CCT Tricolour",
+    "unit_of_measure": "",
+    "sell_price": 165.0
+  },
+  {
+    "item_code": "PATCH-PANEL-FULL",
+    "description": "Patch Panel Supply & Terminate - Per Panel",
+    "unit_of_measure": "",
+    "sell_price": 530.38
+  },
+  {
+    "item_code": "PATCH-PANEL-PORT",
+    "description": "Patch Panel Supply & Terminate - Per Port",
+    "unit_of_measure": "",
+    "sell_price": 54.49
+  },
+  {
+    "item_code": "PERIODIC-INSPECTION",
+    "description": "Periodic Safety Inspection (Commercial)",
+    "unit_of_measure": "",
+    "sell_price": 462.5
+  },
+  {
+    "item_code": "PFC-UNIT-SI",
+    "description": "Supply & Install Power Factor Correction Unit",
+    "unit_of_measure": "",
+    "sell_price": 2575.2
+  },
+  {
+    "item_code": "PHOTOCELL-SI",
+    "description": "Photocell / Daylight Sensor Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 298.57
+  },
+  {
+    "item_code": "PIR-ALARM-SI",
+    "description": "PIR Detector (Alarm) Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 294.4
+  },
+  {
+    "item_code": "PIR-STANDALONE-SI",
+    "description": "Motion Sensor Standalone (PIR) Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 288.74
+  },
+  {
+    "item_code": "PLUG-BASE+INS",
+    "description": "Supply & Install 1 x 3 Pin Plug Base",
+    "unit_of_measure": "",
+    "sell_price": 9.2
+  },
+  {
+    "item_code": "PLUGTOP-REPAIR",
+    "description": "Supply & Fit Rewireable Plug Top / Repair Power Cord (10A/15A)",
+    "unit_of_measure": "",
+    "sell_price": 200.66
+  },
+  {
+    "item_code": "POA-REPAIR",
+    "description": "Point Of Attachment / Service Line Repair",
+    "unit_of_measure": "",
+    "sell_price": 452.48
+  },
+  {
+    "item_code": "POOL-BONDING-CCT",
+    "description": "Pool/Spa Equipment Bonding & Pump Circuit",
+    "unit_of_measure": "",
+    "sell_price": 487.29
+  },
+  {
+    "item_code": "POOL-SAFETY-SWITCH-CERT",
+    "description": "Pool/Spa Safety Switch (RCD) Compliance Certificate",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "RCBO-FAULT",
+    "description": "Investigate, Supply & Install Single Pole RCBO",
+    "unit_of_measure": "",
+    "sell_price": 305.0
+  },
+  {
+    "item_code": "RCBO-REPLACE",
+    "description": "Supply & Replace Existing RCBO - Faulty",
+    "unit_of_measure": "",
+    "sell_price": 300.0
+  },
+  {
+    "item_code": "RCD/RCBO",
+    "description": "Replace CB/Fuse to RCBO | Parts & Labor",
+    "unit_of_measure": "",
+    "sell_price": 330.0
+  },
+  {
+    "item_code": "RCD-TEST-BOARD",
+    "description": "RCD Push-Button Test - Per Board",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "RCD-TEST-EACH",
+    "description": "RCD Push-Button Test - Per RCD",
+    "unit_of_measure": "",
+    "sell_price": 27.75
+  },
+  {
+    "item_code": "REED-SWITCH-SI",
+    "description": "Reed Switch / Door Contact Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 219.38
+  },
+  {
+    "item_code": "REX-BREAKGLASS-SI",
+    "description": "REX Button / Break Glass Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 216.45
+  },
+  {
+    "item_code": "RJ45",
+    "description": "Supply & Install 1 x RJ45 Female Jack",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "RJ45M",
+    "description": "Supply & Install 1 x RJ45 Male Jack",
+    "unit_of_measure": "",
+    "sell_price": 60.0
+  },
+  {
+    "item_code": "SAFETY-SWITCH-ADD",
+    "description": "Supply & Install Standalone Safety Switch (RCD) To Existing Board",
+    "unit_of_measure": "",
+    "sell_price": 241.42
+  },
+  {
+    "item_code": "SB-600X600",
+    "description": "Supply & Install 600x600mm Steel Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 665.0
+  },
+  {
+    "item_code": "SBOARD-INS",
+    "description": "Supply & Install 8/24 Pole Switchboard Enclosure",
+    "unit_of_measure": "",
+    "sell_price": 350.0
+  },
+  {
+    "item_code": "SBOARD-INS-3P-415V-CB",
+    "description": "Supply & Install 3P CB <32A",
+    "unit_of_measure": "",
+    "sell_price": 480.0
+  },
+  {
+    "item_code": "SBOARD-INS-3P-415V-RCBO",
+    "description": "Supply & Install 3P RCBO >32A",
+    "unit_of_measure": "",
+    "sell_price": 665.0
+  },
+  {
+    "item_code": "SBOARD-INS-CB",
+    "description": "Supply & Install 1 Pole CB 240v >63a",
+    "unit_of_measure": "",
+    "sell_price": 215.0
+  },
+  {
+    "item_code": "SBOARD-INS-RCBO",
+    "description": "Supply & Install RCBO 1Pole 240v",
+    "unit_of_measure": "",
+    "sell_price": 315.0
+  },
+  {
+    "item_code": "SBOARD-UPG-12P",
+    "description": "Full Switchboard Upgrade - Domestic (Up To 12 Pole)",
+    "unit_of_measure": "",
+    "sell_price": 2640.3
+  },
+  {
+    "item_code": "SBOARD-UPG-24P",
+    "description": "Full Switchboard Upgrade - Domestic (13-24 Pole)",
+    "unit_of_measure": "",
+    "sell_price": 5280.0
+  },
+  {
+    "item_code": "SBOARD-UPG-24P+",
+    "description": "Full Switchboard Upgrade - Domestic (>24 Pole)",
+    "unit_of_measure": "",
+    "sell_price": 7040.25
+  },
+  {
+    "item_code": "SB-REPLACE-PP",
+    "description": "Switchboard Replacement per pole",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "SENS-INFRASCAN",
+    "description": "Supply & Install 3 Wire Sensor INFRASCAN",
+    "unit_of_measure": "",
+    "sell_price": 370.0
+  },
+  {
+    "item_code": "SIREN-STROBE-SI",
+    "description": "Siren + Strobe Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 281.28
+  },
+  {
+    "item_code": "SMART-GPO-SI",
+    "description": "Smart Switch / Smart GPO Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 407.9
+  },
+  {
+    "item_code": "SMOKE-COMPLIANCE-CHECK",
+    "description": "Smoke Alarm Annual Compliance Check - Per Alarm",
+    "unit_of_measure": "",
+    "sell_price": 37.0
+  },
+  {
+    "item_code": "SMOKE-WIRED",
+    "description": "Supply & Install Smoke Alarm With WIRED Interconnect",
+    "unit_of_measure": "",
+    "sell_price": 520.0
+  },
+  {
+    "item_code": "SMOKE-WIRED W/L Interconnect",
+    "description": "Supply & Fit 240v Smoke Alarm with Wireless Interconnect",
+    "unit_of_measure": "",
+    "sell_price": 480.0
+  },
+  {
+    "item_code": "SPD-SI",
+    "description": "Surge Protection Device (SPD) Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 874.79
+  },
+  {
+    "item_code": "SPEAKER-POINT-SI",
+    "description": "Speaker Point / Ceiling Speaker Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 325.09
+  },
+  {
+    "item_code": "SPITEMG",
+    "description": "Supply & Install Spitfire Emergency Light",
+    "unit_of_measure": "",
+    "sell_price": 352.0
+  },
+  {
+    "item_code": "SPLIT-AC-POWER",
+    "description": "Supply Power To Split System (Back To Back)",
+    "unit_of_measure": "",
+    "sell_price": 452.48
+  },
+  {
+    "item_code": "SPOT-INSTALL",
+    "description": "Supply & Install Twin Spot W/Sensor",
+    "unit_of_measure": "",
+    "sell_price": 390.0
+  },
+  {
+    "item_code": "STEP-STAIR-LIGHT-SI",
+    "description": "Step / Stair Light Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 260.61
+  },
+  {
+    "item_code": "STRIKE-MAGLOCK-SI",
+    "description": "Electric Strike / Mag Lock Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 686.26
+  },
+  {
+    "item_code": "STRIP-LIGHT-PM",
+    "description": "Supply & Install Strip Light - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 125.86
+  },
+  {
+    "item_code": "STRUT-CHANNEL-PM",
+    "description": "Supply & Install Strut Channel (Unistrut) - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 79.1
+  },
+  {
+    "item_code": "SUBC",
+    "description": "Tradesman Labour *Subcontracting Rate*",
+    "unit_of_measure": "",
+    "sell_price": 90.0
+  },
+  {
+    "item_code": "SUBMAIN-RUN-PM",
+    "description": "Meter Board To Sub-Board Submain Run - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 80.98
+  },
+  {
+    "item_code": "T+A",
+    "description": "Tradesmen + Assistant",
+    "unit_of_measure": "",
+    "sell_price": 145.0
+  },
+  {
+    "item_code": "TAILS-RENEWAL",
+    "description": "Tails Renewal / Re-Tail Meter",
+    "unit_of_measure": "",
+    "sell_price": 373.81
+  },
+  {
+    "item_code": "TANDT",
+    "description": "Test & Tag",
+    "unit_of_measure": "",
+    "sell_price": 7.5
+  },
+  {
+    "item_code": "TANDTESTAB",
+    "description": "Test & Tag Site Establishment Fee",
+    "unit_of_measure": "",
+    "sell_price": 250.0
+  },
+  {
+    "item_code": "THERMO-SCAN-BOARD",
+    "description": "Thermographic Switchboard Scan",
+    "unit_of_measure": "",
+    "sell_price": 185.0
+  },
+  {
+    "item_code": "TRACK-HEAD-SI",
+    "description": "Track Lighting - Head Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 260.92
+  },
+  {
+    "item_code": "TRACK-RAIL-PM",
+    "description": "Track Lighting - Track - Per Metre",
+    "unit_of_measure": "",
+    "sell_price": 101.0
+  },
+  {
+    "item_code": "Travel / Callout",
+    "description": "Callout + Travel + Diag",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "TV-MOUNT",
+    "description": "Mount & Fit C/S TV Mount",
+    "unit_of_measure": "",
+    "sell_price": 330.0
+  },
+  {
+    "item_code": "TV-MOUNT-SUPPLY",
+    "description": "Supply & Fit TV Mount + Locate Studs",
+    "unit_of_measure": "",
+    "sell_price": 840.0
+  },
+  {
+    "item_code": "UPS-SI",
+    "description": "Supply & Install UPS (Uninterruptible Power Supply)",
+    "unit_of_measure": "",
+    "sell_price": 2244.76
+  },
+  {
+    "item_code": "VSD-VFD-SI",
+    "description": "Supply & Install VSD/VFD (Variable Speed Drive)",
+    "unit_of_measure": "",
+    "sell_price": 1404.12
+  },
+  {
+    "item_code": "W/L SMOKEY",
+    "description": "Supply & Install 1 x Wireless 10yr smokey with w/l interconnect",
+    "unit_of_measure": "",
+    "sell_price": 610.0
+  },
+  {
+    "item_code": "WALLPACK-BUNKER-SI",
+    "description": "Wall Pack / Bunker Light Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 250.17
+  },
+  {
+    "item_code": "WAP-SI",
+    "description": "WAP (Wireless Access Point) Supply & Install",
+    "unit_of_measure": "",
+    "sell_price": 469.28
+  },
+  {
+    "item_code": "WP-GPO-NEW",
+    "description": "Supply & Install New Weatherproof GPO (New Point)",
+    "unit_of_measure": "",
+    "sell_price": 360.71
+  },
+  {
+    "item_code": "WP-GPO-REPLACE",
+    "description": "Supply & Replace 1 x GPO Weatherproof",
+    "unit_of_measure": "",
+    "sell_price": 350.0
+  }
 ]
