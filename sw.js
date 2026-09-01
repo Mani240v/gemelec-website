@@ -9,7 +9,7 @@
 // the typed text in localStorage and tells the tech to hit send again once they have a bar.
 // The honest failure is better than a queue that silently loses or double-sends a job.
 const CACHE = 'gemelec-tech-v1'
-const SHELL = ['/tech', '/css/style.css', '/js/tech-portal.js', '/images/apple-touch-icon.png']
+const SHELL = ['/tech', '/job-requests', '/css/style.css', '/js/tech-portal.js', '/js/job-requests-dashboard.js', '/images/apple-touch-icon.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

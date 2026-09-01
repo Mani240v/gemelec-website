@@ -23,7 +23,17 @@ const HEADERS = [
   'ai_estimate_high',
   'ai_status',
   'status',
-  'notes'
+  'notes',
+  // Appended 2026-09-01 for the field portal. APPEND ONLY, never insert: appendRow writes
+  // positionally by this array, and getRows reads back by the SHEET's own header row, so a
+  // new name in the middle would silently shift every later column of every future row.
+  // Until the matching labels are pasted into row 1 of the sheet these are written but not
+  // read back — harmless in both directions, which is what makes the migration safe.
+  'client_type',
+  'returning_customer',
+  'site_contact',
+  'billing_address',
+  'billing_email'
 ]
 
 const MAX_PHOTOS = 5
@@ -284,6 +294,15 @@ module.exports = async function handler(req, res) {
       job_address: clean(body.job_address, 500),
       description,
       photo_links: photoLinks.join(', '),
+      // Field-portal extras. The customer form never sends these, so they stay blank there.
+      // Normalised to a closed set rather than passed through: these drive what the office
+      // does about contacts and billing, and 'Commercial ' with a stray space would quietly
+      // read as a different value from 'commercial'.
+      client_type: clean(body.client_type, 20).toLowerCase() === 'commercial' ? 'commercial' : 'residential',
+      returning_customer: body.returning_customer === true ? 'RETURNING' : '',
+      site_contact: clean(body.site_contact, 250),
+      billing_address: clean(body.billing_address, 500),
+      billing_email: clean(body.billing_email, 250),
       ai_summary: '',
       ai_draft_costing: PENDING_COSTING,
       ai_estimate_low: '',

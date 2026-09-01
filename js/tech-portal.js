@@ -23,16 +23,28 @@ const nameInput = document.getElementById('tech-name')
 const unlockBtn = document.getElementById('tech-unlock')
 const whoBtn = document.getElementById('tech-who-btn')
 const form = document.getElementById('tech-form')
-const successPanel = document.getElementById('tech-success')
-const successDetail = document.getElementById('tech-success-detail')
-const anotherBtn = document.getElementById('tech-another')
+const sentBanner = document.getElementById('tech-sent-banner')
+const sentTitle = document.getElementById('tech-sent-title')
+const sentDetail = document.getElementById('tech-sent-detail')
+const clearBtn = document.getElementById('tech-clear')
+const review = document.getElementById('tech-review')
+const reviewSend = document.getElementById('tech-review-send')
+const reviewBack = document.getElementById('tech-review-back')
 const photoInput = document.getElementById('t_photos')
 const photoPreview = document.getElementById('t_photo_preview')
 const descInput = document.getElementById('t_description')
 const descCount = document.getElementById('t_desc_count')
 const submitBtn = document.getElementById('tech-submit')
+const commercialBox = document.getElementById('t_commercial')
+const commercialFields = document.getElementById('t_commercial_fields')
+const returningBox = document.getElementById('t_returning')
 
 let compressedPhotos = []
+
+// The request id of what was last sent from this form, or null for a fresh job. Set after a
+// successful send, cleared by "Start a new job". Its only purpose is to let a re-send say
+// which earlier job it belongs to, so the office can pair them up.
+let lastRequestId = null
 
 function showError(el, message) {
   el.textContent = message
@@ -55,6 +67,7 @@ function enterApp() {
   app.hidden = false
   whoBtn.hidden = false
   whoBtn.textContent = techName()
+  document.getElementById('tech-to-office').hidden = false
   restoreDraft()
 }
 
@@ -80,6 +93,7 @@ async function unlock() {
     }
     localStorage.setItem(CODE_KEY, code)
     localStorage.setItem(NAME_KEY, name)
+    shareCredentialWithDashboard()
     enterApp()
   } catch (error) {
     // A network failure and a wrong code must not read the same, or a tech with no signal
@@ -186,6 +200,29 @@ photoInput.addEventListener('change', async () => {
   renderPreviews()
 })
 
+// ------------------------------------------------------- commercial toggle
+
+function syncCommercial() {
+  commercialFields.hidden = !commercialBox.checked
+}
+commercialBox.addEventListener('change', () => { syncCommercial(); saveDraft() })
+returningBox.addEventListener('change', saveDraft)
+
+// ---------------------------------------------------- jump to the office view
+
+// The dashboard reads its password from sessionStorage; the portal keeps the same secret in
+// localStorage. Copying it across means a tech who has unlocked the portal lands straight in
+// /job-requests instead of logging in twice, and the two screens feel like one app.
+//
+// Harmless when the two secrets differ (TECH_ACCESS_CODE set): the dashboard gets a 401,
+// clears it and shows its own login exactly as it would have anyway.
+function shareCredentialWithDashboard() {
+  try {
+    const code = localStorage.getItem(CODE_KEY)
+    if (code) sessionStorage.setItem('gemelec_dashboard_password', code)
+  } catch {}
+}
+
 // ---------------------------------------------------------------- draft
 
 // Typed text survives a locked screen, a phone call, or the browser dropping the tab to
@@ -198,7 +235,15 @@ function saveDraft() {
       phone: form.t_phone.value,
       email: form.t_email.value,
       address: form.t_address.value,
-      description: descInput.value
+      description: descInput.value,
+      commercial: commercialBox.checked,
+      returning: returningBox.checked,
+      // These three must be here too. Restoring every field EXCEPT the billing block is
+      // worse than restoring nothing: the form looks complete, so the tech does not notice
+      // the gap and the office gets a commercial job with no one to invoice.
+      site_contact: document.getElementById('t_site_contact').value,
+      billing_address: document.getElementById('t_billing_address').value,
+      billing_email: document.getElementById('t_billing_email').value
     }))
   } catch {}
 }
@@ -211,7 +256,13 @@ function restoreDraft() {
     if (draft.email) form.t_email.value = draft.email
     if (draft.address) form.t_address.value = draft.address
     if (draft.description) descInput.value = draft.description
+    commercialBox.checked = Boolean(draft.commercial)
+    returningBox.checked = Boolean(draft.returning)
+    if (draft.site_contact) document.getElementById('t_site_contact').value = draft.site_contact
+    if (draft.billing_address) document.getElementById('t_billing_address').value = draft.billing_address
+    if (draft.billing_email) document.getElementById('t_billing_email').value = draft.billing_email
   } catch {}
+  syncCommercial()
   updateCount()
 }
 
@@ -224,41 +275,109 @@ function updateCount() {
 }
 
 descInput.addEventListener('input', () => { updateCount(); saveDraft() })
-;['t_full_name', 't_phone', 't_email', 't_address'].forEach(id => {
+;['t_full_name', 't_phone', 't_email', 't_address',
+  't_site_contact', 't_billing_address', 't_billing_email'].forEach(id => {
   document.getElementById(id).addEventListener('input', saveDraft)
 })
 
 // ---------------------------------------------------------------- submit
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault()
+// Collects and validates, or returns null having shown the reason.
+function collect() {
   clearError(formError)
-
   const fullName = form.t_full_name.value.trim()
   const phone = form.t_phone.value.trim()
   const description = descInput.value.trim()
 
-  if (!fullName) return showError(formError, 'Customer name is needed.')
-  if (!phone) return showError(formError, 'Phone number is needed.')
-  if (!description) return showError(formError, 'Describe the job before sending.')
+  if (!fullName) { showError(formError, 'Customer name is needed.'); return null }
+  if (!phone) { showError(formError, 'Phone number is needed.'); return null }
+  if (!description) { showError(formError, 'Describe the job before sending.'); return null }
 
+  return {
+    fullName, phone, description,
+    email: form.t_email.value.trim(),
+    address: form.t_address.value.trim(),
+    commercial: commercialBox.checked,
+    returning: returningBox.checked,
+    siteContact: document.getElementById('t_site_contact').value.trim(),
+    billingAddress: document.getElementById('t_billing_address').value.trim(),
+    billingEmail: document.getElementById('t_billing_email').value.trim()
+  }
+}
+
+function openReview(job) {
+  document.getElementById('rv-name').textContent = job.fullName
+  document.getElementById('rv-phone').textContent = job.phone
+  document.getElementById('rv-address').textContent = job.address || 'not given'
+  document.getElementById('rv-photos').textContent = compressedPhotos.length
+    ? `${compressedPhotos.length} attached`
+    : 'none attached'
+  const flags = []
+  flags.push(job.commercial ? 'Commercial' : 'Residential')
+  if (job.returning) flags.push('returning — do not duplicate the contact')
+  document.getElementById('rv-client').textContent = flags.join(' · ')
+  document.getElementById('rv-description').textContent = job.description
+  review.hidden = false
+  // Stop the form scrolling underneath the overlay on iOS.
+  document.body.style.overflow = 'hidden'
+  reviewSend.focus()
+}
+
+function closeReview() {
+  review.hidden = true
+  document.body.style.overflow = ''
+}
+
+// Submitting only opens the read-back. Nothing is sent until the tech confirms in there —
+// the estimate is built from these words, so a deliberate second look is the cheapest place
+// to catch a wrong one.
+form.addEventListener('submit', (e) => {
+  e.preventDefault()
+  const job = collect()
+  if (job) openReview(job)
+})
+
+reviewBack.addEventListener('click', () => {
+  closeReview()
+  descInput.focus()
+})
+
+// Tapping the backdrop is "go back", never "send" — the destructive reading of a stray tap
+// must be the harmless one.
+review.addEventListener('click', (e) => { if (e.target === review) closeReview() })
+
+reviewSend.addEventListener('click', async () => {
+  const job = collect()
+  if (!job) { closeReview(); return }
+
+  const isUpdate = Boolean(lastRequestId)
   const payload = {
     company_website: '',
-    full_name: fullName,
-    phone,
-    email: form.t_email.value.trim(),
-    job_address: form.t_address.value.trim(),
-    description,
+    full_name: job.fullName,
+    phone: job.phone,
+    email: job.email,
+    job_address: job.address,
+    // A re-send is a separate row that names the job it belongs to, rather than an edit of
+    // the original. The office may already have priced or quoted the first one, and silently
+    // overwriting a row someone is working from is the one outcome worth ruling out. Two
+    // clearly paired cards are a human's job to reconcile; a lost edit is nobody's.
+    description: isUpdate
+      ? `[UPDATE to ${lastRequestId} — the tech added this after sending]\n\n${job.description}`
+      : job.description,
     photos: compressedPhotos.map(p => ({ mimeType: p.mimeType, base64: p.base64 })),
-    // Carried in the existing source column rather than a new one: adding a field means
-    // touching HEADERS, the row object and the sheet's own header row, and "where did this
-    // come from" is exactly what source is for.
-    source: `On site — ${techName()}`,
+    client_type: job.commercial ? 'commercial' : 'residential',
+    returning_customer: job.returning,
+    site_contact: job.commercial ? job.siteContact : '',
+    billing_address: job.commercial ? job.billingAddress : '',
+    billing_email: job.commercial ? job.billingEmail : '',
+    source: isUpdate
+      ? `On site — ${techName()} · UPDATE to ${lastRequestId}`
+      : `On site — ${techName()}`,
     page_url: window.location.href
   }
 
-  submitBtn.disabled = true
-  submitBtn.textContent = 'Sending...'
+  reviewSend.disabled = true
+  reviewSend.textContent = 'Sending...'
 
   try {
     const response = await fetch('/api/job-request', {
@@ -271,36 +390,50 @@ form.addEventListener('submit', async (e) => {
       throw new Error(result.message || 'That could not be sent.')
     }
 
+    // Deliberately NOT reset. The tech keeps everything on screen so they can add the thing
+    // they forgot and send again, which is the whole point of leaving the form up.
+    lastRequestId = result.requestId || lastRequestId
     clearDraft()
-    form.reset()
-    compressedPhotos = []
-    renderPreviews()
-    updateCount()
-    form.hidden = true
-    successPanel.hidden = false
-    successDetail.textContent = compressedPhotos.length
-      ? `${fullName} is with the office.`
-      : `${fullName} is with the office. The pricing lands in a minute or so.`
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    closeReview()
+    markSent(job.fullName, isUpdate)
   } catch (error) {
+    closeReview()
     showError(formError, !navigator.onLine
-      ? 'No signal. Your text is saved on this phone — hit send again once you have signal.'
+      ? 'No signal. Nothing was sent, and your text is still here — try again once you have a bar or two.'
       : (error.message || 'Could not send. Try again, or ring the office.'))
   } finally {
-    submitBtn.disabled = false
-    submitBtn.textContent = 'Send to office'
+    reviewSend.disabled = false
+    reviewSend.textContent = "Yes — it's accurate, send it"
   }
 })
 
-anotherBtn.addEventListener('click', () => {
-  successPanel.hidden = true
-  form.hidden = false
+function markSent(name, wasUpdate) {
+  const time = new Date().toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' })
+  sentTitle.textContent = wasUpdate ? `Update sent at ${time}` : `Sent to the office at ${time}`
+  sentDetail.textContent = `${name} — everything is still here. Forgot something? Add it and send again; the office gets it linked to the first one.`
+  sentBanner.hidden = false
+  submitBtn.textContent = 'Send update to office'
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+clearBtn.addEventListener('click', () => {
+  if (!confirm('Clear this job and start a fresh one?')) return
+  lastRequestId = null
+  form.reset()
+  compressedPhotos = []
+  renderPreviews()
+  updateCount()
+  clearDraft()
+  clearError(formError)
+  sentBanner.hidden = true
+  submitBtn.textContent = 'Send to office'
   form.t_full_name.focus()
 })
 
 // ---------------------------------------------------------------- boot
 
 if (localStorage.getItem(CODE_KEY) && techName()) {
+  shareCredentialWithDashboard()
   enterApp()
 } else {
   gate.hidden = false
