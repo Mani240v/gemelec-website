@@ -258,13 +258,14 @@ const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR
 // explicitly excluded by the owner — those either already have a base or include one.
 const COMPANION_ITEMS = [
   {
-    // Every downlight, of every kind, gets a plug base. Owner's call 2026-08-31: assume one
-    // and delete it after a human has verified the job, on site or from the photos.
+    // A downlight plugs into a plug base, so every downlight needs one. Owner's rule,
+    // 2026-09-01: whenever a downlight is priced, allow one plug base per fitting.
     //
-    // Deliberately the over-inclusive direction. A base that turns out to be unnecessary is
-    // one line removed on the dashboard before quoting; a base that was needed and never
-    // appeared is money quoted away, and it is invisible — nothing on the card says an item
-    // is absent. Cheap to undo, expensive to miss.
+    // This pointed at 3PIN-PLUG until 2026-09-01, which was WRONG and shipped wrong:
+    // 3PIN-PLUG is "Supply & Install 3 Pin Plug - 240v 10A", a plug top for the end of an
+    // appliance lead, and at $100.00 it was over-billing a downlight job by roughly $90 a
+    // fitting. The name matched; the item did not. Check what a code actually is before
+    // wiring a rule to it.
     triggers: [
       'DL-CONVERSION',
       'DL-REPLACE',
@@ -272,8 +273,8 @@ const COMPANION_ITEMS = [
       'DL-INSTALL-CBL-F',
       'DL-INSTALL-CBL-R'
     ],
-    companion: '3PIN-PLUG',
-    note: 'Added automatically — one 3 pin plug base per downlight, assumed. Remove any the job does not need once you have eyes on it.'
+    companion: 'PLUG-BASE+INS',
+    note: 'Added automatically — a downlight plugs into a plug base, so one is allowed per fitting. Remove any the job does not need once you have eyes on it.'
   }
 ]
 
