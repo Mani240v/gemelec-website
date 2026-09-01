@@ -2583,3 +2583,153 @@ textarea:focus-visible {
   border-radius: 4px;
   margin: 0 0 10px;
 }
+
+/* Field portal: sent banner + read-back overlay (added 2026-09-01) */
+.tech-sent {
+  background: #e7f4ee;
+  border-left: 4px solid #1d6f52;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #1d4536;
+}
+.tech-sent strong { display: block; font-size: 16px; margin-bottom: 4px; }
+.tech-sent-clear {
+  display: inline-block;
+  margin-top: 10px;
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  font: inherit;
+  font-weight: 700;
+  color: #1d6f52;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* MUST come with the [hidden] rule below. `display: flex` here outranks the browser's own
+   `[hidden] { display: none }`, so without it the overlay covers the whole page from load
+   and nothing underneath can be tapped — the portal looks dead. Caught by a click timing
+   out in a real browser; reading the CSS would not have shown it. */
+.tech-review[hidden] { display: none; }
+
+.tech-review {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 16, 0.72);
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+.tech-review-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 560px;
+  margin: auto 0 0;
+}
+@media (min-width: 560px) { .tech-review { align-items: center; } .tech-review-card { margin: auto; } }
+
+.tech-review-card h2 {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 26px;
+  margin: 0 0 10px;
+}
+.tech-review-warn {
+  background: #fdf6d8;
+  border-left: 3px solid #caa60a;
+  padding: 11px 13px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #5c4a05;
+  margin: 0 0 18px;
+}
+.tech-review-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 14px;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+}
+.tech-review-list dt { color: #6b6b66; }
+.tech-review-list dd { margin: 0; color: #1a1a1a; font-weight: 500; }
+.tech-review-label { font-size: 13px; color: #6b6b66; margin: 0 0 6px; }
+.tech-review-desc {
+  margin: 0;
+  padding: 13px 15px;
+  background: #f4f4f2;
+  border-radius: 10px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: #1a1a1a;
+  /* Dictation produces long unbroken runs; keep them inside the card. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 34vh;
+  overflow-y: auto;
+}
+.tech-review-back {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: none;
+  border: 0;
+  padding: 14px 0;
+  font: inherit;
+  font-size: 15px;
+  color: #55554f;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Field portal: checkboxes, commercial block, cross-links (added 2026-09-01) */
+.tech-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 18px 0 0;
+  padding: 14px;
+  background: #fff;
+  border: 1.5px solid #c9c9c2;
+  border-radius: 10px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.tech-check input[type="checkbox"] {
+  /* 24px so it is a thumb target, not a mouse target. */
+  width: 24px; height: 24px;
+  margin: 1px 0 0;
+  flex: 0 0 auto;
+  accent-color: #1a1a1a;
+}
+.tech-check span { font-size: 14px; line-height: 1.45; color: #55554f; }
+.tech-check strong { display: block; font-size: 15.5px; color: #1a1a1a; margin-bottom: 2px; }
+
+#t_commercial_fields {
+  margin-top: 4px;
+  padding: 4px 0 8px 14px;
+  border-left: 3px solid #faed27;
+}
+.tech-optional { font-weight: 400; color: #8a8a83; font-size: 13px; }
+
+.tech-nav-link {
+  margin-left: auto;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+  border-bottom: 2px solid #faed27;
+  padding-bottom: 1px;
+}
+/* Only one of the two gets the auto margin, or they both push and separate. */
+.tech-nav-link:not([hidden]) ~ .tech-who { margin-left: 10px; }
+
+.dash-back { margin: 0 0 14px; font-size: 14px; }
+.dash-back a { color: var(--text-secondary, #55554f); text-decoration: none; border-bottom: 2px solid #faed27; padding-bottom: 1px; }

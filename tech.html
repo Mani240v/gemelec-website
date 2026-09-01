@@ -25,6 +25,7 @@
   <header class="tech-header">
     <span class="tech-logo">GEMELEC</span>
     <span class="tech-header-sub">Field Portal</span>
+    <a href="/job-requests" id="tech-to-office" class="tech-nav-link" hidden>Job requests &rarr;</a>
     <button type="button" id="tech-who-btn" class="tech-who" hidden></button>
   </header>
 
@@ -42,6 +43,12 @@
 
   <!-- Job entry -->
   <section id="tech-app" class="tech-panel" hidden>
+
+    <div id="tech-sent-banner" class="tech-sent" hidden>
+      <strong id="tech-sent-title">Sent to the office</strong>
+      <span id="tech-sent-detail"></span>
+      <button type="button" id="tech-clear" class="tech-sent-clear">Start a new job</button>
+    </div>
 
     <form id="tech-form" novalidate>
 
@@ -64,10 +71,33 @@
       <label for="t_address">Site address</label>
       <input type="text" id="t_address" autocomplete="off" enterkeyhint="next">
 
+      <label class="tech-check">
+        <input type="checkbox" id="t_returning">
+        <span><strong>We've worked for them before</strong>
+        Tick so the office links this to the existing contact instead of creating a duplicate.</span>
+      </label>
+
+      <label class="tech-check">
+        <input type="checkbox" id="t_commercial">
+        <span><strong>Business or commercial client</strong>
+        Adds the site contact and billing details the office needs to invoice a company.</span>
+      </label>
+
+      <div id="t_commercial_fields" hidden>
+        <label for="t_site_contact">Site contact <span class="tech-optional">who to ask for on the day</span></label>
+        <input type="text" id="t_site_contact" placeholder="Name and mobile" autocomplete="off" enterkeyhint="next">
+
+        <label for="t_billing_address">Billing address <span class="tech-optional">only if different to the site</span></label>
+        <input type="text" id="t_billing_address" autocomplete="off" enterkeyhint="next">
+
+        <label for="t_billing_email">Billing email <span class="tech-optional">where the invoice goes</span></label>
+        <input type="email" id="t_billing_email" inputmode="email" autocomplete="off" enterkeyhint="next">
+      </div>
+
       <h2 class="tech-section-title">The job</h2>
 
       <label for="t_description">What needs doing *</label>
-      <p class="tech-hint">Tap the microphone on your keyboard and talk. Read it back and fix anything it misheard before you submit — the pricing is only as good as this text.</p>
+      <p class="tech-hint">Type it, or tap the microphone on your keyboard and talk — whichever is quicker. If you dictate, read it back and fix anything it misheard.</p>
       <textarea id="t_description" rows="7" enterkeyhint="enter" required></textarea>
       <div class="tech-counter"><span id="t_desc_count">0</span> characters</div>
 
@@ -79,17 +109,30 @@
       <p class="tech-error" id="tech-form-error" role="alert" hidden></p>
 
       <button type="submit" id="tech-submit" class="btn btn-primary tech-btn-block tech-submit">Send to office</button>
-      <p class="tech-hint tech-hint-centre">Saved the moment you hit send. The pricing takes about half a minute to work itself out — you can close this and drive off, it finishes on its own.</p>
+      <p class="tech-hint tech-hint-centre">Saved the moment you hit send, and the pricing works itself out in about half a minute. Await further instruction from HQ before leaving site.</p>
     </form>
 
-    <div id="tech-success" class="tech-success" hidden>
-      <div class="tech-success-tick">&check;</div>
-      <h2>Sent</h2>
-      <p id="tech-success-detail"></p>
-      <button type="button" id="tech-another" class="btn btn-primary tech-btn-block">Next job</button>
-    </div>
-
   </section>
+
+  <!-- Read-back before sending. The estimate is built from these words, so the last thing
+       between a mistyped job and a wrong quote is the tech actually reading it. -->
+  <div id="tech-review" class="tech-review" hidden>
+    <div class="tech-review-card" role="dialog" aria-modal="true" aria-labelledby="tech-review-title">
+      <h2 id="tech-review-title">Check before it goes</h2>
+      <p class="tech-review-warn">The office prices this from your words. Anything vague, missing or mistyped comes back as a wrong number &mdash; and a wrong number is what the customer sees.</p>
+      <dl class="tech-review-list">
+        <dt>Customer</dt><dd id="rv-name"></dd>
+        <dt>Phone</dt><dd id="rv-phone"></dd>
+        <dt>Address</dt><dd id="rv-address"></dd>
+        <dt>Photos</dt><dd id="rv-photos"></dd>
+        <dt>Client</dt><dd id="rv-client"></dd>
+      </dl>
+      <p class="tech-review-label">The job, exactly as the office will read it:</p>
+      <blockquote id="rv-description" class="tech-review-desc"></blockquote>
+      <button type="button" id="tech-review-send" class="btn btn-primary tech-btn-block">Yes &mdash; it's accurate, send it</button>
+      <button type="button" id="tech-review-back" class="tech-review-back">Go back and fix something</button>
+    </div>
+  </div>
 
 </main>
 
