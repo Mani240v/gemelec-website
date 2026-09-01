@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>GEMELEC Field Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1a1a1a">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="icon" href="/images/favicon.png">
+  <!-- Standalone so it opens without browser chrome once added to the home screen. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GEMELEC">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="tech-body">
+
+<main class="tech-shell">
+
+  <header class="tech-header">
+    <span class="tech-logo">GEMELEC</span>
+    <span class="tech-header-sub">Field Portal</span>
+    <button type="button" id="tech-who-btn" class="tech-who" hidden></button>
+  </header>
+
+  <!-- Gate -->
+  <section id="tech-gate" class="tech-panel" hidden>
+    <h1>Field Portal</h1>
+    <p class="tech-lede">Staff only. Enter the access code, then your name — this phone will remember both.</p>
+    <label for="tech-code">Access code</label>
+    <input type="password" id="tech-code" autocomplete="one-time-code" inputmode="text" enterkeyhint="go">
+    <label for="tech-name">Your name</label>
+    <input type="text" id="tech-name" placeholder="e.g. Mani" autocomplete="name" enterkeyhint="go">
+    <p class="tech-error" id="tech-gate-error" role="alert" hidden></p>
+    <button type="button" id="tech-unlock" class="btn btn-primary tech-btn-block">Unlock</button>
+  </section>
+
+  <!-- Job entry -->
+  <section id="tech-app" class="tech-panel" hidden>
+
+    <form id="tech-form" novalidate>
+
+      <h2 class="tech-section-title">Customer</h2>
+
+      <label for="t_full_name">Name *</label>
+      <input type="text" id="t_full_name" autocomplete="off" enterkeyhint="next" required>
+
+      <div class="tech-row">
+        <div>
+          <label for="t_phone">Phone *</label>
+          <input type="tel" id="t_phone" inputmode="tel" autocomplete="off" enterkeyhint="next" required>
+        </div>
+        <div>
+          <label for="t_email">Email</label>
+          <input type="email" id="t_email" inputmode="email" autocomplete="off" enterkeyhint="next">
+        </div>
+      </div>
+
+      <label for="t_address">Site address</label>
+      <input type="text" id="t_address" autocomplete="off" enterkeyhint="next">
+
+      <h2 class="tech-section-title">The job</h2>
+
+      <label for="t_description">What needs doing *</label>
+      <p class="tech-hint">Tap the microphone on your keyboard and talk. Read it back and fix anything it misheard before you submit — the pricing is only as good as this text.</p>
+      <textarea id="t_description" rows="7" enterkeyhint="enter" required></textarea>
+      <div class="tech-counter"><span id="t_desc_count">0</span> characters</div>
+
+      <h2 class="tech-section-title">Photos</h2>
+      <p class="tech-hint">Up to 5. Take them now, or pick ones you shot earlier — useful when there was no signal in the basement.</p>
+      <input type="file" id="t_photos" accept="image/*" multiple>
+      <div class="job-photo-preview" id="t_photo_preview"></div>
+
+      <p class="tech-error" id="tech-form-error" role="alert" hidden></p>
+
+      <button type="submit" id="tech-submit" class="btn btn-primary tech-btn-block tech-submit">Send to office</button>
+      <p class="tech-hint tech-hint-centre">Saved the moment you hit send. The pricing takes about half a minute to work itself out — you can close this and drive off, it finishes on its own.</p>
+    </form>
+
+    <div id="tech-success" class="tech-success" hidden>
+      <div class="tech-success-tick">&check;</div>
+      <h2>Sent</h2>
+      <p id="tech-success-detail"></p>
+      <button type="button" id="tech-another" class="btn btn-primary tech-btn-block">Next job</button>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="/js/tech-portal.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {})
+    })
+  }
+</script>
+</body>
+</html>

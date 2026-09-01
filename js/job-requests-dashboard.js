@@ -192,6 +192,7 @@ function renderCard(row) {
         ${['new', 'quoted', 'won', 'lost'].map(s => `<option value="${s}" ${row.status === s ? 'selected' : ''}>${s}</option>`).join('')}
       </select>
     </div>
+    ${row.source && row.source !== 'website' ? `<p class="job-source">${escapeHtml(row.source)}</p>` : ''}
     <p class="job-meta"><strong>Phone:</strong> <a href="tel:${escapeAttr(row.phone || '')}">${escapeHtml(row.phone || '')}</a></p>
     ${row.email ? `<p class="job-meta"><strong>Email:</strong> <a href="mailto:${escapeAttr(row.email)}">${escapeHtml(row.email)}</a></p>` : ''}
     ${row.job_address ? `<p class="job-meta"><strong>Address:</strong> ${escapeHtml(row.job_address)}</p>` : ''}
