@@ -6,5 +6,8 @@
     "start": "npx serve . -p 3456",
     "dev": "npx serve . -p 3456",
     "dev:vercel": "npx vercel dev --listen 3456"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
   }
 }

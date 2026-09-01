@@ -13,10 +13,19 @@ one AI-drafted rough costing, one dashboard, and email + WhatsApp alerts.
 2. **Google service account.** Create one (or reuse an existing one) with the Sheets API and
    Drive API enabled, and download its key. This is used to write rows and (optionally) upload
    photos — no `googleapis` dependency, `api/_lib/google-auth.js` hand-signs the OAuth JWT.
-3. **Google Drive folder.** Create a new folder (e.g. "Gemelec Job Request Photos"). Share it
-   with the same service account email as **Editor**. Uploaded photos are set to
-   "anyone with the link can view" so the dashboard can render thumbnails — they are not fully
-   private, just unlisted.
+3. **Vercel Blob store (job photos).** In the Vercel dashboard: Storage -> Create Database ->
+   Blob, and connect it to this project. That sets `BLOB_READ_WRITE_TOKEN` for you; do not add
+   it by hand. Photos are written **private** under the `job-photos/` prefix and are only
+   readable through `/api/job-photo`, behind `DASHBOARD_PASSWORD`.
+
+   A daily cron (`crons` in `vercel.json`, 16:00 UTC ~ 2am Sydney) deletes photos older than
+   `PHOTO_RETENTION_DAYS` (default 14), which is what keeps the storage bill near zero. The
+   alert email carries the photos as attachments on every submission and keeps them
+   indefinitely, so the purge never destroys the only copy.
+
+   Google Drive was used for this until 2026-09-01 and never worked — a bare service account
+   has no Drive storage quota of its own. `DRIVE_FOLDER_ID` is no longer read by anything and
+   can be deleted from the environment.
 4. **Anthropic API key.** Create one at console.anthropic.com (with billing enabled) for the
    AI-drafted costing step.
 5. **Resend account (internal notification email only — never emails the customer).** Sign up
@@ -55,7 +64,9 @@ one AI-drafted rough costing, one dashboard, and email + WhatsApp alerts.
 | `JOB_REQUESTS_SHEET_TAB` | `Job Requests` |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Service account email from step 2 |
 | `GOOGLE_PRIVATE_KEY` | Private key including `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----` |
-| `DRIVE_FOLDER_ID` | ID of the Drive folder from step 3 |
+| `BLOB_READ_WRITE_TOKEN` | Added automatically when you create the Blob store (step 3) — do not type it by hand |
+| `PHOTO_RETENTION_DAYS` | Optional. Days to keep job photos, default `14`. Out-of-range values fall back to 14 |
+| `CRON_SECRET` | Any long random string. Vercel sends it on the daily photo purge |
 | `ANTHROPIC_API_KEY` | Key from step 4 |
 | `RESEND_API_KEY` | Key from step 5 |
 | `NOTIFY_EMAIL_FROM` | e.g. `notifications@gemelec.sydney` |
@@ -78,7 +89,7 @@ npm run dev:vercel
 
 ## Notes
 
-- If `DRIVE_FOLDER_ID`, `ANTHROPIC_API_KEY`, the Resend vars, or the Twilio vars are missing, the
+- If `BLOB_READ_WRITE_TOKEN`, `ANTHROPIC_API_KEY`, the Resend vars, or the Twilio vars are missing, the
   corresponding step is skipped gracefully (no photos / no AI draft / no email / no WhatsApp) —
   the submission still gets recorded in the Sheet either way. Email and WhatsApp are independent;
   either, both, or neither can be configured.

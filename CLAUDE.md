@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler, no npm dependencies (the API functions use Node built-ins only; the frontend pulls Swiper from a CDN). Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
+Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler. The frontend has no dependencies at all (Swiper comes from a CDN). The API functions have exactly one, `@vercel/blob`, added 2026-09-01 for job-photo storage — everything else there is Node built-ins, including the hand-signed Google OAuth JWT. Treat that count as a budget: reach for a built-in before a package. Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
 
 ## How to work with Mani
 
@@ -38,6 +38,15 @@ Adding a page means also updating `sitemap.xml`, the nav block in every page (if
 Both `contact.html` (`form#job-request-form`) and `job-request.html` (same form id) share `js/job-request.js` for photo compression, address autocomplete, and submit handling → `POST /api/job-request` → `api/job-request.js` appends a row to Google Sheets, best-effort uploads photos to Drive, best-effort drafts an AI rough costing (`api/_lib/anthropic.js`), and fires best-effort email (Resend) + WhatsApp (Twilio) alerts. There is no separate lead-capture pipeline — `api/lead.js` and the n8n webhook it used were retired in favor of this one.
 
 - `api/job-request.js` is a Vercel serverless function. It mints a Google OAuth token by hand-signing a JWT (RS256 via `node:crypto`) — there is no `googleapis` dependency. Sheet target comes from env vars (see `VERCEL_SETUP.md`).
+
+#### Job photos — Vercel Blob, private, purged after 14 days
+Photos used to go to Google Drive. That never worked: a bare service account has no Drive storage quota, so every upload failed, and fixing it needed a Workspace shared drive or domain-wide delegation. Replaced 2026-09-01 with Vercel Blob. `api/_lib/google-drive.js` is gone; do not reintroduce it.
+
+- **The sheet's `photo_links` column holds blob PATHNAMES now, not URLs.** Private blobs are not fetchable by URL, so a URL there would look like a working link and never be one. Rows written before 2026-09-01 may hold Drive URLs; the dashboard tells them apart by the `job-photos/` prefix rather than migrating them.
+- **Everything is written under the `job-photos/` prefix**, and both the purge and the read path are scoped to it. The purge lists only that prefix, so a blob another feature puts in this store cannot be deleted by it; `getPhoto` refuses anything outside it, so the dashboard password is not a key to the whole store. Keep both scopes if you touch `api/_lib/photo-store.js`.
+- **The email attachment is the archive, not the blob.** Blob holds photos for `PHOTO_RETENTION_DAYS` (default 14, floor 1, ceiling 3650); the alert email carries them indefinitely. `api/job-request.js` attaches them on *every* submission — it used to skip attachments when an upload succeeded, and reinstating that would make the expiring copy the only copy.
+- **`api/job-photo.js` is the only way the bytes come out**, gated by the same `DASHBOARD_PASSWORD` header as the rest of the dashboard. An `<img src>` cannot send that header, so `js/job-requests-dashboard.js` fetches each photo and hands the `<img>` an object URL.
+- **`api/purge-photos.js` runs daily from the `crons` block in `vercel.json`** (16:00 UTC = ~2am Sydney) and requires `CRON_SECRET`.
 - Honeypot field: `company_website`. If filled, the function returns `200 ok` without writing (silent bot drop).
 - Required fields: `full_name` (sent as `first_name`/`last_name` from the form, combined client-side), `phone`, `description`. Photos are optional (up to 5) — a submission with none still gets an AI summary attempt from the description text alone.
 - The `HEADERS` array in `api/job-request.js` defines the exact sheet column order. **To add a form field you must touch three places**: the form HTML (both `contact.html` and `job-request.html` if it applies to both), the payload object in `js/job-request.js`, and both `HEADERS` + the `row` object in `api/job-request.js`.

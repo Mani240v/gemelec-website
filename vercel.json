@@ -2,8 +2,12 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
-    "api/job-request.js": { "maxDuration": 90 }
+    "api/job-request.js": { "maxDuration": 90 },
+    "api/purge-photos.js": { "maxDuration": 60 }
   },
+  "crons": [
+    { "path": "/api/purge-photos", "schedule": "0 16 * * *" }
+  ],
   "rewrites": [
     { "source": "/helpmeasap", "destination": "/job-request" }
   ],

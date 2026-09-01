@@ -1,6 +1,6 @@
 const crypto = require('node:crypto')
 const { appendRow, updateRowCells } = require('./_lib/sheets')
-const { uploadPhotoToDrive } = require('./_lib/google-drive')
+const { putPhoto, configured: photoStoreConfigured } = require('./_lib/photo-store')
 const { draftCosting } = require('./_lib/anthropic')
 const { money, SUBTOTAL_CAP } = require('./_lib/price-book')
 const { sendNotification } = require('./_lib/email')
@@ -105,7 +105,6 @@ function appendedRowNumber(appendResult) {
   return match ? Number(match[1]) : null
 }
 
-const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID
 const JOB_REQUESTS_SHEET_ID = process.env.JOB_REQUESTS_SHEET_ID
 const JOB_REQUESTS_SHEET_TAB = process.env.JOB_REQUESTS_SHEET_TAB || 'Job Requests'
 
@@ -249,32 +248,29 @@ module.exports = async function handler(req, res) {
     // Photo upload and the AI draft are best-effort — a failure in either must never
     // stop the customer's request from being recorded. Sheet append is the one step
     // that has to succeed for the submission to count.
+    // Photo upload and the AI draft are best-effort — a failure in either must never
+    // stop the customer's request from being recorded. Sheet append is the one step
+    // that has to succeed for the submission to count.
+    //
+    // photo_links holds Blob PATHNAMES now, not URLs. Private blobs are not fetchable by
+    // URL, so a URL here would look like a working link and never be one; the dashboard
+    // reads these through /api/job-photo. Rows written before 2026-09-01 still hold Drive
+    // URLs, and the dashboard tells the two apart rather than migrating them.
     const photoLinks = []
-    if (DRIVE_FOLDER_ID && photos.length) {
+    if (photos.length && photoStoreConfigured()) {
       for (const [index, photo] of photos.entries()) {
         try {
-          const uploaded = await uploadPhotoToDrive(
-            DRIVE_FOLDER_ID,
-            `${requestId}-${index + 1}.jpg`,
-            photo.mimeType,
-            photo.base64
-          )
-          photoLinks.push(uploaded.viewUrl)
+          photoLinks.push(await putPhoto(requestId, index, photo.mimeType, photo.base64))
         } catch (error) {
+          // No fail-fast here, unlike the Drive code this replaces. A Drive failure was a
+          // configuration fact that repeated identically for every photo; a Blob failure is
+          // far more likely to be about this one upload, so the remaining photos still get
+          // their turn.
           console.error(`Photo upload failed (${index + 1}/${photos.length}):`, error)
-          // A configuration failure will reject the remaining photos identically, and each
-          // rejection costs a full upload of the image first. Stop, and leave the time to
-          // the estimate — the photos are still attached to the alert email either way.
-          if (error?.permanent) {
-            console.error(
-              `Skipping ${photos.length - index - 1} remaining upload(s): Drive is misconfigured, not failing per-photo`
-            )
-            break
-          }
         }
       }
-    } else if (photos.length && !DRIVE_FOLDER_ID) {
-      console.error('DRIVE_FOLDER_ID not configured — skipping photo upload')
+    } else if (photos.length) {
+      console.error('BLOB_READ_WRITE_TOKEN not configured — skipping photo upload')
     }
 
     const row = {
@@ -377,9 +373,8 @@ module.exports = async function handler(req, res) {
       writeBackOk = false
     }
 
-    // Photos ride along as email attachments rather than a Drive link — the service
-    // account has no Drive storage quota of its own (see uploadPhotoToDrive above,
-    // best-effort and usually a no-op until that's set up with domain-wide delegation).
+    // Photos ride along as email attachments on every submission. This is the archive:
+    // the Blob copy behind the dashboard is purged after 14 days, the mailbox is not.
     const photoAttachments = photos.map((photo, index) => ({
       filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
       content: photo.base64,
@@ -441,11 +436,14 @@ module.exports = async function handler(req, res) {
           estimateLine,
           writeBackLine,
           '',
-          !photoLinks.length && photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
+          photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
           'Review: https://www.gemelec.com.au/job-requests',
           JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
         ].filter(Boolean).join('\n'),
-        attachments: photoLinks.length ? undefined : photoAttachments,
+        // Always attach, even when the upload succeeded. Blob holds photos for 14 days
+        // only, so the email is the permanent archive — dropping the attachments because a
+        // copy exists would mean the copy is the ONLY one, and it expires.
+        attachments: photoAttachments,
         replyTo: row.email
       }),
       sendWhatsAppNotification(
