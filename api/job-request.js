@@ -39,7 +39,14 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 // slow Opus 5 turn ran the invocation past 60s and the platform killed it: row saved,
 // no email, no WhatsApp, and the customer told "Sorry, that could not be sent" so they
 // resubmit and Mani gets two rows for one job. The AI now gets what is genuinely left.
-const FUNCTION_BUDGET_MS = 55000 // 5s under maxDuration, for the platform's own overhead
+// 5s under maxDuration, for the platform's own overhead. maxDuration is 90s in
+// vercel.json: at 60 this left the estimator ~29s once five photos had been parsed and
+// uploaded, and Opus 5 at effort 'high' over a 208-item catalogue and five images does
+// not reliably answer in that — a live submission on 2026-09-01 timed out at 29308ms and
+// produced no estimate at all. OVERALL_DEADLINE_MS (50s) in anthropic.js is the binding
+// cap now rather than this one, which is the right way round: the model's ceiling should
+// be a deliberate number, not whatever the platform happened to leave over.
+const FUNCTION_BUDGET_MS = 85000
 const ALERT_RESERVE_MS = 15000 // write-back + email with attachments + WhatsApp
 const ALERT_SEND_RESERVE_MS = 9000 // of that reserve, what the two alerts keep for themselves
 const MIN_AI_BUDGET_MS = 20000 // below this, skip the model rather than pay for a timeout
@@ -254,7 +261,16 @@ module.exports = async function handler(req, res) {
           )
           photoLinks.push(uploaded.viewUrl)
         } catch (error) {
-          console.error('Photo upload failed:', error)
+          console.error(`Photo upload failed (${index + 1}/${photos.length}):`, error)
+          // A configuration failure will reject the remaining photos identically, and each
+          // rejection costs a full upload of the image first. Stop, and leave the time to
+          // the estimate — the photos are still attached to the alert email either way.
+          if (error?.permanent) {
+            console.error(
+              `Skipping ${photos.length - index - 1} remaining upload(s): Drive is misconfigured, not failing per-photo`
+            )
+            break
+          }
         }
       }
     } else if (photos.length && !DRIVE_FOLDER_ID) {
