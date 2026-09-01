@@ -588,4 +588,8 @@ async function draftCosting({ description, photos = [], budgetMs }) {
   }
 }
 
-module.exports = { draftCosting, CostingError }
+// callAnthropic/newFence/MODEL/EFFORT are exported for api/_lib/quote-description.js, which
+// is a second, separate call with its own schema. Deliberately sharing the transport and the
+// model choice rather than the prompt: the two jobs have nothing in common except who they
+// are talking to.
+module.exports = { draftCosting, CostingError, callAnthropic, newFence, MODEL, EFFORT }
