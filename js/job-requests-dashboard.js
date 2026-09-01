@@ -284,9 +284,11 @@ function renderCard(row) {
     ${listBlock('job-notes', "Your own price-list rulings that applied here:", costing?.notes || [])}
     ${listBlock('job-unpriced', "The AI's own notes — not from your price list, and not checked by this system:", costing?.unpriced_items || [])}
     <div class="job-total-slot"></div>
+    <div class="job-description-slot"></div>
     <div class="job-actions">
       <button type="button" class="btn btn-sm job-add-line">+ Add line</button>
       <button type="button" class="btn btn-primary btn-sm job-save">Save changes</button>
+      <button type="button" class="btn btn-sm job-describe">Generate quote description</button>
       <button type="button" class="btn btn-sm job-copy">Copy quote text</button>
       <span class="job-save-status"></span>
     </div>
@@ -401,6 +403,66 @@ function renderCard(row) {
       setTimeout(() => { statusEl.textContent = '' }, 2500)
     } catch (error) {
       statusEl.textContent = error.message || 'Save failed.'
+    }
+  })
+
+  card.querySelector('.job-describe').addEventListener('click', async () => {
+    const btn = card.querySelector('.job-describe')
+    const slot = card.querySelector('.job-description-slot')
+    // Reads the table as it stands, so anything Mani has added or deleted is what the
+    // customer gets told about.
+    const rows = [...card.querySelectorAll('.job-costing-table tbody tr')].map(tr => ({
+      description: tr.querySelector('.desc').value.trim(),
+      item_code: tr.querySelector('.code').value.trim(),
+      qty: Number(tr.querySelector('.qty').value) || 0
+    })).filter(r => r.description)
+
+    if (!rows.length) {
+      slot.innerHTML = '<p class="job-desc-error">Add at least one line item first.</p>'
+      return
+    }
+
+    btn.disabled = true
+    btn.textContent = 'Writing...'
+    slot.innerHTML = '<p class="job-desc-pending">Writing the scope description — about twenty seconds.</p>'
+    try {
+      const response = await apiFetch('/api/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ line_items: rows, description: row.description || '' })
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok || result.ok === false) throw new Error(result.message || 'Could not generate a description.')
+
+      slot.innerHTML = `
+        <div class="job-desc-box">
+          <span class="job-desc-label">Quote description — draft, read it before it goes out</span>
+          <textarea class="job-desc-text" rows="16"></textarea>
+          <div class="job-desc-actions">
+            <button type="button" class="btn btn-sm job-desc-copy">Copy for Tradify</button>
+            <span class="job-desc-status"></span>
+          </div>
+        </div>`
+      // Set as a value, never interpolated into the HTML above — this string is model output
+      // and the box it lands in is the one thing here that gets pasted into a customer quote.
+      slot.querySelector('.job-desc-text').value = result.description
+
+      slot.querySelector('.job-desc-copy').addEventListener('click', async () => {
+        const text = slot.querySelector('.job-desc-text').value
+        const status = slot.querySelector('.job-desc-status')
+        try {
+          await navigator.clipboard.writeText(text)
+          status.textContent = 'Copied.'
+          setTimeout(() => { status.textContent = '' }, 2000)
+        } catch {
+          window.prompt('Copy this description:', text)
+        }
+      })
+    } catch (error) {
+      slot.innerHTML = `<p class="job-desc-error">${escapeHtml(error.message || 'Could not generate a description.')}</p>`
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Generate quote description'
     }
   })
 
