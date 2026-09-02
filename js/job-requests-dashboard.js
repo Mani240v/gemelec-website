@@ -291,6 +291,7 @@ function renderCard(row) {
       <button type="button" class="btn btn-sm job-describe">Generate quote description</button>
       <button type="button" class="btn btn-sm job-copy">Copy quote text</button>
       <span class="job-save-status"></span>
+      <button type="button" class="btn btn-sm job-delete">Delete</button>
     </div>
   `
 
@@ -403,6 +404,35 @@ function renderCard(row) {
       setTimeout(() => { statusEl.textContent = '' }, 2500)
     } catch (error) {
       statusEl.textContent = error.message || 'Save failed.'
+    }
+  })
+
+  card.querySelector('.job-delete').addEventListener('click', async () => {
+    const btn = card.querySelector('.job-delete')
+    const statusEl = card.querySelector('.job-save-status')
+    // Names the customer in the prompt rather than asking "are you sure?". On a page of
+    // similar-looking cards, the only useful confirmation is one that says WHICH job.
+    const who = row.full_name || 'this job request'
+    if (!confirm(`Delete ${who}?\n\nThe sheet row and any photos are removed for good. This cannot be undone.`)) return
+
+    btn.disabled = true
+    btn.textContent = 'Deleting...'
+    try {
+      const response = await apiFetch('/api/job-requests-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_id: row.request_id })
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok || result.ok === false) throw new Error(result.message || 'Could not delete.')
+      // Removed from the page immediately rather than reloading the list: a reload would
+      // scroll the office back to the top and lose any other card they were part-way
+      // through editing.
+      card.remove()
+    } catch (error) {
+      btn.disabled = false
+      btn.textContent = 'Delete'
+      statusEl.textContent = error.message || 'Could not delete.'
     }
   })
 

@@ -99,4 +99,15 @@ async function purgeOldPhotos(now = Date.now()) {
   return { scanned, deleted: doomed.length, retentionDays: days }
 }
 
-module.exports = { putPhoto, getPhoto, purgeOldPhotos, configured, PREFIX, retentionDays }
+// Deletes specific photos, for when a whole job is removed rather than aged out. Scoped to
+// the prefix like everything else here, so a pathname from a corrupted row cannot be used to
+// delete something outside the photo store.
+async function deletePhotos(pathnames) {
+  const safe = (Array.isArray(pathnames) ? pathnames : [])
+    .filter(p => typeof p === 'string' && p.startsWith(PREFIX) && !p.includes('..'))
+  if (!safe.length) return { deleted: 0 }
+  await del(safe)
+  return { deleted: safe.length }
+}
+
+module.exports = { putPhoto, getPhoto, purgeOldPhotos, deletePhotos, configured, PREFIX, retentionDays }
