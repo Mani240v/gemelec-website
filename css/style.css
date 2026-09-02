@@ -2760,3 +2760,44 @@ textarea:focus-visible {
 
 .dash-back { margin: 0 0 14px; font-size: 14px; }
 .dash-back a { color: var(--text-secondary, #55554f); text-decoration: none; border-bottom: 2px solid #faed27; padding-bottom: 1px; }
+
+/* === ADDED 2026-09-01 — Google Places dropdown (.pac-*) ==================== */
+/* Google injects this dropdown and gives it almost no styling of its own: no background,
+   no border, no z-index. It is positioned ABSOLUTELY over the page, so without a background
+   it renders as bare text sitting on top of whatever is underneath — on /tech that was the
+   address input, with the suggestion text and marker icons colliding with what the tech had
+   just typed.
+   contact.html and job-request.html each carry their own copy of these rules in a <style>
+   block, which is why only the field portal was affected. Defining them here means the next
+   page to use an address field is styled by default rather than by remembering. */
+.pac-container {
+  background: #fff;
+  border: 1px solid #e6e4dd;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 20, 15, 0.14);
+  /* Above everything on the page. The portal's review overlay sits at 50; this has to clear
+     it and anything else, because a dropdown behind another element is unusable. */
+  z-index: 10000;
+  margin-top: 4px;
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.pac-item {
+  /* 15px and roomy padding: this is tapped with a thumb on a phone, not clicked. */
+  padding: 12px 14px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #55554f;
+  cursor: pointer;
+  border-top: 1px solid #f0eee7;
+}
+.pac-item:first-child { border-top: 0; }
+.pac-item:hover,
+.pac-item-selected { background: #faf9f5; }
+
+.pac-item-query { font-size: 15px; color: #1a1a1a; margin-right: 6px; }
+.pac-matched { font-weight: 700; }
+
+/* Google's marker sprite. Without a width it collapses and the icon overlaps the text. */
+.pac-icon { margin-right: 8px; }
