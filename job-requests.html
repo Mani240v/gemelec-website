@@ -81,6 +81,12 @@
   .job-total-yours { color: #0d0d0d; }
   .job-total-note { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; color: var(--text-secondary); }
   .job-line-discounted { font-variant-numeric: tabular-nums; color: var(--text-secondary); white-space: nowrap; }
+  /* Pushed to the far right, away from Save. Destructive and irreversible, so it should not
+     sit under the thumb that was reaching for the button beside it. */
+  .job-delete { margin-left: auto; color: #991b1b; border-color: #f3c9c9; background: #fff; }
+  .job-delete:hover:not(:disabled) { background: #fdecea; border-color: #e39c9c; }
+  .job-actions { flex-wrap: wrap; }
+
   .job-desc-box { margin-top: 16px; background: #faf9f5; border: 1px solid #e6e4dd; border-radius: 12px; padding: 16px; }
   .job-desc-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #b45309; margin-bottom: 8px; }
   .job-desc-text { width: 100%; box-sizing: border-box; font: 400 13.5px/1.6 'DM Sans', sans-serif; padding: 14px; border: 1.5px solid var(--gray); border-radius: 8px; background: #fff; resize: vertical; }

@@ -119,4 +119,56 @@ async function updateRowCells(sheetId, tab, rowNumber, headers, updates) {
   return payload
 }
 
-module.exports = { appendRow, getRows, updateRowCells, columnLetter }
+// deleteDimension addresses a tab by its NUMERIC id (the gid), not the name every other
+// call here uses, so the name has to be resolved first. Fetched per delete rather than
+// cached: deletes are rare and a stale gid would delete rows out of the wrong tab.
+async function getTabId(sheetId, tab) {
+  const accessToken = await getAccessToken([SHEETS_SCOPE])
+  const response = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?fields=sheets(properties(sheetId,title))`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  const payload = await response.json()
+  if (!response.ok) throw new Error(payload.error?.message || 'Failed to read Google Sheet')
+
+  const found = (payload.sheets || []).find(s => s.properties?.title === tab)
+  if (!found) throw new Error(`No tab named "${tab}" in that spreadsheet`)
+  return found.properties.sheetId
+}
+
+// Removes one row outright. Callers MUST resolve rowNumber from a fresh getRows keyed on
+// request_id, never from a number they were holding: every row below a delete shifts up by
+// one, so a stale index deletes somebody else's job.
+async function deleteRow(sheetId, tab, rowNumber) {
+  // Row 1 is the header. Deleting it would silently break every future read, since getRows
+  // maps values by the sheet's own header row.
+  if (!Number.isInteger(rowNumber) || rowNumber < 2) {
+    throw new Error(`Refusing to delete row ${rowNumber}`)
+  }
+
+  const tabId = await getTabId(sheetId, tab)
+  const accessToken = await getAccessToken([SHEETS_SCOPE])
+
+  const response = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        requests: [{
+          deleteDimension: {
+            // rowNumber is 1-based and includes the header; this range is 0-based and
+            // half-open, so row 2 is [1, 2).
+            range: { sheetId: tabId, dimension: 'ROWS', startIndex: rowNumber - 1, endIndex: rowNumber }
+          }
+        }]
+      })
+    }
+  )
+
+  const payload = await response.json()
+  if (!response.ok) throw new Error(payload.error?.message || 'Failed to delete Google Sheet row')
+  return payload
+}
+
+module.exports = { appendRow, getRows, updateRowCells, deleteRow, columnLetter }
