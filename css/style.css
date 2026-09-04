@@ -141,9 +141,13 @@ input, textarea, select, button { font-family: inherit; }
 }
 .nav-links {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  align-self: stretch;
   gap: 32px;
 }
+/* Each item fills the bar's full height: a taller hover target, and it makes
+   `top: 100%` on a dropdown resolve to the bottom edge of the nav bar. */
+.nav-links > li { display: flex; align-items: center; }
 .nav-links a {
   font-size: 14px;
   font-weight: 500;
@@ -2173,8 +2177,17 @@ textarea:focus-visible {
   .nav-logo { text-decoration: none; display: flex; flex-direction: column; }
   .nav-dropdown { position: relative; }
   .nav-dropdown-toggle { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-  .nav-dropdown-menu { display: none; position: absolute; top: calc(100% + 16px); left: -16px; width: 220px; background: #1a1a1a; border: 1px solid rgba(60,176,178,0.2); border-radius: 8px; padding: 8px 0; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-  .nav-dropdown:hover .nav-dropdown-menu { display: flex; flex-direction: column; }
+  /* The panel floats 10px below the nav bar. That gap is not hoverable on its
+     own, so ::before bridges it — without the bridge the menu closes the moment
+     the pointer leaves the link on its way to a sub-item. */
+  .nav-dropdown-menu { display: flex; flex-direction: column; position: absolute; top: calc(100% + 10px); left: -16px; width: 220px; background: #1a1a1a; border: 1px solid rgba(60,176,178,0.2); border-radius: 8px; padding: 8px 0; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .nav-dropdown-menu::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 10px; }
+  /* Hidden by default, and on close it stays interactive for 220ms before
+     fading — enough slack to slip off the panel edge and come back. */
+  .nav-dropdown-menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity 0.15s ease 0.22s, transform 0.15s ease 0.22s, visibility 0s linear 0.37s; }
+  .nav-dropdown:hover .nav-dropdown-menu,
+  .nav-dropdown:focus-within .nav-dropdown-menu { visibility: visible; opacity: 1; transform: none; transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s; }
+  @media (prefers-reduced-motion: reduce) { .nav-dropdown-menu { transform: none; transition: opacity 0.01s linear 0.22s, visibility 0s linear 0.22s; } }
   .nav-dropdown-menu a { padding: 10px 16px; font-size: 14px; color: rgba(255,255,255,0.75); transition: color 0.15s, background 0.15s; }
   .nav-dropdown-menu a:hover { color: #3cb0b2; background: rgba(60,176,178,0.05); }
   .nav-dropdown-all { border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4px; padding-top: 12px !important; color: #3cb0b2 !important; font-weight: 600 !important; }
