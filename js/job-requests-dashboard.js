@@ -99,11 +99,11 @@ function buildCostingTable(costing, onChange = () => {}) {
   function addRow(item = { description: '', item_code: '', qty: 1, sell_price: 0 }, notify = false) {
     const tr = document.createElement('tr')
     tr.innerHTML = `
-      <td><input type="text" class="desc" value="${escapeAttr(item.description || '')}"></td>
-      <td><input type="text" class="code" value="${escapeAttr(item.item_code || '')}"></td>
-      <td><input type="number" class="qty" min="0" step="1" value="${Number(item.qty) || 1}"></td>
-      <td><input type="number" class="price" min="0" step="0.01" value="${Number(item.sell_price) || 0}"></td>
-      <td class="job-line-discounted">$${money((Number(item.sell_price) || 0) * (1 - discount))}</td>
+      <td data-label="Item"><input type="text" class="desc" value="${escapeAttr(item.description || '')}"></td>
+      <td data-label="Code"><input type="text" class="code" value="${escapeAttr(item.item_code || '')}"></td>
+      <td data-label="Qty"><input type="number" class="qty" min="0" step="1" value="${Number(item.qty) || 1}"></td>
+      <td data-label="List price"><input type="number" class="price" min="0" step="0.01" value="${Number(item.sell_price) || 0}"></td>
+      <td data-label="Your price" class="job-line-discounted">$${money((Number(item.sell_price) || 0) * (1 - discount))}</td>
       <td><button type="button" class="job-line-remove" aria-label="Remove line">Remove</button></td>
     `
     tr.querySelector('.job-line-remove').addEventListener('click', () => { tr.remove(); onChange() })
