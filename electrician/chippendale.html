@@ -79,13 +79,9 @@
   .logo-bolt { margin-bottom: 1px; flex-shrink: 0; }
   .nav-logo-sub { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: #666; margin-top: 3px; display: block; }
   .nav-logo { text-decoration: none; display: flex; flex-direction: column; }
-  .nav-dropdown { position: relative; }
-  .nav-dropdown-toggle { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-  .nav-dropdown-menu { display: none; position: absolute; top: calc(100% + 16px); left: -16px; width: 220px; background: #1a1a1a; border: 1px solid rgba(60,176,178,0.2); border-radius: 8px; padding: 8px 0; z-index: 200; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-  .nav-dropdown:hover .nav-dropdown-menu { display: flex; flex-direction: column; }
-  .nav-dropdown-menu a { padding: 10px 16px; font-size: 14px; color: rgba(255,255,255,0.75); transition: color 0.15s, background 0.15s; }
-  .nav-dropdown-menu a:hover { color: #3cb0b2; background: rgba(60,176,178,0.05); }
-  .nav-dropdown-all { border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4px; padding-top: 12px !important; color: #3cb0b2 !important; font-weight: 600 !important; }
+  /* Services dropdown styling lives in css/style.css — deliberately NOT copied
+     here. This block used to duplicate it, and being inline it outranked the
+     stylesheet, so fixes to style.css silently did nothing on this page. */
   .btn-primary { background: #faed27 !important; color: #0d0d0d !important; border-color: #faed27 !important; }
   .btn-primary:hover { background: #e0d420 !important; border-color: #e0d420 !important; }
   .nav-phone { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
