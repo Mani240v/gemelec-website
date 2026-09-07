@@ -13,16 +13,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="/images/favicon.png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-  <title>Privacy Policy | Gemelec Electrical Services</title>
-  <meta name="description" content="How Gemelec collects, uses, and protects your personal information. Compliant with the Australian Privacy Act 1988.">
-  <link rel="canonical" href="https://www.gemelec.com.au/privacy-policy">
-  <meta property="og:title" content="Privacy Policy | Gemelec Electrical Services">
-  <meta property="og:description" content="How Gemelec collects, uses, and protects your personal information. Compliant with the Australian Privacy Act 1988.">
-  <meta property="og:url" content="https://www.gemelec.com.au/privacy-policy">
+  <title>Thanks — We've Got Your Request | Gemelec Electrical Services</title>
+  <meta name="description" content="Your job request has been received. We'll be in touch shortly. For urgent electrical work call 0498 351 351.">
+  <!-- Confirmation pages stay out of the index: they rank for nothing, and an indexed
+       thank-you page pollutes conversion counts with organic arrivals. Deliberately
+       NOT listed in sitemap.xml for the same reason. -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://www.gemelec.com.au/thank-you">
+  <meta property="og:title" content="Thanks — We've Got Your Request | Gemelec Electrical Services">
+  <meta property="og:description" content="Your job request has been received. We'll be in touch shortly.">
+  <meta property="og:url" content="https://www.gemelec.com.au/thank-you">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Privacy Policy | Gemelec Electrical Services">
-  <meta name="twitter:description" content="How Gemelec collects, uses, and protects your personal information. Compliant with the Australian Privacy Act 1988.">
+  <meta name="twitter:title" content="Thanks — We've Got Your Request | Gemelec Electrical Services">
+  <meta name="twitter:description" content="Your job request has been received. We'll be in touch shortly.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap">
@@ -30,29 +34,54 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css?v=20260730d">
   <style>
+  /* Page-unique styles only. Shared chrome (nav, dropdown, footer, buttons) comes from
+     css/style.css on purpose — duplicating shared component CSS inline is what silently
+     overrode the stylesheet and broke the Services dropdown on 36 pages. */
   .nav-logo-wordmark { display: flex; align-items: center; gap: 1px; line-height: 1; }
   .logo-gem { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; color: #3cb0b2; letter-spacing: -0.02em; }
   .logo-lec { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; color: #faed27; letter-spacing: -0.02em; }
   .logo-bolt { margin-bottom: 1px; flex-shrink: 0; }
   .nav-logo-sub { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: #666; margin-top: 3px; display: block; }
   .nav-logo { text-decoration: none; display: flex; flex-direction: column; }
-  /* Services dropdown styling lives in css/style.css — deliberately NOT copied
-     here. This block used to duplicate it, and being inline it outranked the
-     stylesheet, so fixes to style.css silently did nothing on this page. */
   .btn-primary { background: #faed27 !important; color: #0d0d0d !important; border-color: #faed27 !important; }
   .btn-primary:hover { background: #e0d420 !important; border-color: #e0d420 !important; }
   .nav-phone { color: rgba(255,255,255,0.8); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
   .nav-phone svg { flex-shrink: 0; }
-  .legal-page { background: #f8f8f7; padding: 72px 0 96px; }
-  .legal-page .container { max-width: 820px; }
-  .legal-page h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 56px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 12px; color: #0d0d0d; }
-  .legal-page .updated { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #858481; margin-bottom: 40px; }
-  .legal-page h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; color: #0d0d0d; margin-top: 40px; margin-bottom: 14px; }
-  .legal-page p { font-size: 16px; line-height: 1.75; color: #2a2a2a; margin-bottom: 14px; }
-  .legal-page ul { margin: 8px 0 16px 22px; padding: 0; }
-  .legal-page li { font-size: 16px; line-height: 1.75; color: #2a2a2a; margin-bottom: 6px; }
-  .legal-page a { color: #3cb0b2; }
-  .legal-page a:hover { color: #2a8e90; }
+
+  .ty-hero { background: #0d0d0d; padding: 80px 0 72px; text-align: center; }
+  .ty-hero .container { max-width: 720px; }
+  .ty-tick { width: 72px; height: 72px; border-radius: 50%; background: rgba(60,176,178,0.14); border: 2px solid #3cb0b2; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; }
+  .ty-hero h1 { color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 60px; font-weight: 800; text-transform: uppercase; line-height: 0.98; margin: 0 0 18px; letter-spacing: -0.01em; }
+  .ty-hero h1 em { color: #faed27; font-style: normal; }
+  .ty-hero p.ty-sub { color: rgba(255,255,255,0.72); font-size: 19px; line-height: 1.65; margin: 0 auto 34px; max-width: 560px; }
+  .ty-cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+  .ty-next { background: #f8f8f7; padding: 76px 0; }
+  .ty-next .container { max-width: 900px; }
+  .ty-next h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 800; text-transform: uppercase; margin: 0 0 40px; line-height: 1; text-align: center; }
+  .ty-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; list-style: none; margin: 0; padding: 0; counter-reset: ty-step; }
+  .ty-steps li { background: #fff; border: 1px solid #ececec; border-radius: 10px; padding: 30px 26px; }
+  .ty-steps li::before { counter-increment: ty-step; content: counter(ty-step); display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; background: #faed27; color: #0d0d0d; font-family: 'Barlow Condensed', sans-serif; font-size: 19px; font-weight: 800; margin-bottom: 16px; }
+  .ty-steps h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 21px; font-weight: 700; text-transform: uppercase; margin: 0 0 10px; }
+  .ty-steps p { font-size: 15px; line-height: 1.65; color: #555; margin: 0; }
+
+  .ty-urgent { background: #fff; padding: 64px 0; text-align: center; border-top: 1px solid #ececec; }
+  .ty-urgent .container { max-width: 720px; }
+  .ty-urgent h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 34px; font-weight: 800; text-transform: uppercase; margin: 0 0 12px; line-height: 1; }
+  .ty-urgent p { font-size: 17px; line-height: 1.7; color: #444; margin: 0 0 26px; }
+  .ty-links { display: flex; gap: 10px 28px; flex-wrap: wrap; justify-content: center; margin-top: 34px; padding-top: 26px; border-top: 1px solid #ececec; }
+  .ty-links a { color: #3cb0b2; font-weight: 600; font-size: 15px; text-decoration: none; }
+  .ty-links a:hover { text-decoration: underline; }
+
+  @media (max-width: 820px) {
+    .ty-hero { padding: 56px 0 52px; }
+    .ty-hero h1 { font-size: 40px; }
+    .ty-hero p.ty-sub { font-size: 17px; }
+    .ty-steps { grid-template-columns: 1fr; }
+    .ty-next h2 { font-size: 30px; }
+    .ty-cta-row { flex-direction: column; }
+    .ty-cta-row .btn { width: 100%; }
+  }
   </style>
 <script type="application/ld+json">
 {
@@ -68,8 +97,8 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "Privacy Policy",
-      "item": "https://www.gemelec.com.au/privacy-policy"
+      "name": "Thank You",
+      "item": "https://www.gemelec.com.au/thank-you"
     }
   ]
 }
@@ -102,7 +131,6 @@
         <li><a href="/about">About</a></li>
         <li><a href="/blog">Blog</a></li>
         <li><a href="/contact">Contact</a></li>
-        <li><a href="/privacy-policy" class="active" style="display:none;">Privacy</a></li>
       </ul>
       <div class="nav-cta">
         <a href="tel:0498351351" class="nav-phone">
@@ -127,77 +155,56 @@
 </nav>
 
 <main id="main-content">
-<section class="legal-page">
+
+<section class="ty-hero">
   <div class="container">
-    <span class="label">Legal</span>
-    <h1>PRIVACY POLICY</h1>
-    <p class="updated">Last updated: 7 September 2026</p>
-
-    <h2>Introduction</h2>
-    <p>This page describes how Gemelec Electrical Services handles personal information. We operate under the Australian Privacy Act 1988 and follow the Australian Privacy Principles (APPs). If you have any questions about how we manage your data, get in touch using the contact details at the bottom of this page.</p>
-
-    <h2>What we collect</h2>
-    <p>When you fill out the contact form on this site, we collect the information you give us. That typically includes:</p>
-    <ul>
-      <li>Your name</li>
-      <li>Phone number</li>
-      <li>Email address</li>
-      <li>Suburb</li>
-      <li>Type of electrical service you need</li>
-      <li>Urgency of the job</li>
-      <li>Property type</li>
-      <li>Company name (optional)</li>
-      <li>Job address (optional)</li>
-      <li>Preferred contact method</li>
-      <li>Preferred timeframe</li>
-      <li>Any message or job details you share</li>
-    </ul>
-    <p>We may also receive information you give us over the phone, by email, or in person when arranging or carrying out electrical work at your property.</p>
-
-    <h2>Why we collect it</h2>
-    <p>We use your information to provide quotes, schedule jobs, perform electrical work, communicate with you about your enquiry, and meet our obligations under electrical safety regulations and Australian tax and accounting rules.</p>
-
-    <h2>Who we share it with</h2>
-    <p>We use a small number of third-party providers to run the business. Your information may be processed by:</p>
-    <ul>
-      <li>Google, which stores our contact form submissions in Google Sheets, supports our email through Google Workspace, and provides the website analytics described under Cookies below</li>
-      <li>Vercel, which hosts this website and processes form submissions before they reach us</li>
-      <li>Payment and accounting providers we use to issue invoices and keep our books</li>
-    </ul>
-    <p>We do not sell your information. We only share what is necessary for the providers above to do their job, and we expect them to handle your data securely.</p>
-
-    <h2>How long we keep it</h2>
-    <p>We keep your information only as long as we need it for the work and our legal obligations. Tax and invoicing records are kept for up to 7 years, in line with Australian Taxation Office requirements. Quote enquiries that do not progress to a job are kept for up to 24 months, then deleted.</p>
-
-    <h2>Your rights</h2>
-    <p>You can ask us for a copy of the personal information we hold about you, ask us to correct anything that is wrong, or ask us to delete it. We will action requests promptly, subject to any record-keeping obligations we have under Australian law.</p>
-
-    <h2>Security</h2>
-    <p>We take reasonable steps to protect the information we hold from loss, misuse, and unauthorised access. Form submissions are sent over an encrypted connection, and access to our internal systems is restricted to people who need it. No online system is perfectly secure, so we cannot guarantee absolute protection.</p>
-
-    <h2>Cookies and analytics</h2>
-    <p>This site uses a small number of cookies. Our host, Vercel, may set basic cookies needed for the site to function, and records anonymous hosting analytics.</p>
-    <p>We also use Google Analytics to understand how people find and use the site — which pages are read, which enquiry forms get completed, and roughly where visitors are located. Google sets cookies to do this and processes the data on our behalf, which may involve transferring it overseas. We use it to improve the website, not to build a profile of you, and we do not run third-party advertising or remarketing pixels.</p>
-    <p>You can clear or block cookies in your browser settings at any time, and Google publishes an opt-out browser add-on at <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">tools.google.com/dlpage/gaoptout</a>. Blocking either will not stop you using this site or contacting us.</p>
-
-    <h2>Children</h2>
-    <p>Our services are not aimed at children, and we do not knowingly collect personal information from anyone under 16. If you believe a child has given us their information, contact us and we will delete it.</p>
-
-    <h2>Changes to this policy</h2>
-    <p>We may update this policy from time to time. The date at the top of the page reflects the most recent update. If we make a material change, we will update the page and, where appropriate, let affected customers know directly.</p>
-
-    <h2>Contact for privacy enquiries</h2>
-    <p>For any privacy question, request, or correction, contact us at:</p>
-    <ul>
-      <li>Phone: <a href="tel:0498351351">0498 351 351</a></li>
-      <li>Email: <a href="mailto:info@gemelec.sydney">info@gemelec.sydney</a></li>
-      <li>Mail: 587 Bunnerong Rd, Matraville NSW 2036</li>
-    </ul>
-
-    <h2>Complaints</h2>
-    <p>If you are not satisfied with how we have handled your information or your request, you can contact the Office of the Australian Information Commissioner (OAIC) at <a href="https://www.oaic.gov.au" target="_blank" rel="noopener">oaic.gov.au</a>.</p>
+    <div class="ty-tick">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#3cb0b2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h1>Got it — <em>we're on it.</em></h1>
+    <p class="ty-sub">Your request has landed with us. We'll be in touch shortly — usually within 2 hours during business hours.</p>
+    <div class="ty-cta-row">
+      <a href="tel:0498351351" class="btn btn-primary btn-lg">Call 0498 351 351</a>
+      <a href="https://wa.me/61498351351?text=Hi%20Gemelec%2C%20I%27ve%20just%20sent%20through%20a%20job%20request" class="btn btn-outline btn-lg" style="color:#fff;border-color:rgba(255,255,255,0.3);" target="_blank" rel="noopener">Message on WhatsApp</a>
+    </div>
   </div>
 </section>
+
+<section class="ty-next">
+  <div class="container">
+    <h2>What happens next</h2>
+    <ol class="ty-steps">
+      <li>
+        <h3>We read it properly</h3>
+        <p>The Gemelec team goes through your details and any photos you sent, so we understand the job before we call.</p>
+      </li>
+      <li>
+        <h3>We call or text you</h3>
+        <p>Usually within 2 hours during business hours. If anything is unclear we will ask — no guesswork on your quote.</p>
+      </li>
+      <li>
+        <h3>You get a price</h3>
+        <p>A clear quote with no obligation. Happy with it? We book a time that suits you.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="ty-urgent">
+  <div class="container">
+    <h2>Power out right now?</h2>
+    <p>Do not wait on the form. We answer the phone 24/7 and we have never missed an after-hours call.</p>
+    <a href="tel:0498351351" class="btn btn-primary btn-lg">Call 0498 351 351</a>
+    <div class="ty-links">
+      <a href="/">Back to home</a>
+      <a href="/services">Our services</a>
+      <a href="/#service-areas">Areas we cover</a>
+      <a href="/about">About Gemelec</a>
+      <a href="/blog">Blog</a>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- FOOTER -->

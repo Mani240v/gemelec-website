@@ -149,10 +149,13 @@ if (jobRequestForm) {
       compressedPhotos = []
       renderPreviews()
       jobRequestForm.style.display = 'none'
-      if (successMsg) {
-        successMsg.style.display = 'block'
-        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
+
+      // Send the visitor to a real confirmation URL rather than revealing an inline
+      // banner. /thank-you is what analytics can count as a conversion — an inline
+      // div never changes the URL, so there is nothing to fire a goal on.
+      // The #form-success banner below is the fallback if navigation is blocked.
+      if (successMsg) successMsg.style.display = 'block'
+      window.location.assign('/thank-you')
     } catch (error) {
       if (errorMsg) {
         errorMsg.textContent = error.message || 'Sorry, that could not be sent. Please call 0498 351 351.'
