@@ -482,7 +482,12 @@ textarea:focus-visible {
 
 @media (max-width: 768px) {
   .section { padding: 56px 0; }
-  .nav-links, .nav-cta { display: none; }
+  .nav-links { display: none; }
+  /* Keep the phone number in the sticky bar on mobile — only the
+     "Get a Quote" button folds away into the hamburger menu. */
+  .nav-cta .btn { display: none; }
+  .nav-inner { gap: 12px; }
+  .nav-phone { white-space: nowrap; }
   .hamburger { display: flex; }
   .emergency-grid { grid-template-columns: 1fr; }
   .emergency-time { font-size: 64px; }
@@ -505,6 +510,8 @@ textarea:focus-visible {
   .areas-grid { grid-template-columns: 1fr 1fr; }
   .hero-actions { flex-direction: column; }
   .hero-actions .btn { width: 100%; justify-content: center; }
+  /* .nav prefix needed: the per-page inline blocks also set .nav-phone font-size */
+  .nav .nav-phone { font-size: 14px; gap: 5px; }
 }
 
 /* ─── Photo Hero ─── */
