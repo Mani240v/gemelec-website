@@ -342,10 +342,13 @@ module.exports = async function handler(req, res) {
 
     // The lead is captured the moment that row lands. Everything below — the AI costing,
     // the write-back and the alerts — produces material for the dashboard and for Mani's
-    // inbox, not for the customer: this 200 carries no estimate, and js/job-request.js
-    // redirects to /thank-you without ever reading the body. Answering here rather than
-    // after that work is what stops a customer watching a dead button for up to a minute
-    // and sending the form again, which is the documented cause of two rows for one job.
+    // inbox, not for the customer. Both clients do read this body: js/job-request.js:142
+    // branches on result.ok before redirecting to /thank-you, and js/tech-portal.js:413
+    // keeps result.requestId so a tech's follow-up chains onto the same job. Neither
+    // reads anything the deferred work produces, and the payload below is byte-identical
+    // to the one that used to be sent at the end — that, not "nobody reads it", is why
+    // answering early is safe. Doing so is what stops a customer watching a dead button
+    // for up to a minute and sending the form again, the documented cause of two rows.
     send(res, 200, {
       ok: true,
       requestId,
