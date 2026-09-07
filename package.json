@@ -8,6 +8,7 @@
     "dev:vercel": "npx vercel dev --listen 3456"
   },
   "dependencies": {
-    "@vercel/blob": "^2.8.0"
+    "@vercel/blob": "^2.8.0",
+    "@vercel/functions": "^3.9.5"
   }
 }

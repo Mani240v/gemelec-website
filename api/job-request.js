@@ -5,6 +5,7 @@ const { draftCosting } = require('./_lib/anthropic')
 const { money, SUBTOTAL_CAP } = require('./_lib/price-book')
 const { sendNotification } = require('./_lib/email')
 const { sendWhatsAppNotification } = require('./_lib/whatsapp')
+const { waitUntil } = require('@vercel/functions')
 
 const HEADERS = [
   'submitted_at',
@@ -49,6 +50,10 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 // slow Opus 5 turn ran the invocation past 60s and the platform killed it: row saved,
 // no email, no WhatsApp, and the customer told "Sorry, that could not be sent" so they
 // resubmit and Mani gets two rows for one job. The AI now gets what is genuinely left.
+// Since 2026-09-07 the 200 also goes out before any of this runs (see waitUntil below), so
+// a slow turn no longer shows the customer an error and no longer produces the duplicate.
+// The budget still matters, but it fails differently now: overrunning costs the costing
+// and the alerts silently, in the log, instead of loudly at the customer.
 // 5s under maxDuration, for the platform's own overhead. maxDuration is 90s in
 // vercel.json: at 60 this left the estimator ~29s once five photos had been parsed and
 // uploaded, and Opus 5 at effort 'high' over a 208-item catalogue and five images does
@@ -220,6 +225,8 @@ module.exports = async function handler(req, res) {
   // Every downstream deadline is taken from this rather than from a fixed constant, so the
   // stages cannot each claim the reserve and sum past maxDuration between them.
   const remainingMs = () => FUNCTION_BUDGET_MS - (Date.now() - invocationStartedAt)
+  // Set once the 200 has gone out, so the outer catch knows a second send would throw.
+  let responded = false
 
   if (req.method === 'OPTIONS') {
     res.setHeader('Allow', 'POST, OPTIONS')
@@ -333,157 +340,181 @@ module.exports = async function handler(req, res) {
 
     const rowNumber = appendedRowNumber(appendResult)
 
-    // Every failure mode inside draftCosting — a 400 on a parameter Opus 5 rejects, a
-    // refusal, a truncation, a timeout, a total outside the plausible band — throws and is
-    // caught right here, so it can never reach the outer catch and turn a missing estimate
-    // into a lost lead.
-    let aiDraft = null
-    let aiStatus = 'failed'
-    // Whatever is left of the invocation once the alerts have their reserve. On a
-    // five-photo submission the uploads and the append have already spent several seconds
-    // of it, and that is exactly the case where the old fixed 50s overran.
-    const aiBudgetMs = remainingMs() - ALERT_RESERVE_MS
-
-    if (aiBudgetMs < MIN_AI_BUDGET_MS) {
-      console.error(`Skipping AI costing: only ${aiBudgetMs}ms left of the invocation`)
-      aiStatus = 'failed:no-time'
-    } else if (!claimAiBudget()) {
-      console.error('Skipping AI costing: per-instance hourly ceiling reached')
-      aiStatus = 'failed:rate-limited'
-    } else {
-      try {
-        aiDraft = await draftCosting({
-          description,
-          photos: photos.map(photo => ({ mimeType: photo.mimeType, base64: photo.base64 })),
-          budgetMs: aiBudgetMs
-        })
-        aiStatus = aiDraft.ai_status || 'ok'
-      } catch (error) {
-        console.error('AI costing draft failed:', error)
-        aiStatus = error.aiStatus || 'failed'
-      }
-    }
-
-    const hasLines = Boolean(aiDraft && aiDraft.line_items.length)
-    // A withheld estimate (over the ceiling) still has a real itemisation behind it, so
-    // "did we price anything" and "is there a range to print" are now different questions.
-    const hasRange = Boolean(
-      aiDraft && Number.isFinite(aiDraft.estimate_low) && Number.isFinite(aiDraft.estimate_high)
-    )
-
-    let writeBackOk = true
-    if (rowNumber) {
-      const writeBack = await withDeadline(
-        updateRowCells(JOB_REQUESTS_SHEET_ID, JOB_REQUESTS_SHEET_TAB, rowNumber, HEADERS, {
-          ai_summary: aiDraft?.summary || '',
-          ai_draft_costing: aiDraft ? JSON.stringify(aiDraft) : '',
-          ai_estimate_low: hasRange ? aiDraft.estimate_low : '',
-          ai_estimate_high: hasRange ? aiDraft.estimate_high : '',
-          ai_status: aiStatus
-        }).catch(error => {
-          console.error('AI costing write-back failed:', error)
-          return { failed: true }
-        }),
-        Math.max(4000, remainingMs() - ALERT_SEND_RESERVE_MS),
-        'AI costing write-back'
-      )
-      writeBackOk = !(writeBack && (writeBack.failed || writeBack.timedOut))
-    } else {
-      writeBackOk = false
-    }
-
-    // Photos ride along as email attachments on every submission. This is the archive:
-    // the Blob copy behind the dashboard is purged after 14 days, the mailbox is not.
-    const photoAttachments = photos.map((photo, index) => ({
-      filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
-      content: photo.base64,
-      content_type: photo.mimeType
-    }))
-
-    // Branches on whether anything was priced, not on the figure. An honest "I could not
-    // match this to your price list" is zero, and printing that as "$0 - $0" reads like a
-    // genuine no-charge job.
-    const flaggedCount = aiDraft ? aiDraft.flagged_items.length : 0
-    let estimateLine
-    if (!aiDraft) {
-      estimateLine = 'AI draft estimate: not available for this one — review manually.'
-    } else if (hasRange) {
-      // Two figures on purpose. The list total is the worst case; the discounted one is
-      // what Mani normally charges, and it is the number he actually wants at a glance on
-      // his phone. confidence_pct is about the item picks, not the prices.
-      const discountLabel = Number.isFinite(aiDraft.discount_pct)
-        ? ` (${Math.round(aiDraft.discount_pct * 100)}% off list)`
-        : ''
-      estimateLine = [
-        `AI draft estimate: $${money(aiDraft.estimate_low)} - $${money(aiDraft.estimate_high)}` +
-          ' (from your price list, review before quoting' +
-          `${flaggedCount ? `; ${flaggedCount} item${flaggedCount === 1 ? '' : 's'} flagged` : ''})`,
-        Number.isFinite(aiDraft.subtotal) && Number.isFinite(aiDraft.typical_subtotal)
-          ? `  List total $${money(aiDraft.subtotal)} / your price $${money(aiDraft.typical_subtotal)}${discountLabel}`
-          : '',
-        Number.isFinite(aiDraft.confidence_pct)
-          ? `  AI confidence in the item picks: ${aiDraft.confidence_pct}%`
-          : ''
-      ].filter(Boolean).join('\n')
-    } else if (hasLines) {
-      estimateLine = `AI draft estimate: the items come to more than $${money(SUBTOTAL_CAP)}, which is ` +
-        'above the ceiling this system will put a number on — the itemisation is on the dashboard, total it yourself.'
-    } else {
-      estimateLine = 'AI draft estimate: nothing matched your price list — price this one manually.'
-    }
-
-    // Said out loud rather than left to be discovered. If the write-back did not land, the
-    // dashboard card still reads "Estimate is still being worked out — reload in a minute"
-    // and will say that forever, while this alert carries a real figure. Nothing retries
-    // and nothing reconciles, so the two channels Mani triages on would silently disagree.
-    const writeBackLine = writeBackOk
-      ? ''
-      : 'Note: the dashboard row could not be updated with this draft, so the card there will still say the estimate is being worked out. This alert is the copy of record.'
-
-    await withDeadline(Promise.all([
-      sendNotification({
-        subject: `New job request — ${row.full_name}`,
-        text: [
-          `${row.full_name} (${row.phone}) sent a new job request.`,
-          '',
-          row.email
-            ? `Email: ${row.email}  (replying to this alert goes straight to them)`
-            : 'Email: not given — reply goes to the office inbox, so call them instead.',
-          `Address: ${row.job_address || 'not given'}`,
-          `Description: ${description}`,
-          '',
-          estimateLine,
-          writeBackLine,
-          '',
-          photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
-          'Review: https://www.gemelec.com.au/job-requests',
-          JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
-        ].filter(Boolean).join('\n'),
-        // Always attach, even when the upload succeeded. Blob holds photos for 14 days
-        // only, so the email is the permanent archive — dropping the attachments because a
-        // copy exists would mean the copy is the ONLY one, and it expires.
-        attachments: photoAttachments,
-        replyTo: row.email
-      }),
-      sendWhatsAppNotification(
-        [
-          `New job request — ${row.full_name} (${row.phone})`,
-          row.job_address ? `Address: ${row.job_address}` : '',
-          `Job: ${description.slice(0, 400)}`,
-          estimateLine,
-          writeBackLine,
-          'Review: https://www.gemelec.com.au/job-requests'
-        ].filter(Boolean).join('\n')
-      )
-    ]), Math.max(3000, remainingMs()), 'Job request alerts')
-
-    return send(res, 200, {
+    // The lead is captured the moment that row lands. Everything below — the AI costing,
+    // the write-back and the alerts — produces material for the dashboard and for Mani's
+    // inbox, not for the customer: this 200 carries no estimate, and js/job-request.js
+    // redirects to /thank-you without ever reading the body. Answering here rather than
+    // after that work is what stops a customer watching a dead button for up to a minute
+    // and sending the form again, which is the documented cause of two rows for one job.
+    send(res, 200, {
       ok: true,
       requestId,
       message: "Thanks — we've received your details. We'll be in touch with a quote shortly."
     })
+    responded = true
+
+    // waitUntil keeps the invocation alive past the response. Without it the platform is
+    // free to freeze us mid-costing, and the row would sit there with empty ai_* columns,
+    // no email and no WhatsApp. maxDuration (90s, vercel.json) still bounds the whole
+    // invocation, so every remainingMs() deadline below is measured against exactly the
+    // budget it always was — the work is not given more time, the customer just is not
+    // made to watch it.
+    return waitUntil((async () => {
+      try {
+        // Every failure mode inside draftCosting — a 400 on a parameter Opus 5 rejects, a
+        // refusal, a truncation, a timeout, a total outside the plausible band — throws and is
+        // caught right here, so it can never reach the outer catch and turn a missing estimate
+        // into a lost lead.
+        let aiDraft = null
+        let aiStatus = 'failed'
+        // Whatever is left of the invocation once the alerts have their reserve. On a
+        // five-photo submission the uploads and the append have already spent several seconds
+        // of it, and that is exactly the case where the old fixed 50s overran.
+        const aiBudgetMs = remainingMs() - ALERT_RESERVE_MS
+
+        if (aiBudgetMs < MIN_AI_BUDGET_MS) {
+          console.error(`Skipping AI costing: only ${aiBudgetMs}ms left of the invocation`)
+          aiStatus = 'failed:no-time'
+        } else if (!claimAiBudget()) {
+          console.error('Skipping AI costing: per-instance hourly ceiling reached')
+          aiStatus = 'failed:rate-limited'
+        } else {
+          try {
+            aiDraft = await draftCosting({
+              description,
+              photos: photos.map(photo => ({ mimeType: photo.mimeType, base64: photo.base64 })),
+              budgetMs: aiBudgetMs
+            })
+            aiStatus = aiDraft.ai_status || 'ok'
+          } catch (error) {
+            console.error('AI costing draft failed:', error)
+            aiStatus = error.aiStatus || 'failed'
+          }
+        }
+
+        const hasLines = Boolean(aiDraft && aiDraft.line_items.length)
+        // A withheld estimate (over the ceiling) still has a real itemisation behind it, so
+        // "did we price anything" and "is there a range to print" are now different questions.
+        const hasRange = Boolean(
+          aiDraft && Number.isFinite(aiDraft.estimate_low) && Number.isFinite(aiDraft.estimate_high)
+        )
+
+        let writeBackOk = true
+        if (rowNumber) {
+          const writeBack = await withDeadline(
+            updateRowCells(JOB_REQUESTS_SHEET_ID, JOB_REQUESTS_SHEET_TAB, rowNumber, HEADERS, {
+              ai_summary: aiDraft?.summary || '',
+              ai_draft_costing: aiDraft ? JSON.stringify(aiDraft) : '',
+              ai_estimate_low: hasRange ? aiDraft.estimate_low : '',
+              ai_estimate_high: hasRange ? aiDraft.estimate_high : '',
+              ai_status: aiStatus
+            }).catch(error => {
+              console.error('AI costing write-back failed:', error)
+              return { failed: true }
+            }),
+            Math.max(4000, remainingMs() - ALERT_SEND_RESERVE_MS),
+            'AI costing write-back'
+          )
+          writeBackOk = !(writeBack && (writeBack.failed || writeBack.timedOut))
+        } else {
+          writeBackOk = false
+        }
+
+        // Photos ride along as email attachments on every submission. This is the archive:
+        // the Blob copy behind the dashboard is purged after 14 days, the mailbox is not.
+        const photoAttachments = photos.map((photo, index) => ({
+          filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
+          content: photo.base64,
+          content_type: photo.mimeType
+        }))
+
+        // Branches on whether anything was priced, not on the figure. An honest "I could not
+        // match this to your price list" is zero, and printing that as "$0 - $0" reads like a
+        // genuine no-charge job.
+        const flaggedCount = aiDraft ? aiDraft.flagged_items.length : 0
+        let estimateLine
+        if (!aiDraft) {
+          estimateLine = 'AI draft estimate: not available for this one — review manually.'
+        } else if (hasRange) {
+          // Two figures on purpose. The list total is the worst case; the discounted one is
+          // what Mani normally charges, and it is the number he actually wants at a glance on
+          // his phone. confidence_pct is about the item picks, not the prices.
+          const discountLabel = Number.isFinite(aiDraft.discount_pct)
+            ? ` (${Math.round(aiDraft.discount_pct * 100)}% off list)`
+            : ''
+          estimateLine = [
+            `AI draft estimate: $${money(aiDraft.estimate_low)} - $${money(aiDraft.estimate_high)}` +
+              ' (from your price list, review before quoting' +
+              `${flaggedCount ? `; ${flaggedCount} item${flaggedCount === 1 ? '' : 's'} flagged` : ''})`,
+            Number.isFinite(aiDraft.subtotal) && Number.isFinite(aiDraft.typical_subtotal)
+              ? `  List total $${money(aiDraft.subtotal)} / your price $${money(aiDraft.typical_subtotal)}${discountLabel}`
+              : '',
+            Number.isFinite(aiDraft.confidence_pct)
+              ? `  AI confidence in the item picks: ${aiDraft.confidence_pct}%`
+              : ''
+          ].filter(Boolean).join('\n')
+        } else if (hasLines) {
+          estimateLine = `AI draft estimate: the items come to more than $${money(SUBTOTAL_CAP)}, which is ` +
+            'above the ceiling this system will put a number on — the itemisation is on the dashboard, total it yourself.'
+        } else {
+          estimateLine = 'AI draft estimate: nothing matched your price list — price this one manually.'
+        }
+
+        // Said out loud rather than left to be discovered. If the write-back did not land, the
+        // dashboard card still reads "Estimate is still being worked out — reload in a minute"
+        // and will say that forever, while this alert carries a real figure. Nothing retries
+        // and nothing reconciles, so the two channels Mani triages on would silently disagree.
+        const writeBackLine = writeBackOk
+          ? ''
+          : 'Note: the dashboard row could not be updated with this draft, so the card there will still say the estimate is being worked out. This alert is the copy of record.'
+
+        await withDeadline(Promise.all([
+          sendNotification({
+            subject: `New job request — ${row.full_name}`,
+            text: [
+              `${row.full_name} (${row.phone}) sent a new job request.`,
+              '',
+              row.email
+                ? `Email: ${row.email}  (replying to this alert goes straight to them)`
+                : 'Email: not given — reply goes to the office inbox, so call them instead.',
+              `Address: ${row.job_address || 'not given'}`,
+              `Description: ${description}`,
+              '',
+              estimateLine,
+              writeBackLine,
+              '',
+              photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
+              'Review: https://www.gemelec.com.au/job-requests',
+              JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
+            ].filter(Boolean).join('\n'),
+            // Always attach, even when the upload succeeded. Blob holds photos for 14 days
+            // only, so the email is the permanent archive — dropping the attachments because a
+            // copy exists would mean the copy is the ONLY one, and it expires.
+            attachments: photoAttachments,
+            replyTo: row.email
+          }),
+          sendWhatsAppNotification(
+            [
+              `New job request — ${row.full_name} (${row.phone})`,
+              row.job_address ? `Address: ${row.job_address}` : '',
+              `Job: ${description.slice(0, 400)}`,
+              estimateLine,
+              writeBackLine,
+              'Review: https://www.gemelec.com.au/job-requests'
+            ].filter(Boolean).join('\n')
+          )
+        ]), Math.max(3000, remainingMs()), 'Job request alerts')
+      } catch (error) {
+        // The customer cannot be told anything now — they have their 200 and the browser
+        // has already moved to /thank-you. The row exists, so the lead itself is safe;
+        // what is lost is the draft costing and possibly the alerts, hence the loud log.
+        console.error('Job request post-response work failed:', requestId, error)
+      }
+    })())
   } catch (error) {
     console.error('Job request submit failed:', error)
+    // res.end has already run; a second send would throw ERR_STREAM_WRITE_AFTER_END.
+    if (responded) return
     return send(res, 500, {
       ok: false,
       message: 'Sorry, that could not be sent. Please call 0498 351 351 or email info@gemelec.sydney.'
