@@ -502,12 +502,19 @@ function renderCard(row) {
       qty: Number(tr.querySelector('.qty').value) || 0,
       sell_price: Number(tr.querySelector('.price').value) || 0
     }))
-    const total = computeTotal(rows)
-    // Mani's price, not the list ceiling: the list is a worst case he rarely charges, and
-    // this text goes to a customer. Editing the List price column moves this with it, so
-    // there is no way to discount twice.
+    // Mani's price, not the list ceiling: the list is a worst case he rarely charges. This
+    // text is the guide the real quote gets written from. Editing the List price column
+    // moves this with it, so there is no way to discount twice.
     const discount = discountOf(costing)
-    const lines = rows.map(r => `${r.qty} x ${r.description} — $${money(r.sell_price * (1 - discount))}`)
+    // A "+ Add line" row that was never filled in would otherwise print "1 x  — $0.00".
+    // Matches the filter the describe handler already applies.
+    const priced = rows.filter(r => r.description)
+    const lines = priced.map(r => `${r.qty} x ${r.description} — $${money(r.sell_price * (1 - discount))}`)
+    // Same basis as the lines: each line prints a discounted UNIT price, so the total is
+    // the sum of qty x that. computeTotal is the undiscounted LIST total and is what the
+    // save path at the bottom of this file wants; printing it here put an undiscounted
+    // total underneath discounted lines, so the two disagreed by the whole discount.
+    const total = priced.reduce((sum, r) => sum + r.qty * r.sell_price * (1 - discount), 0)
     const text = [
       `Quote for ${row.full_name}`,
       row.job_address ? `Address: ${row.job_address}` : '',
