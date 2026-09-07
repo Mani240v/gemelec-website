@@ -155,6 +155,13 @@ if (jobRequestForm) {
       // div never changes the URL, so there is nothing to fire a goal on.
       // The #form-success banner below is the fallback if navigation is blocked.
       if (successMsg) successMsg.style.display = 'block'
+
+      // One-shot token consumed by the generate_lead block in js/main.js, so the
+      // conversion counts a real submission rather than any arrival at the page.
+      // Written only after the POST succeeded — a failed send must not look like
+      // a lead. Storage being unavailable is not worth failing the redirect over.
+      try { sessionStorage.setItem('gx_pending_lead', '1') } catch (err) {}
+
       window.location.assign('/thank-you')
     } catch (error) {
       if (errorMsg) {
