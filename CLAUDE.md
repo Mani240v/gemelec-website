@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler. The frontend has no dependencies at all (Swiper comes from a CDN). The API functions have exactly one, `@vercel/blob`, added 2026-09-01 for job-photo storage — everything else there is Node built-ins, including the hand-signed Google OAuth JWT. Treat that count as a budget: reach for a built-in before a package. Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
+Static marketing website for Gemelec Electrical Services (Sydney electrician). Plain HTML/CSS/JS with Vercel serverless functions for lead/job capture. No framework, no build step, no bundler. The frontend has no dependencies at all (Swiper comes from a CDN). The API functions have exactly two: `@vercel/blob` (added 2026-09-01, job-photo storage) and `@vercel/functions` (added 2026-09-07, `waitUntil` so the AI costing and the alerts run after the response instead of making the customer wait for them). Everything else there is Node built-ins, including the hand-signed Google OAuth JWT. Treat that count as a budget: reach for a built-in before a package. Git remote is `github.com/Mani240v/gemelec-website`, deployed on Vercel.
 
 ## How to work with Mani
 
