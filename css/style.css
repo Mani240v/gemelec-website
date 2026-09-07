@@ -195,7 +195,6 @@ a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-ra
 .section-header-center { text-align: center; max-width: 640px; margin: 0 auto 52px; }
 
 /* ─── Service Cards ─── */
-.services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .service-card {
   background: var(--white);
   border: 1px solid var(--gray);
@@ -474,7 +473,6 @@ textarea:focus-visible {
 
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
-  .services-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .areas-grid { grid-template-columns: repeat(3, 1fr); }
   .blog-grid { grid-template-columns: repeat(2, 1fr); }
@@ -496,7 +494,6 @@ textarea:focus-visible {
   .areas-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-grid { grid-template-columns: 1fr; }
   .commercial-inner { flex-direction: column; }
-  .services-grid { grid-template-columns: 1fr; }
   .service-full { grid-template-columns: 1fr; }
   .values-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
