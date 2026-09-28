@@ -79,15 +79,22 @@ self.addEventListener('push', (event) => {
   } catch {
     data = {}
   }
+  const tag = data.tag || 'gemelec-enquiry'
   event.waitUntil(
     self.registration.showNotification(data.title || 'New website enquiry', {
       body: data.body || 'Open the job requests page to see it.',
       icon: '/images/tech-icon-192.png',
       // One notification per enquiry: the request id keeps two quick enquiries from
       // collapsing into one.
-      tag: data.tag || 'gemelec-enquiry',
+      tag,
       data: { url: data.url || '/job-requests' }
     })
+      // Tell any open staff page it arrived. js/staff-push.js waits for this after "Send a
+      // test", which is how it can tell "never reached this device" (a network or firewall
+      // problem) apart from "arrived but the computer hid it" (its notification settings).
+      .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      .then(windows => windows.forEach(client => client.postMessage({ type: 'gemelec-push-received', tag })))
+      .catch(() => {})
   )
 })
 
