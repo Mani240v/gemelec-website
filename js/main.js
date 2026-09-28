@@ -52,6 +52,51 @@ document.addEventListener('click', (e) => {
   else if (href.indexOf('wa.me') !== -1) trackLead('whatsapp', href)
 })
 
+// === ADDED 2026-09-28: WeChat ===
+//
+// WeChat has no click-to-chat link like wa.me: a customer can only message Mani once
+// they've added him as a friend, and the dependable way in is his QR code. So anything
+// marked data-wechat opens a small dialog showing it. The element's href is the QR image
+// itself, which is the whole fallback: no JS, or no <dialog> support, and the tap just
+// opens the picture. His WeChat ID is deliberately not shown: it is a system-assigned
+// wxid_..., which WeChat doesn't let anyone search for.
+//
+// Counted as generate_lead with method 'wechat', per the one-key-event rule above.
+const WECHAT_QR = '/images/wechat-qr.jpg'
+let wechatDialog = null
+
+function buildWechatDialog () {
+  const dialog = document.createElement('dialog')
+  dialog.className = 'wechat-dialog'
+  dialog.setAttribute('aria-labelledby', 'wechat-dialog-title')
+  // Static markup only; nothing here comes from the page or the visitor.
+  dialog.innerHTML =
+    '<button type="button" class="wechat-close" aria-label="Close">&times;</button>' +
+    '<h2 id="wechat-dialog-title">Add us on WeChat</h2>' +
+    '<img src="' + WECHAT_QR + '" width="600" height="805" alt="WeChat QR code for Mani G, Gemelec Electrical Services">' +
+    '<p>Scan the code in WeChat to add Mani, then message us like any other chat.</p>' +
+    '<p>On your phone? Press and hold the code to save it, then in WeChat tap <strong>+</strong>, then <strong>Scan</strong>, and choose the photo from your album.</p>'
+  dialog.querySelector('.wechat-close').addEventListener('click', () => dialog.close())
+  // Close on a backdrop click. The backdrop reports the dialog as the target, so check
+  // the point is actually outside the box rather than on its padding.
+  dialog.addEventListener('click', (e) => {
+    const r = dialog.getBoundingClientRect()
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close()
+  })
+  document.body.appendChild(dialog)
+  return dialog
+}
+
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest && e.target.closest('[data-wechat]')
+  if (!trigger) return
+  trackLead('wechat', window.location.pathname)
+  if (typeof HTMLDialogElement !== 'function') return // let the link open the image
+  e.preventDefault()
+  if (!wechatDialog) wechatDialog = buildWechatDialog()
+  wechatDialog.showModal()
+})
+
 // A completed job request lands on /thank-you, so arriving there is the lead.
 //
 // The event is gated on a one-shot token that js/job-request.js writes just

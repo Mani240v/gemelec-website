@@ -2821,3 +2821,15 @@ textarea:focus-visible {
 
 /* Google's marker sprite. Without a width it collapses and the icon overlaps the text. */
 .pac-icon { margin-right: 8px; }
+
+/* === ADDED 2026-09-28 — WeChat button and QR dialog (dialog built by js/main.js) === */
+/* Dark text on WeChat green: white on #07c160 is 2.4:1, #0d0d0d is about 8:1. */
+.gx-btn-wechat { background: #07c160; color: #0d0d0d; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid #07c160; border-radius: 6px; text-decoration: none; transition: background 0.15s, border-color 0.15s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.gx-btn-wechat:hover { background: #06ad56; border-color: #06ad56; }
+.wechat-dialog { border: none; border-radius: 12px; padding: 28px 24px 20px; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow-y: auto; text-align: center; color: #0d0d0d; background: #fff; }
+.wechat-dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+.wechat-dialog h2 { font-family: var(--font-heading); font-size: 28px; font-weight: 800; text-transform: uppercase; line-height: 1; margin: 0 0 14px; }
+.wechat-dialog img { display: block; width: 100%; max-width: 260px; height: auto; margin: 0 auto 14px; }
+.wechat-dialog p { font-size: 14px; line-height: 1.5; margin: 0 0 8px; color: rgba(0, 0, 0, 0.7); }
+.wechat-close { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: none; background: none; font-size: 30px; line-height: 1; color: #0d0d0d; cursor: pointer; }
+.wechat-close:focus-visible { outline: 2px solid #0d0d0d; outline-offset: -4px; }
