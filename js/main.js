@@ -54,9 +54,10 @@ document.addEventListener('click', (e) => {
 
 // === ADDED 2026-09-28: WeChat ===
 //
-// WeChat has no click-to-chat link like wa.me: a customer can only message Mani once
-// they've added him as a friend, and the dependable way in is his QR code. So anything
-// marked data-wechat opens a small dialog showing it. The element's href is the QR image
+// WeChat has no click-to-chat link like wa.me: a customer can only message the business
+// account once they've added it as a friend, and the dependable way in is its QR code. So
+// anything marked data-wechat opens a small dialog showing it. Customer-facing wording says
+// "Gemelec"/"us", never Mani's name (his request), and the image is cropped to the code. The element's href is the QR image
 // itself, which is the whole fallback: no JS, or no <dialog> support, and the tap just
 // opens the picture. The dialog also shows his WeChat ID with a copy button, for people
 // who'd rather search than scan. That only works because it's a custom ID (set
@@ -75,8 +76,8 @@ function buildWechatDialog () {
   dialog.innerHTML =
     '<button type="button" class="wechat-close" aria-label="Close">&times;</button>' +
     '<h2 id="wechat-dialog-title">Add us on WeChat</h2>' +
-    '<img src="' + WECHAT_QR + '" width="600" height="805" alt="WeChat QR code for Mani G, Gemelec Electrical Services">' +
-    '<p>Scan the code in WeChat to add Mani, then message us like any other chat.</p>' +
+    '<img src="' + WECHAT_QR + '" width="640" height="640" alt="WeChat QR code for Gemelec Electrical Services">' +
+    '<p>Scan the code in WeChat to add Gemelec, then message us like any other chat.</p>' +
     '<p class="wechat-id">Or search our WeChat ID: <strong>' + WECHAT_ID + '</strong> <button type="button" class="wechat-copy">Copy</button></p>' +
     '<p>On your phone? Press and hold the code to save it, then in WeChat tap <strong>+</strong>, then <strong>Scan</strong>, and choose the photo from your album.</p>'
   dialog.querySelector('.wechat-close').addEventListener('click', () => dialog.close())
