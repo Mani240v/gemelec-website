@@ -1,8 +1,8 @@
 # Gemelec Electrical Services
-> Licensed Sydney electrician. Owner-operated. 24/7 emergency callouts. Eastern Suburbs, Inner West, South Sydney.
+> Licensed Sydney electrician. Family owned and operated. 24/7 emergency callouts, same-day emergency service (on site within 4 hours). Eastern Suburbs, Inner West, South Sydney, plus the Sutherland Shire and Northern Beaches.
 
 ## About
-Emmanuel "Mani" Gemelas runs Gemelec Electrical Services. NSW Security Master Licence 000108133, NSW Electrical Contractor Licence 376553C, ABN 92 647 631 267. Based at 587 Bunnerong Road, Matraville NSW 2036. Phone 0498 351 351. Email info@gemelec.sydney. Founded 2018. 15+ years trade experience.
+Emmanuel "Mani" Gemelas runs Gemelec Electrical Services. NSW Security Master Licence 000108133, NSW Electrical Contractor Licence 376553C, ABN 92 647 631 267. Based at 587 Bunnerong Road, Matraville NSW 2036. Phone 0498 351 351. Email info@gemelec.sydney. Founded 2018. Mani has been on the tools since 2010 (15+ years trade experience).
 
 ## Services
 - Emergency electrician (24/7 callouts across Sydney)
@@ -15,12 +15,17 @@ Emmanuel "Mani" Gemelas runs Gemelec Electrical Services. NSW Security Master Li
 - Test and tag
 
 ## Service Area
-Matraville, Botany, Mascot, Eastgardens, Rosebery, Alexandria, Waterloo, Zetland, Bondi, Coogee, Randwick, Maroubra, Kingsford, Paddington, Woolloomooloo, Potts Point, Darlinghurst, Surry Hills, Redfern, Newtown, Glebe, Pyrmont, Ultimo, Chippendale
+Matraville, Botany, Mascot, Eastgardens, Rosebery, Alexandria, Waterloo, Zetland, Bondi, Coogee, Randwick, Maroubra, Kingsford, Paddington, Woolloomooloo, Potts Point, Darlinghurst, Surry Hills, Redfern, Newtown, Glebe, Pyrmont, Ultimo, Chippendale. Also the Sutherland Shire and Northern Beaches.
 
 ## Key pages
 - [Homepage](https://www.gemelec.com.au/): services overview, reviews, contact
+- [Services](https://www.gemelec.com.au/services): all six service lines on one page
 - [Emergency Electrician](https://www.gemelec.com.au/services/emergency-electrician): 24/7 callouts
 - [Switchboard Upgrades](https://www.gemelec.com.au/services/switchboard-upgrades): fixed-price quotes, no published price range
 - [EV Charger Installation](https://www.gemelec.com.au/services/ev-charger-installation): all major brands
+- [Lighting & Downlights](https://www.gemelec.com.au/services/lighting-downlights): LED downlights, dimmers, feature and outdoor lighting
+- [Commercial Electrical](https://www.gemelec.com.au/services/commercial-electrical): strata, retail, hospitality and light industrial
+- [Security & Access Control](https://www.gemelec.com.au/services/security-access-control): Inner Range access control, CCTV, intercoms, gate automation
+- [Service Areas](https://www.gemelec.com.au/electrician): links to all 24 suburb pages
 - [About](https://www.gemelec.com.au/about): Mani's story, licences, experience
 - [Contact](https://www.gemelec.com.au/contact): phone, email, quote form
