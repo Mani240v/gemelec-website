@@ -123,7 +123,9 @@
   .nearby h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; text-transform: uppercase; margin: 0 0 24px; }
   .chip-strip { display: flex; flex-wrap: wrap; gap: 10px; }
   .chip { display: inline-block; padding: 9px 18px; background: #fff; border: 1px solid #ddd; border-radius: 999px; color: #333; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.15s; }
-  .chip:hover { border-color: #3cb0b2; color: #3cb0b2; }
+  /* Suburbs without their own page are plain <span class="chip">, so only
+     the linked chips get a hover state. */
+  a.chip:hover { border-color: #3cb0b2; color: #3cb0b2; }
   @media (max-width: 820px) {
     .suburb-hero-grid { grid-template-columns: 1fr; gap: 32px; }
     .suburb-hero h1 { font-size: 44px; }
@@ -199,7 +201,7 @@
         </div>
       </div>
       <div>
-        <img src="../images/manus/Gemelecswitchboard_8205abc2.webp" alt="Gemelec switchboard upgrade in a Bondi apartment building" width="640" height="480" fetchpriority="high">
+        <img src="../images/manus/Gemelecswitchboard_8205abc2.webp" srcset="../images/manus/Gemelecswitchboard_8205abc2-700w.webp 700w, ../images/manus/Gemelecswitchboard_8205abc2.webp 1600w" sizes="(max-width: 820px) calc(100vw - 32px), 522px" alt="Gemelec switchboard upgrade in a Bondi apartment building" width="1600" height="1100" fetchpriority="high">
       </div>
     </div>
   </div>
@@ -208,7 +210,7 @@
 <!-- BREADCRUMB -->
 <nav class="breadcrumb" aria-label="Breadcrumb">
   <div class="container">
-    <a href="../index.html">Home</a><span>/</span><a href="../services.html">Service Areas</a><span>/</span>Bondi
+    <a href="../index.html">Home</a><span>/</span><a href="/electrician">Service Areas</a><span>/</span>Bondi
   </div>
 </nav>
 
@@ -315,11 +317,11 @@
     <h2>Nearby suburbs we service</h2>
     <div class="chip-strip">
       <a class="chip" href="coogee.html">Coogee</a>
-      <a class="chip" href="../services.html">Bondi Junction</a>
-      <a class="chip" href="../services.html">Paddington</a>
-      <a class="chip" href="../services.html">Waverley</a>
-      <a class="chip" href="../services.html">Tamarama</a>
-      <a class="chip" href="../services.html">Bronte</a>
+      <span class="chip">Bondi Junction</span>
+      <a class="chip" href="paddington.html">Paddington</a>
+      <span class="chip">Waverley</span>
+      <span class="chip">Tamarama</span>
+      <span class="chip">Bronte</span>
     </div>
   </div>
 </section>
@@ -380,14 +382,14 @@
         <a href="mailto:info@gemelec.sydney">info@gemelec.sydney</a>
         <a href="https://www.google.com/maps/search/?api=1&amp;query=GEMELEC%20Electrical%20Services%20587%20Bunnerong%20Road%2C%20Matraville%20NSW%202036" target="_blank" rel="noopener">Google Business Profile</a>
         <p style="font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6;">587 Bunnerong Rd<br>Matraville NSW 2036</p>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 12px;">Available 24/7</p>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 12px;">Available 24/7</p>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Gemelec Electrical Services. All rights reserved.</p>
       <div class="footer-bottom-links">
         <a href="../privacy-policy.html">Privacy Policy</a>
-        <a href="#">Sitemap</a>
+        <a href="/sitemap.xml">Sitemap</a>
       </div>
     </div>
   </div>
