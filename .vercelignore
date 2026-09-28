@@ -1,0 +1,9 @@
+# Internal notes. These are for whoever maintains the site and must not be
+# served publicly: without this file Vercel deploys every file in the repo, and
+# /CLAUDE.md, /REVIEWS.md and /VERCEL_SETUP.md were all readable on
+# www.gemelec.com.au. package.json and package-lock.json must NOT be listed:
+# the API functions need them to install @vercel/blob and @vercel/functions.
+CLAUDE.md
+REVIEWS.md
+VERCEL_SETUP.md
+.claude
