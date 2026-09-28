@@ -2,7 +2,7 @@ const crypto = require('node:crypto')
 const { appendRow, updateRowCells } = require('./_lib/sheets')
 const { putPhoto, configured: photoStoreConfigured } = require('./_lib/photo-store')
 const { draftCosting } = require('./_lib/anthropic')
-const { money, SUBTOTAL_CAP } = require('./_lib/price-book')
+const { money, round2, resolveCode, DISCOUNT_PCT, SUBTOTAL_CAP } = require('./_lib/price-book')
 const { sendNotification } = require('./_lib/email')
 const { sendWhatsAppNotification } = require('./_lib/whatsapp')
 const { notifyAll } = require('./_lib/web-push')
@@ -116,6 +116,123 @@ const PENDING_COSTING = JSON.stringify({
   estimate_low: '',
   estimate_high: ''
 })
+
+// Line items a tech picked from the price book on site (js/tech-portal.js), posted as
+// tech_items: [{ code, qty }]. When at least one is usable they ARE the job's costing and
+// the AI draft is skipped: the tech chose the items, so there is nothing for the model to
+// guess at. Portal submissions only (source other than 'website'). The customer form never
+// sends tech_items, and one arriving with source 'website' is ignored.
+const MAX_TECH_ITEMS = 40
+const MAX_TECH_ITEM_QTY = 500
+const PICKED_STATUS = 'picked-on-site'
+// First in every picked costing's flagged_items (the dashboard's red block). The AI is skipped
+// for the whole job, so anything the tech wrote in the description instead of picking ("also
+// swap the old switchboard") is priced by nobody, and a list and a total that look complete
+// would hide that. Named so the alert can count the other flags without it.
+const UNPRICED_REST_FLAG = 'Only the items listed were priced'
+
+// "On site — Sam" or "On site — Sam · UPDATE to job-..." (js/tech-portal.js) -> "Sam".
+function techNameFrom(source) {
+  let name = String(source || '').replace(/^On site\s*[—–-]\s*/, '')
+  const update = name.indexOf(' · UPDATE to ')
+  if (update !== -1) name = name.slice(0, update)
+  return clean(name, 60) || 'the tech'
+}
+
+// The costing for a tech's picks, in the shape the dashboard reads from ai_draft_costing: the
+// keys an AI draft carries, less the model's range and confidence, plus picked_on_site and
+// picked_by for the dashboard's label. Only the code and the quantity come from the phone.
+// Every description and price is read from api/price-list.json through resolveCode, the same
+// exact-match lookup the AI's picks go through, so a doctored request can choose items but
+// never set a price.
+//
+// Not priceSelections: that is built to distrust a model. It cuts quantities back to what an
+// AI may price unreviewed (12 of most things), adds plug bases and a callout nobody picked,
+// and bands the total, all wrong for a count made by someone standing in front of the job.
+// Anything unusable is dropped and counted, never repaired: an unknown code, a quantity that
+// is not a whole number from 1 to 500, anything past the 40th entry. No usable line at all
+// gives { costing: null } and the job goes to the AI as usual.
+function pickedCosting(rawItems, pickedBy) {
+  if (!Array.isArray(rawItems) || !rawItems.length) return { costing: null, dropped: 0 }
+
+  const lines = []
+  const byCode = new Map()
+  let dropped = Math.max(0, rawItems.length - MAX_TECH_ITEMS)
+
+  for (const entry of rawItems.slice(0, MAX_TECH_ITEMS)) {
+    const item = entry && typeof entry === 'object' ? resolveCode(entry.code) : null
+    const qty = item ? entry.qty : null
+    if (!item || !Number.isInteger(qty) || qty < 1 || qty > MAX_TECH_ITEM_QTY) {
+      dropped += 1
+      continue
+    }
+    // The portal sends each code once. A repeat is added on, as the AI path does.
+    const existing = byCode.get(item.item_code)
+    if (existing) {
+      existing.qty = Math.min(MAX_TECH_ITEM_QTY, existing.qty + qty)
+      continue
+    }
+    const line = {
+      item_code: item.item_code,
+      description: item.description,
+      qty,
+      sell_price: item.sell_price,
+      discounted_price: round2(item.sell_price * (1 - DISCOUNT_PCT))
+    }
+    byCode.set(item.item_code, line)
+    lines.push(line)
+  }
+
+  if (!lines.length) return { costing: null, dropped }
+
+  const subtotal = round2(lines.reduce((sum, line) => sum + line.qty * line.sell_price, 0))
+  const flagged = [{
+    description: UNPRICED_REST_FLAG,
+    reason: 'anything else in the job description has NOT been priced. Read it before quoting.'
+  }]
+  if (dropped) {
+    flagged.push({
+      description: `${dropped} picked item${dropped === 1 ? '' : 's'} left out`,
+      reason: `not found in your price list, or no usable quantity, so nothing was priced for ${dropped === 1 ? 'it' : 'them'}. Ask ${pickedBy} what was meant.`
+    })
+  }
+  // Nothing is capped (the tech counted), but a stray 500 where 5 was meant should not reach
+  // a quote unnoticed.
+  if (subtotal > SUBTOTAL_CAP) {
+    flagged.push({
+      description: `The items come to more than $${money(SUBTOTAL_CAP)}`,
+      reason: 'check the quantities before quoting.'
+    })
+  }
+
+  return {
+    dropped,
+    costing: {
+      picked_on_site: true,
+      picked_by: pickedBy,
+      summary: 'Prices come from your price list (list price, ex GST), not from the phone: the tech chose the items and quantities only. Review before quoting.',
+      line_items: lines,
+      flagged_items: flagged,
+      notes: [{
+        description: 'No AI draft',
+        reason: `${pickedBy} picked these items on site, so the AI costing was skipped for this job.`
+      }],
+      unpriced_items: [],
+      // Low and high are the one figure, as on a costing saved from the dashboard. The
+      // dashboard shows no range for a picked costing either way.
+      estimate_low: subtotal,
+      estimate_high: subtotal,
+      range_note: '',
+      over_cap: false,
+      subtotal,
+      band_down_pct: 0,
+      band_up_pct: 0,
+      discount_pct: DISCOUNT_PCT,
+      typical_subtotal: round2(subtotal * (1 - DISCOUNT_PCT)),
+      ai_status: PICKED_STATUS
+    }
+  }
+}
 
 // appendRow's own response names the row it wrote (e.g. 'Job Requests'!A42:Q42), so the
 // costing can be patched in afterwards without a second read of the sheet.
@@ -380,6 +497,29 @@ module.exports = async function handler(req, res) {
       notes: ''
     }
 
+    // A tech's price-book picks (see pickedCosting) go into the row as its costing, rather than
+    // being written back after the response like an AI draft: the card shows them the moment it
+    // appears, and there is no second sheet write that could fail and leave it saying the
+    // estimate is still being worked out. The customer form's tech_items are never read.
+    const techPick = row.source === 'website'
+      ? { costing: null, dropped: 0 }
+      : pickedCosting(body.tech_items, techNameFrom(row.source))
+    const picked = techPick.costing
+    if (picked) {
+      // The portal keeps its list after a send, so a re-send carries all of it again.
+      if (row.source.includes(' · UPDATE to ')) {
+        picked.notes.push({
+          description: 'Re-send',
+          reason: 'this list is everything on the phone now, including what the first card already had. Quote from one card, not both.'
+        })
+      }
+      row.ai_summary = picked.summary
+      row.ai_draft_costing = JSON.stringify(picked)
+      row.ai_status = PICKED_STATUS
+    } else if (techPick.dropped) {
+      console.error(`Job request ${requestId}: none of the ${techPick.dropped} price-book items the tech picked were usable, so it goes to the AI as usual`)
+    }
+
     // The row goes in BEFORE the AI draft, not after it. The draft is best-effort; the
     // lead is the business. Written the other way round, a slow model call means the
     // platform kills the function mid-flight and the customer's request is lost outright
@@ -417,7 +557,16 @@ module.exports = async function handler(req, res) {
           row.email
             ? 'Replying to this alert goes straight to the customer.'
             : 'No email given, so a reply goes to the office inbox. Call them instead.',
-          'AI draft estimate: not run for this one. Price it manually.',
+          // A tech's picks are spelled out in full: with no row, this email is the only place
+          // they are written down.
+          picked
+            ? [
+                `Items picked on site by ${picked.picked_by} (no AI draft; list prices ex GST, from your price list):`,
+                ...picked.line_items.map(line => `  ${line.qty} x ${line.description} [${line.item_code}] $${money(line.sell_price)} each`),
+                `  List total $${money(picked.subtotal)}`,
+                ...picked.flagged_items.map(flag => `  ${flag.description}: ${flag.reason}`)
+              ].join('\n')
+            : 'AI draft estimate: not run for this one. Price it manually.',
           photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
           ...rowForManualEntry,
           JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
@@ -511,7 +660,10 @@ module.exports = async function handler(req, res) {
         // of it, and that is exactly the case where the old fixed 50s overran.
         const aiBudgetMs = remainingMs() - ALERT_RESERVE_MS
 
-        if (aiBudgetMs < MIN_AI_BUDGET_MS) {
+        if (picked) {
+          // The tech's picks are the costing and went in with the row, so the model is not
+          // asked, and nothing is counted against the hourly AI ceiling.
+        } else if (aiBudgetMs < MIN_AI_BUDGET_MS) {
           console.error(`Skipping AI costing: only ${aiBudgetMs}ms left of the invocation`)
           aiStatus = 'failed:no-time'
         } else if (!claimAiBudget()) {
@@ -539,7 +691,9 @@ module.exports = async function handler(req, res) {
         )
 
         let writeBackOk = true
-        if (rowNumber) {
+        if (picked) {
+          // Nothing to write back: the picked costing was appended with the row.
+        } else if (rowNumber) {
           const writeBack = await withDeadline(
             updateRowCells(JOB_REQUESTS_SHEET_ID, JOB_REQUESTS_SHEET_TAB, rowNumber, HEADERS, {
               ai_summary: aiDraft?.summary || '',
@@ -567,7 +721,21 @@ module.exports = async function handler(req, res) {
         // genuine no-charge job.
         const flaggedCount = aiDraft ? aiDraft.flagged_items.length : 0
         let estimateLine
-        if (!aiDraft) {
+        if (picked) {
+          // Same two-figure layout as an AI draft's, so it reads the same on Mani's phone. The
+          // "your price" figure is fine here: this goes to the office, never to the tech.
+          // The standing "only these were priced" flag is on every picked costing, so it is said
+          // in words on the last line rather than counted as if something had gone wrong.
+          const lineCount = picked.line_items.length
+          const pickedFlags = picked.flagged_items.filter(flag => flag.description !== UNPRICED_REST_FLAG).length
+          estimateLine = [
+            `Items picked on site by ${picked.picked_by}: ${lineCount} line${lineCount === 1 ? '' : 's'} from your price list, no AI draft for this one` +
+              ` (review before quoting${pickedFlags ? `; ${pickedFlags} thing${pickedFlags === 1 ? '' : 's'} flagged` : ''})`,
+            `  List total $${money(picked.subtotal)} / your price $${money(picked.typical_subtotal)}` +
+              ` (${Math.round(picked.discount_pct * 100)}% off list)`,
+            '  Only those lines are priced. Anything else in the description is not: read it before quoting.'
+          ].join('\n')
+        } else if (!aiDraft) {
           estimateLine = 'AI draft estimate: not available for this one — review manually.'
         } else if (hasRange) {
           // Two figures on purpose. The list total is the worst case; the discounted one is
@@ -592,6 +760,11 @@ module.exports = async function handler(req, res) {
             'above the ceiling this system will put a number on — the itemisation is on the dashboard, total it yourself.'
         } else {
           estimateLine = 'AI draft estimate: nothing matched your price list — price this one manually.'
+        }
+        // The tech sent items but not one of them was usable, so the job went the AI route.
+        // Said here because the dashboard card has nowhere else to show it.
+        if (!picked && techPick.dropped) {
+          estimateLine += `\nNote: the ${techPick.dropped} item${techPick.dropped === 1 ? '' : 's'} the tech picked on site could not be matched to your price list, so none were used. Ask them what was meant.`
         }
 
         // Said out loud rather than left to be discovered. If the write-back did not land, the

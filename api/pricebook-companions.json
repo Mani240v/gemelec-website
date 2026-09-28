@@ -1,0 +1,306 @@
+﻿{
+    "generated":  "2026-09-29",
+    "invoices":  560,
+    "companions":  {
+                       "Travel / Callout":  [
+                                                "LABOUR",
+                                                "SUBC",
+                                                "2LAB",
+                                                "GPO-REPLACE-STANDARD",
+                                                "DL-REPLACE",
+                                                "LAH"
+                                            ],
+                       "LABOUR":  [
+                                      "Travel / Callout",
+                                      "MINOR DIAG + C/O",
+                                      "L2",
+                                      "4/5PIN-PLUG-415V",
+                                      "LAH"
+                                  ],
+                       "MINOR DIAG + C/O":  [
+                                                "LABOUR",
+                                                "GPO-REPLACE-STANDARD",
+                                                "MISC-LIGHTING-CS",
+                                                "2.5-PWR-CCT-RUN-PM",
+                                                "2GANG-CLIPSAL-SWITCH",
+                                                "25/20-CONDUIT+FIXINGS"
+                                            ],
+                       "GPO-REPLACE-STANDARD":  [
+                                                    "MINOR DIAG + C/O",
+                                                    "Travel / Callout",
+                                                    "2.5-PWR-CCT-RUN-PM",
+                                                    "WP-GPO-REPLACE",
+                                                    "DIM-ROTARY",
+                                                    "DL-INSTALL-CBL-F"
+                                                ],
+                       "MISC-LIGHTING-CS":  [
+                                                "MINOR DIAG + C/O",
+                                                "Travel / Callout",
+                                                "2GANG-CLIPSAL-SWITCH",
+                                                "DIM-ROTARY",
+                                                "GPO-REPLACE-STANDARD",
+                                                "WP-GPO-REPLACE"
+                                            ],
+                       "2.5-PWR-CCT-RUN-PM":  [
+                                                  "MINOR DIAG + C/O",
+                                                  "25/20-CONDUIT+FIXINGS",
+                                                  "GPO-REPLACE-STANDARD",
+                                                  "1GANG-CLIPSAL-SWITCH",
+                                                  "SPOT-INSTALL",
+                                                  "1.5-LTS-CCT-RUN-PM"
+                                              ],
+                       "SUBC":  [
+                                    "Travel / Callout"
+                                ],
+                       "DL-REPLACE":  [
+                                          "MINOR DIAG + C/O",
+                                          "Travel / Callout"
+                                      ],
+                       "25/20-CONDUIT+FIXINGS":  [
+                                                     "MINOR DIAG + C/O",
+                                                     "2.5-PWR-CCT-RUN-PM",
+                                                     "2.5-PWR-RUN \u003c5M",
+                                                     "Travel / Callout"
+                                                 ],
+                       "2GANG-CLIPSAL-SWITCH":  [
+                                                    "MINOR DIAG + C/O",
+                                                    "MISC-LIGHTING-CS",
+                                                    "DIM-ROTARY",
+                                                    "FAN-CUS-SUPPLIED",
+                                                    "GPO-REPLACE-STANDARD"
+                                                ],
+                       "WP-GPO-REPLACE":  [
+                                              "Travel / Callout",
+                                              "GPO-REPLACE-STANDARD",
+                                              "MINOR DIAG + C/O",
+                                              "EX-FAN-SURFACE",
+                                              "MISC-LIGHTING-CS"
+                                          ],
+                       "L2":  [
+                                  "Travel / Callout",
+                                  "LABOUR"
+                              ],
+                       "LAH":  [
+                                   "Travel / Callout",
+                                   "MINOR DIAG + C/O",
+                                   "LABOUR"
+                               ],
+                       "1.5-LTS-CCT-RUN-PM":  [
+                                                  "MINOR DIAG + C/O",
+                                                  "1GANG-CLIPSAL-SWITCH",
+                                                  "2.5-PWR-CCT-RUN-PM",
+                                                  "EX-FAN-SURFACE",
+                                                  "GPO-REPLACE-STANDARD"
+                                              ],
+                       "1GANG-CLIPSAL-SWITCH":  [
+                                                    "2.5-PWR-CCT-RUN-PM",
+                                                    "Travel / Callout",
+                                                    "1.5-LTS-CCT-RUN-PM",
+                                                    "MINOR DIAG + C/O"
+                                                ],
+                       "2LAB":  [
+                                    "Travel / Callout"
+                                ],
+                       "DC-FAN-W-LIGHT":  [
+                                              "MINOR DIAG + C/O",
+                                              "Travel / Callout"
+                                          ],
+                       "EX-FAN-SURFACE":  [
+                                              "GPO-REPLACE-STANDARD",
+                                              "Travel / Callout",
+                                              "1.5-LTS-CCT-RUN-PM",
+                                              "2.5-PWR-CCT-RUN-PM",
+                                              "WP-GPO-REPLACE"
+                                          ],
+                       "FAN-CUS-SUPPLIED":  [
+                                                "MINOR DIAG + C/O",
+                                                "2GANG-CLIPSAL-SWITCH"
+                                            ],
+                       "SBOARD-INS-RCBO":  [
+                                               "6-PWR-RUN-PM",
+                                               "MINOR DIAG + C/O",
+                                               "1PHISO",
+                                               "APPISO",
+                                               "APPLIN",
+                                               "GPO-REPLACE-STANDARD"
+                                           ],
+                       "6-PWR-RUN-PM":  [
+                                            "MINOR DIAG + C/O",
+                                            "SBOARD-INS-RCBO",
+                                            "Travel / Callout"
+                                        ],
+                       "CAT6-CABLE-RUN-PM":  [
+                                                 "RJ45M",
+                                                 "RJ45",
+                                                 "Travel / Callout"
+                                             ],
+                       "RCD/RCBO":  [
+                                        "1PHISO",
+                                        "GPO-REPLACE-STANDARD",
+                                        "Travel / Callout"
+                                    ],
+                       "RJ45":  [
+                                    "Travel / Callout",
+                                    "CAT6-CABLE-RUN-PM",
+                                    "RJ45M"
+                                ],
+                       "SPOT-INSTALL":  [
+                                            "MINOR DIAG + C/O",
+                                            "2.5-PWR-CCT-RUN-PM"
+                                        ],
+                       "1PHISO":  [
+                                      "2.5-PWR-CCT-RUN-PM",
+                                      "GPO-REPLACE-STANDARD",
+                                      "RCD/RCBO",
+                                      "SBOARD-INS-RCBO",
+                                      "Travel / Callout"
+                                  ],
+                       "4/5PIN-PLUG-415V":  [
+                                                "MINOR DIAG + C/O",
+                                                "LABOUR"
+                                            ],
+                       "DIM-ROTARY":  [
+                                          "MINOR DIAG + C/O",
+                                          "2GANG-CLIPSAL-SWITCH",
+                                          "GPO-REPLACE-STANDARD",
+                                          "4GANG-CLIPSAL-SWITCH",
+                                          "MISC-LIGHTING-CS"
+                                      ],
+                       "DL-INSTALL-CBL-F":  [
+                                                "GPO-REPLACE-STANDARD",
+                                                "MINOR DIAG + C/O",
+                                                "2.5-PWR-CCT-RUN-PM"
+                                            ],
+                       "RJ45M":  [
+                                     "CAT6-CABLE-RUN-PM",
+                                     "RJ45",
+                                     "Travel / Callout"
+                                 ],
+                       "SENS-INFRASCAN":  [
+                                              "MINOR DIAG + C/O"
+                                          ],
+                       "APPLIN":  [
+                                      "APPISO",
+                                      "SBOARD-INS-RCBO",
+                                      "Travel / Callout"
+                                  ],
+                       "BATT4FTWP":  [
+                                         "EMG EX",
+                                         "Travel / Callout"
+                                     ],
+                       "HW-240V":  [
+                                       "MINOR DIAG + C/O"
+                                   ],
+                       "TANDT":  [
+                                     "Travel / Callout"
+                                 ],
+                       "4/5-PIN-OUTLET":  [
+                                              "MINOR DIAG + C/O"
+                                          ],
+                       "APPISO":  [
+                                      "APPLIN",
+                                      "SBOARD-INS-RCBO"
+                                  ],
+                       "OYSTER-MED":  [
+                                          "Travel / Callout"
+                                      ],
+                       "RCBO-REPLACE":  [
+                                            "MINOR DIAG + C/O"
+                                        ]
+                   },
+    "popular":  {
+                    "Travel / Callout":  243,
+                    "LABOUR":  207,
+                    "MINOR DIAG + C/O":  110,
+                    "GPO-REPLACE-STANDARD":  22,
+                    "MISC-LIGHTING-CS":  17,
+                    "2.5-PWR-CCT-RUN-PM":  16,
+                    "SUBC":  16,
+                    "DL-REPLACE":  10,
+                    "25/20-CONDUIT+FIXINGS":  9,
+                    "2GANG-CLIPSAL-SWITCH":  9,
+                    "WP-GPO-REPLACE":  9,
+                    "L2":  8,
+                    "LAH":  8,
+                    "1.5-LTS-CCT-RUN-PM":  7,
+                    "1GANG-CLIPSAL-SWITCH":  7,
+                    "2LAB":  7,
+                    "DC-FAN-W-LIGHT":  7,
+                    "EX-FAN-SURFACE":  7,
+                    "FAN-CUS-SUPPLIED":  7,
+                    "SBOARD-INS-RCBO":  7,
+                    "6-PWR-RUN-PM":  6,
+                    "CAT6-CABLE-RUN-PM":  6,
+                    "RCD/RCBO":  6,
+                    "RJ45":  6,
+                    "SPOT-INSTALL":  6,
+                    "1PHISO":  5,
+                    "4/5PIN-PLUG-415V":  5,
+                    "AWNING-1":  5,
+                    "DIM-ROTARY":  5,
+                    "DL-INSTALL-CBL-F":  5,
+                    "RJ45M":  5,
+                    "SENS-INFRASCAN":  5,
+                    "APPLIN":  4,
+                    "BATT4FTWP":  4,
+                    "CCEW":  4,
+                    "HW-240V":  4,
+                    "TANDT":  4,
+                    "16-XLPE-PM":  3,
+                    "4/5-PIN-OUTLET":  3,
+                    "APPISO":  3,
+                    "OYSTER-MED":  3,
+                    "RCBO-REPLACE":  3,
+                    "2.5-4C+E-PWR-CCT-RUN-PM":  2,
+                    "2.5-PWR-RUN \u003c5M":  2,
+                    "2.5-PWR-RUN \u003e5M":  2,
+                    "2.5-PWR-RUN 10/20M":  2,
+                    "2.5-PWR-RUN 20/30M":  2,
+                    "3GANG-CLIPSAL-SWITCH":  2,
+                    "3PIN-PLUG":  2,
+                    "4GANG-CLIPSAL-SWITCH":  2,
+                    "CABREP":  2,
+                    "EARTH-STAKE":  2,
+                    "EMG EX":  2,
+                    "FUSE-80A-CART":  2,
+                    "LED-BATT-4FT":  2,
+                    "MAJOR DIAG + C/O":  2,
+                    "OYSTER-LRG":  2,
+                    "RCBO-FAULT":  2,
+                    "SBOARD-INS":  2,
+                    "SBOARD-INS-3P-415V-RCBO":  2,
+                    "SMOKE-WIRED W/L Interconnect":  2,
+                    "TANDTESTAB":  2,
+                    "WP-GPO-NEW":  2,
+                    "100-FLOOD-INSTALL":  1,
+                    "12VBUB":  1,
+                    "3IN1":  1,
+                    "3IN1CS":  1,
+                    "3PHCB":  1,
+                    "3PHISO":  1,
+                    "APPLINC":  1,
+                    "AWNING-2":  1,
+                    "BATT2FTWP":  1,
+                    "CCTV-CABLE-RUN-PM":  1,
+                    "CCTV-KIT-4":  1,
+                    "DC-FAN-NO-LIGHT":  1,
+                    "DISCO-MAKESAFE\u003c5":  1,
+                    "DISCO-MAKESAFE-\u003e5":  1,
+                    "DL-CONVERSION":  1,
+                    "DL-INSTALL\u003c12":  1,
+                    "EX-FAN-INLINE-W/RELAY":  1,
+                    "GPO-DOUBLE-NEW":  1,
+                    "GPO-QUAD-NEW":  1,
+                    "HIGHBAY-LED-SI":  1,
+                    "HWS-SERVICE":  1,
+                    "LED5M":  1,
+                    "MISC-LIGHTING-SUPPLY":  1,
+                    "MS-80/100A-3POLE":  1,
+                    "PAN-240V-":  1,
+                    "PIR-STANDALONE-SI":  1,
+                    "SB-600X600":  1,
+                    "SBOARD-INS-3P-415V-CB":  1,
+                    "SBOARD-UPG-12P":  1,
+                    "SMOKE-WIRED":  1
+                }
+}

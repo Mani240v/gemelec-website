@@ -215,7 +215,10 @@
   <div id="job-list" class="job-list"></div>
 </div>
 
-<script src="js/job-requests-dashboard.js?v=20260929a"></script>
+<!-- Before the dashboard, so window.GxPricebook exists when the cards are drawn. The dashboard
+     works without it (plain inputs), so a failed load here breaks nothing. -->
+<script src="js/pricebook-picker.js?v=20260929a"></script>
+<script src="js/job-requests-dashboard.js?v=20260929b"></script>
 <script src="/js/staff-push.js"></script>
 </body>
 </html>

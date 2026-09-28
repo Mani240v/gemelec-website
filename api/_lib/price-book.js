@@ -247,7 +247,10 @@ const CALLOUT_CODE = 'Travel / Callout'
 // ...except where travel is already inside the item. Both diagnostic codes are priced
 // "+ Travel", so adding the callout on top would bill the trip twice. If the model picked
 // one of these, the callout is already covered.
-const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR DIAG + C/O'])
+// ACMG-ATTEND ("Site Attendance - Per Visit", $150, added 2026-09-29 with the other ACMG-*
+// compliance lines) is itself the visit charge, so it counts as travel-inclusive: without
+// it here a drafted test & tag job got the attendance line AND the automatic callout.
+const TRAVEL_INCLUSIVE_CODES = new Set([CALLOUT_CODE, 'MINOR DIAG + C/O', 'MAJOR DIAG + C/O', 'ACMG-ATTEND'])
 
 // Items that cannot be installed without another item, at matching quantity. Same reasoning
 // as the callout: this is Mani's trade knowledge, it is the same on every job, and a model
@@ -319,7 +322,9 @@ const CATALOGUE_TEXT = (() => {
     emitted.add(code)
   }
 
-  lines.push('GEMELEC price list. These 207 items are the complete set you may choose from, and')
+  // The count is read from the list: it said 207 here while the file held 208, and the list
+  // keeps growing (216 on 2026-09-29, with the ACMG-* rates and CCTV-CAM-SI).
+  lines.push(`GEMELEC price list. These ${PRICE_LIST.length} items are the complete set you may choose from, and`)
   lines.push('these prices are the real ones. You do not need to repeat a price back — the')
   lines.push('application reads every price from this list itself.')
   lines.push('')

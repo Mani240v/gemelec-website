@@ -13,8 +13,10 @@
 // Background Sync and careful thought about duplicates; until then js/tech-portal.js keeps
 // the typed text in localStorage and tells the tech to hit send again once they have a bar.
 // The honest failure is better than a queue that silently loses or double-sends a job.
-const CACHE = 'gemelec-tech-v3'
-const SHELL = ['/tech', '/job-requests', '/css/style.css', '/js/tech-portal.js', '/js/job-requests-dashboard.js', '/js/staff-push.js', '/images/apple-touch-icon.png']
+const CACHE = 'gemelec-tech-v4'
+// v4 (2026-09-29): the price-book picker, which both staff pages now load. Cached so a portal
+// opened with no signal still has its items box, ready for when the price book can load.
+const SHELL = ['/tech', '/job-requests', '/css/style.css', '/js/tech-portal.js', '/js/job-requests-dashboard.js', '/js/staff-push.js', '/js/pricebook-picker.js', '/images/apple-touch-icon.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
