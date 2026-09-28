@@ -559,9 +559,11 @@ async function loadRequests({ quiet = false } = {}) {
   loadError.style.display = 'none'
   loginError.style.display = 'none'
   const wasLoggedIn = contentPanel.style.display !== 'none'
+  let reachedServer = false
 
   try {
     const response = await apiFetch('/api/job-requests-list')
+    reachedServer = true
     const result = await response.json().catch(() => ({}))
     if (loadingNote) loadingNote.style.display = 'none'
 
@@ -598,10 +600,11 @@ async function loadRequests({ quiet = false } = {}) {
     })
   } catch (error) {
     if (loadingNote) loadingNote.style.display = 'none'
-    // A dropped connection throws a TypeError whose text is the browser's ("Load failed",
-    // "Failed to fetch"). On the login screen that reads like a sign-in failure, so say what
-    // actually happened.
-    const message = error instanceof TypeError
+    // A dropped connection makes the fetch itself throw, with the browser's own text ("Load
+    // failed", "Failed to fetch"). On the login screen that reads like a sign-in failure, so
+    // say what actually happened. Only the fetch counts: an error after the server answered
+    // (a bad row in rendering, say) keeps its own message.
+    const message = !reachedServer
       ? 'No connection. If this device is signed in it still is; reload once you have signal.'
       : (error.message || 'Could not load job requests.')
     // A thrown network error (as opposed to a handled 401/non-ok response) means we
@@ -679,14 +682,17 @@ async function boot() {
   loginPanel.style.display = 'none'
   const legacy = getPassword()
   if (legacy) {
+    // Drop it once the server has given a real answer: 200 (the cookie is set now) or 401
+    // (it was wrong anyway). On no signal or a 5xx, keep it, so the header fallback in
+    // apiFetch still gets this tab in.
     try {
-      await fetch('/api/staff-session', {
+      const response = await fetch('/api/staff-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: legacy, scope: 'office' })
       })
+      if (response.ok || response.status === 401) sessionStorage.removeItem(STORAGE_KEY)
     } catch {}
-    sessionStorage.removeItem(STORAGE_KEY)
   }
   loadRequests({ quiet: true })
   fetch('/api/staff-session', { cache: 'no-store' }).catch(() => {})

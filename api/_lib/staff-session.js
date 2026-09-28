@@ -36,7 +36,13 @@ const ROLES = ['office', 'tech']
 
 function signingKey() {
   const office = process.env.DASHBOARD_PASSWORD
-  const secret = process.env.STAFF_SESSION_SECRET || process.env.GOOGLE_PRIVATE_KEY
+  // A STAFF_SESSION_SECRET that's too short is ignored rather than obeyed: obeying it would
+  // 503 every staff endpoint and lock Mani out of the dashboard over one mistyped setting.
+  const custom = process.env.STAFF_SESSION_SECRET
+  if (custom && custom.length < 32) {
+    console.error('STAFF_SESSION_SECRET is shorter than 32 characters; ignoring it and signing with GOOGLE_PRIVATE_KEY')
+  }
+  const secret = custom && custom.length >= 32 ? custom : process.env.GOOGLE_PRIVATE_KEY
   // Fail closed: without a password to check or a secret to sign with, no session can be
   // issued or accepted.
   if (!office || !secret || secret.length < 32) return null

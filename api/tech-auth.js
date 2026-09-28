@@ -69,7 +69,9 @@ module.exports = async function handler(req, res) {
 
   // Since 2026-09-29 the portal signs in through /api/staff-session. This endpoint stays for
   // a phone still running the older script, and now also sets the staff cookie so that
-  // phone is remembered from here on.
+  // phone is remembered from here on. If sessions can't be signed (no DASHBOARD_PASSWORD
+  // on a portal-only setup), setSession sets nothing and this still answers ok, on purpose:
+  // the old script keeps the code in localStorage and doesn't need the cookie.
   setSession(res, matchSecret(provided) || 'tech', name)
   res.statusCode = 200
   return res.end(JSON.stringify({ ok: true }))

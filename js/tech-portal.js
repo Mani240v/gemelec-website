@@ -95,6 +95,15 @@ async function unlock() {
       body: JSON.stringify(code ? { password: code, name } : { name })
     })
     const result = await response.json().catch(() => ({}))
+    if (response.status === 401 && nameOnly) {
+      // The sign-in lapsed between opening and now, so the name alone won't do: bring the
+      // code box back rather than say "Wrong code" about a box that isn't there.
+      nameOnly = false
+      codeInput.hidden = false
+      const codeLabel = document.querySelector('label[for="tech-code"]')
+      if (codeLabel) codeLabel.hidden = false
+      throw new Error('Signed out on this phone. Enter the access code too.')
+    }
     if (!response.ok || result.ok === false) {
       throw new Error(response.status === 401 ? 'Wrong code.' : (result.message || 'Wrong code.'))
     }
@@ -122,7 +131,7 @@ unlockBtn.addEventListener('click', unlock)
 })
 
 whoBtn.addEventListener('click', async () => {
-  if (!confirm(`Signed in as ${techName()}. Sign out on this phone?`)) return
+  if (!confirm(`Signed in as ${techName()}. Sign out on this phone? This also signs out the job requests page here.`)) return
   // The cookie has to be cleared by the server. If that can't happen (no signal), don't
   // pretend: the next open would find the cookie and sign straight back in.
   try {
