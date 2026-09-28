@@ -2,61 +2,61 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.gemelec.com.au/</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/about</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/contact</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/commercial-electrical</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/emergency-electrician</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/ev-charger-installation</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/lighting-downlights</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/security-access-control</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/services/switchboard-upgrades</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -67,146 +67,152 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.gemelec.com.au/electrician</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.gemelec.com.au/electrician/alexandria</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/bondi</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/botany</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/chippendale</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/coogee</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/darlinghurst</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/eastgardens</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/glebe</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/kingsford</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/maroubra</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/mascot</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/matraville</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/newtown</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/paddington</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/potts-point</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/pyrmont</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/randwick</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/redfern</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/rosebery</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/surry-hills</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/ultimo</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/waterloo</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/woolloomooloo</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.gemelec.com.au/electrician/zetland</loc>
-    <lastmod>2026-05-28</lastmod>
+    <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

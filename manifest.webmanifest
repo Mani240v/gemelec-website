@@ -1,7 +1,8 @@
 {
+  "id": "/tech",
   "name": "GEMELEC Field Portal",
   "short_name": "GEMELEC",
-  "description": "Log a job from site \u2014 customer details, description and photos straight to the office.",
+  "description": "Log a job from site — customer details, description and photos straight to the office.",
   "start_url": "/tech",
   "scope": "/",
   "display": "standalone",
@@ -10,14 +11,26 @@
   "theme_color": "#1a1a1a",
   "icons": [
     {
-      "src": "/images/apple-touch-icon.png",
-      "sizes": "180x180",
+      "src": "/images/tech-icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/favicon.png",
-      "sizes": "32x32",
+      "src": "/images/tech-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/tech-icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/tech-icon-180.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }

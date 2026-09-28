@@ -65,14 +65,17 @@ const FUNCTION_BUDGET_MS = 85000
 const ALERT_RESERVE_MS = 15000 // write-back + email with attachments + WhatsApp
 const ALERT_SEND_RESERVE_MS = 9000 // of that reserve, what the two alerts keep for themselves
 const MIN_AI_BUDGET_MS = 20000 // below this, skip the model rather than pay for a timeout
+// Sheet-failure path only: the customer is still watching the button while these go out, so
+// they get a bounded wait rather than whatever the invocation has left.
+const FALLBACK_ALERT_MS = 20000
 
-// /api/job-request has no auth, no CAPTCHA and no rate limit — only the company_website
-// honeypot, which a scripted client simply omits. One submission can bill up to 16,000
-// Opus 5 output tokens. This is a per-instance ceiling on the AI STEP ONLY: past it the
-// lead is still saved, the email and WhatsApp still go out, Mani just prices that one by
-// hand. It is a blast-radius cap, not a real rate limiter — Vercel runs many instances and
-// recycles them, so a distributed flood still gets through. Durable limiting needs shared
-// state this repo deliberately does not have.
+// /api/job-request has no auth, no CAPTCHA and no rate limit — only the gx_check honeypot
+// (company_website before 2026-09-28), which a scripted client simply omits. One
+// submission can bill up to 16,000 Opus 5 output tokens. This is a per-instance ceiling on
+// the AI STEP ONLY: past it the lead is still saved, the email and WhatsApp still go out,
+// Mani just prices that one by hand. It is a blast-radius cap, not a real rate limiter —
+// Vercel runs many instances and recycles them, so a distributed flood still gets through.
+// Durable limiting needs shared state this repo deliberately does not have.
 const AI_CALLS_PER_WINDOW = 40
 const AI_WINDOW_MS = 60 * 60 * 1000
 const aiCallTimes = []
@@ -118,6 +121,17 @@ const PENDING_COSTING = JSON.stringify({
 function appendedRowNumber(appendResult) {
   const match = String(appendResult?.updates?.updatedRange || '').match(/![A-Z]+(\d+)(?::|$)/)
   return match ? Number(match[1]) : null
+}
+
+// Photos ride along as email attachments on every alert, including the sheet-failure one.
+// This is the archive: the Blob copy behind the dashboard is purged after 14 days, the
+// mailbox is not.
+function photoAttachmentsFor(photos) {
+  return photos.map((photo, index) => ({
+    filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
+    content: photo.base64,
+    content_type: photo.mimeType
+  }))
 }
 
 const JOB_REQUESTS_SHEET_ID = process.env.JOB_REQUESTS_SHEET_ID
@@ -241,7 +255,11 @@ module.exports = async function handler(req, res) {
   try {
     const body = await getBody(req)
 
-    if (clean(body.company_website)) {
+    // Honeypot: silent 200, nothing written. The trap was renamed from company_website to
+    // gx_check on 2026-09-28 because browser autofill reads "company" as an organisation
+    // field and could fill it in for a real customer, whose lead would then be dropped here.
+    // The old name is still checked for anyone submitting from a stale cached page.
+    if (clean(body.gx_check) || clean(body.company_website)) {
       return send(res, 200, { ok: true })
     }
 
@@ -331,6 +349,75 @@ module.exports = async function handler(req, res) {
       })
 
     if (!appendResult) {
+      // The sheet write failed, but the lead is still in hand. This used to go straight to
+      // the 500 below, and the alerts only run after a successful append, so nobody at
+      // Gemelec was told and the customer was asked to ring instead. Now the email (photos
+      // attached, as on every alert) and the WhatsApp go out here, tagged so Mani knows to
+      // key the row in by hand. They are awaited (up to a deadline) before replying, because the
+      // reply depends on them; waitUntil below only keeps a slow one alive past that deadline.
+      // If either one landed, the lead reached a person, so the
+      // customer gets the normal 200 and /thank-you, which also lets GA4 count it. Only if
+      // both fail do they see the error. No AI costing on this path: there is no row to write
+      // it back to, and the customer is still waiting.
+      const tag = 'NOT IN SHEET - enter manually'
+      // Every column the row would have held, so it can be keyed in as-is. The ai_* columns
+      // are left out because the costing never ran; blank there is the truth.
+      const rowForManualEntry = HEADERS
+        .filter(header => !header.startsWith('ai_') && row[header] !== '')
+        .map(header => `${header}: ${row[header]}`)
+      const photoAttachments = photoAttachmentsFor(photos)
+
+      const emailAlert = sendNotification({
+        subject: `[${tag}] New job request: ${row.full_name} (${requestId})`,
+        text: [
+          `${tag}. The Google Sheet write failed, so this job is not on the dashboard and this email is the only full record of it. Add the row by hand from the lines below.`,
+          row.email
+            ? 'Replying to this alert goes straight to the customer.'
+            : 'No email given, so a reply goes to the office inbox. Call them instead.',
+          'AI draft estimate: not run for this one. Price it manually.',
+          photoAttachments.length ? `Photos attached to this email (${photoAttachments.length}).` : '',
+          ...rowForManualEntry,
+          JOB_REQUESTS_SHEET_ID ? `Sheet: https://docs.google.com/spreadsheets/d/${JOB_REQUESTS_SHEET_ID}/edit` : ''
+        ].filter(Boolean).join('\n'),
+        // Attached here too, for the same reason as on the normal path: the email is the
+        // archive, and on this path it may be the only copy of anything.
+        attachments: photoAttachments,
+        replyTo: row.email
+      })
+      const whatsAppAlert = sendWhatsAppNotification(
+        [
+          `${tag} (${requestId})`,
+          `New job request: ${row.full_name} (${row.phone})`,
+          row.email ? `Email: ${row.email}` : '',
+          row.job_address ? `Address: ${row.job_address}` : '',
+          `Job: ${description.slice(0, 400)}`,
+          'The sheet write failed, so this is not on the dashboard. The alert email has the full row and the photos. If it did not arrive, this message is the only record.'
+        ].filter(Boolean).join('\n')
+      )
+
+      // A send still going at the deadline is kept alive past the response rather than frozen
+      // with the invocation, so a slow one can still land.
+      waitUntil(Promise.allSettled([emailAlert, whatsAppAlert]))
+      const alertDeadlineMs = Math.min(FALLBACK_ALERT_MS, Math.max(3000, remainingMs()))
+      const [emailSent, whatsAppSent] = await Promise.all([
+        withDeadline(emailAlert, alertDeadlineMs, 'Sheet-failure email alert'),
+        withDeadline(whatsAppAlert, alertDeadlineMs, 'Sheet-failure WhatsApp alert')
+      ])
+
+      // Both helpers resolve true only on a confirmed send. false means not configured or
+      // rejected; a timeout resolves { timedOut: true }, which is truthy, hence === true.
+      if (emailSent === true || whatsAppSent === true) {
+        console.error('Job request not in sheet, alerted instead:', requestId,
+          { email: emailSent === true, whatsapp: whatsAppSent === true })
+        // Same payload as the normal path below, so both clients behave exactly as they do
+        // on a normal submission.
+        return send(res, 200, {
+          ok: true,
+          requestId,
+          message: "Thanks — we've received your details. We'll be in touch with a quote shortly."
+        })
+      }
+
       console.error('Job request not captured:', requestId)
       return send(res, 500, {
         ok: false,
@@ -342,8 +429,8 @@ module.exports = async function handler(req, res) {
 
     // The lead is captured the moment that row lands. Everything below — the AI costing,
     // the write-back and the alerts — produces material for the dashboard and for Mani's
-    // inbox, not for the customer. Both clients do read this body: js/job-request.js:142
-    // branches on result.ok before redirecting to /thank-you, and js/tech-portal.js:413
+    // inbox, not for the customer. Both clients do read this body: js/job-request.js's submit
+    // handler branches on result.ok before redirecting to /thank-you, and js/tech-portal.js:413
     // keeps result.requestId so a tech's follow-up chains onto the same job. Neither
     // reads anything the deferred work produces, and the payload below is byte-identical
     // to the one that used to be sent at the end — that, not "nobody reads it", is why
@@ -423,13 +510,8 @@ module.exports = async function handler(req, res) {
           writeBackOk = false
         }
 
-        // Photos ride along as email attachments on every submission. This is the archive:
-        // the Blob copy behind the dashboard is purged after 14 days, the mailbox is not.
-        const photoAttachments = photos.map((photo, index) => ({
-          filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
-          content: photo.base64,
-          content_type: photo.mimeType
-        }))
+        // Photos ride along as email attachments on every submission (see photoAttachmentsFor).
+        const photoAttachments = photoAttachmentsFor(photos)
 
         // Branches on whether anything was priced, not on the figure. An honest "I could not
         // match this to your price list" is zero, and printing that as "$0 - $0" reads like a

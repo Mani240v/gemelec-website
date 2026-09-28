@@ -8,9 +8,17 @@ const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 // sheet is opened. Prefixing with an apostrophe forces literal-text, the standard
 // mitigation for CSV/spreadsheet formula injection — only applied to strings so real
 // numeric values (e.g. ai_estimate_low) keep their native Sheets number type.
+//
+// The same apostrophe also covers strings that start with 0 and then a digit. USER_ENTERED
+// reads "0412345678" as the number 412345678, so a phone typed without spaces lost its
+// leading 0 and the dashboard's tap-to-call dialled a 9-digit number. The apostrophe is not
+// stored or read back, it only marks the cell as text. Nothing meant to be numeric comes
+// through here as such a string: timestamps are ISO (20xx-...), ids start "job-", costing is
+// JSON, and the estimate figures are real numbers, which the typeof check passes untouched.
+// Do not switch to RAW to fix this instead: RAW would store the apostrophe literally.
 function sanitizeSheetValue(value) {
   if (typeof value !== 'string') return value
-  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+  return /^[=+\-@\t\r]|^0\d/.test(value) ? `'${value}` : value
 }
 
 function columnLetter(index) {

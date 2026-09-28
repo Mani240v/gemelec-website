@@ -42,6 +42,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
   </noscript>
+  <style>
+  /* Hero chips sit under the buttons so Call stays above the fold on a phone.
+     style.css spaces the chips from what follows them; here they follow the buttons. */
+  .gx-hero-cta + .gx-hero-chips-row { margin: 28px 0 0; }
+  </style>
 
   <meta name="robots" content="index, follow">
   <meta name="author" content="Gemelec Electrical Services">
@@ -103,10 +108,10 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      {"@type": "Question", "name": "Does Gemelec offer 24/7 emergency electrical services in Sydney?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gemelec Electrical Services is available 24 hours a day, 7 days a week for electrical emergencies across Greater Sydney. We have never missed an after-hours call in 6+ years of operation. Call 0498 351 351 any time."}},
+      {"@type": "Question", "name": "Does Gemelec offer 24/7 emergency electrical services in Sydney?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gemelec Electrical Services is available 24 hours a day, 7 days a week for electrical emergencies across Greater Sydney. We have never missed an after-hours call since we started in 2018. Call 0498 351 351 any time."}},
       {"@type": "Question", "name": "How much does a switchboard upgrade cost in Sydney?", "acceptedAnswer": {"@type": "Answer", "text": "Switchboard upgrade costs vary depending on the size of the property, the number of circuits, and the complexity of the work. Gemelec gives every job a fixed, obligation-free quote before any work starts. Call 0498 351 351 or submit a quote request online."}},
       {"@type": "Question", "name": "Does Gemelec install EV chargers in Sydney?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gemelec is a certified EV charger installer in Sydney, supporting all major brands including Tesla, Wallbox, Zappi, and Fronius. We handle home and commercial EV charging installations across Greater Sydney."}},
-      {"@type": "Question", "name": "What areas does Gemelec Electrical Services cover?", "acceptedAnswer": {"@type": "Answer", "text": "Gemelec services all of Greater Sydney, with a focus on the Eastern Suburbs, Inner West, South Sydney, and Sutherland Shire. We are based in Matraville and can reach most Sydney suburbs within 30 to 45 minutes."}},
+      {"@type": "Question", "name": "What areas does Gemelec Electrical Services cover?", "acceptedAnswer": {"@type": "Answer", "text": "Gemelec services all of Greater Sydney, with a focus on the Eastern Suburbs, Inner West, South Sydney, and Sutherland Shire. We are based in Matraville and offer same-day emergency service, on site within 4 hours."}},
       {"@type": "Question", "name": "Is Gemelec a licensed electrician in NSW?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Gemelec Electrical Services holds NSW Electrical Contractor Licence 376553C. We also hold NSW Security Master Licence 000108133 for security and CCTV work. All work is fully licensed, insured, and compliant with Australian Standards."}}
     ]
   }
@@ -175,13 +180,7 @@
         <span class="accent-teal">goes out,</span>
         <span class="line">we show up.</span>
       </h1>
-      <p class="gx-hero-sub">Gemelec Electrical Services. Sydney's trusted electricians for residential and commercial work. 15 years experience. <strong>Never missed an after-hours call.</strong></p>
-      <div class="gx-hero-chips-row">
-        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Same Day Service</span>
-        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Skilled &amp; Professional Tradesmen</span>
-        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> No Obligation Onsite Quotes</span>
-        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Family Owned &amp; Operated Since 2018</span>
-      </div>
+      <p class="gx-hero-sub">Gemelec Electrical Services. Sydney's trusted electricians for residential and commercial work. 15+ years experience. <strong>Never missed an after-hours call.</strong></p>
       <div class="gx-hero-cta">
         <a href="tel:0498351351" class="gx-btn-primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
@@ -195,6 +194,12 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22 6 12 13 2 6"></polyline></svg>
           Get a Free Quote
         </a>
+      </div>
+      <div class="gx-hero-chips-row">
+        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Same Day Service</span>
+        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Skilled &amp; Professional Tradesmen</span>
+        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> No Obligation Onsite Quotes</span>
+        <span class="gx-hero-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Family Owned &amp; Operated Since 2018</span>
       </div>
     </div>
   </div>
@@ -263,7 +268,7 @@
         <img src="images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp" srcset="images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175-700w.webp 700w, images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp 780w" sizes="(max-width: 900px) calc(100vw - 32px), (max-width: 1248px) calc((100vw - 88px) / 3), 371px" alt="Emergency electrician" loading="lazy" width="800" height="550">
         <div class="gx-pcard-body">
           <h3>24/7 Emergency Electrician</h3>
-          <p>Power out at 3am? We answer every after-hours call. Never missed an emergency callout in 5 years.</p>
+          <p>Power out at 3am? We answer every after-hours call. Never missed an emergency callout since 2018.</p>
           <span class="gx-pcard-link">Learn more →</span>
         </div>
       </a>
@@ -296,7 +301,7 @@
       <span class="accent-yellow">We're already</span>
       on the way.
     </h2>
-    <p>Mani and the Gemelec team have <strong>never missed an after-hours call</strong> in 5 years of business. When you have a genuine electrical emergency, you need someone who actually picks up.</p>
+    <p>Mani and the Gemelec team have <strong>never missed an after-hours call</strong> since we started in 2018. When you have a genuine electrical emergency, you need someone who actually picks up.</p>
     <ul class="gx-411-list">
       <li>Power outages &amp; tripped switchboards</li>
       <li>Sparking or burning smell from outlets</li>
@@ -327,7 +332,7 @@
           Mani built this
           <span class="accent-teal">on reliability.</span>
         </h2>
-        <p>Mani has been a licensed electrician for over 15 years, and started Gemelec Electrical Services to do things differently. Faster response times, cleaner work, and a team that actually shows up when they say they will.</p>
+        <p>Mani has been on the tools since 2010, and started Gemelec Electrical Services to do things differently. Faster response times, cleaner work, and a team that actually shows up when they say they will.</p>
         <p>Based in Matraville, Gemelec services all of Greater Sydney with a focus on the Eastern Suburbs, Inner West, and South Sydney. Residential, commercial, strata. They do it all.</p>
         <ul class="gx-manny-checks">
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Licensed &amp; fully insured. Lic: 376553C</li>
@@ -533,7 +538,7 @@
     <div class="faq-refined" style="max-width: 820px; margin: 0 auto;">
       <details class="faq-refined__item" open>
         <summary>Does Gemelec offer 24/7 emergency electrical services in Sydney?</summary>
-        <p>Yes. Gemelec Electrical Services is available 24 hours a day, 7 days a week for electrical emergencies across Greater Sydney. We have never missed an after-hours call in 6+ years of operation. Call 0498 351 351 any time.</p>
+        <p>Yes. Gemelec Electrical Services is available 24 hours a day, 7 days a week for electrical emergencies across Greater Sydney. We have never missed an after-hours call since we started in 2018. Call 0498 351 351 any time.</p>
       </details>
       <details class="faq-refined__item">
         <summary>How much does a switchboard upgrade cost in Sydney?</summary>
@@ -545,7 +550,7 @@
       </details>
       <details class="faq-refined__item">
         <summary>What areas does Gemelec Electrical Services cover?</summary>
-        <p>Gemelec services all of Greater Sydney, with a focus on the Eastern Suburbs, Inner West, South Sydney, and Sutherland Shire. We are based in Matraville and can reach most Sydney suburbs within 30 to 45 minutes.</p>
+        <p>Gemelec services all of Greater Sydney, with a focus on the Eastern Suburbs, Inner West, South Sydney, and Sutherland Shire. We are based in Matraville and offer same-day emergency service, on site within 4 hours.</p>
       </details>
       <details class="faq-refined__item">
         <summary>Is Gemelec a licensed electrician in NSW?</summary>
@@ -659,9 +664,10 @@
         <h4>Contact</h4>
         <a href="tel:0498351351" class="footer-phone">0498 351 351</a>
         <a href="mailto:info@gemelec.sydney">info@gemelec.sydney</a>
+        <a href="/images/wechat-qr.jpg" data-wechat>WeChat</a>
         <a href="https://www.google.com/maps/search/?api=1&amp;query=GEMELEC%20Electrical%20Services%20587%20Bunnerong%20Road%2C%20Matraville%20NSW%202036" target="_blank" rel="noopener">Google Business Profile</a>
         <p style="font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6;">587 Bunnerong Rd<br>Matraville NSW 2036</p>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 12px;">Available 24/7</p>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 12px;">Available 24/7</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -707,12 +713,13 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
   if (window.Swiper) {
+    // No autoplay on purpose: a carousel that moves by itself needs a pause control
+    // (WCAG 2.2.2). Swipe and the arrow buttons do the job.
     new Swiper('.gx-reviews-swiper', {
       slidesPerView: 1,
       spaceBetween: 20,
       loop: true,
       grabCursor: true,
-      autoplay: { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true },
       navigation: { nextEl: '.gx-next', prevEl: '.gx-prev' },
       breakpoints: {
         640:  { slidesPerView: 1.4, spaceBetween: 20 },
