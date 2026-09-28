@@ -155,7 +155,8 @@
   function showOn(note) {
     draw('Notifications on for this device.',
       [['Send a test', sendTest, false], ['Turn off', turnOff, false]], note, true)
-    if (note) fadeNote(15000)
+    // Long ones are instructions; leave time to follow them.
+    if (note) fadeNote(note.length > 120 ? 90000 : 15000)
   }
 
   // Information the owner can't act on from here (iPhone tab, unsupported browser, blocked):
@@ -195,6 +196,8 @@
       const reg = await registration()
       const sub = await reg.pushManager.getSubscription()
       if (!sub) return showOff('This device is not signed up any more. Turn notifications on again.')
+      // Listen before sending: on a good connection the push can land before the reply does.
+      const arrival = waitForArrival(12000)
       const { response, result } = await api('POST', { subscription: sub.toJSON(), test: true })
       if (response.status === 410 && result.gone) {
         if (retried === true) {
@@ -206,10 +209,34 @@
         return sendTest(true)
       }
       if (!response.ok) throw ours(result.message || 'The test did not go through.')
-      showOn('Test sent. It should pop up in a few seconds. Nothing? Check this device allows notifications from the browser (on a Mac: System Settings, Notifications; on Windows: Settings, System, Notifications) and that Do Not Disturb or Focus is off. On a computer, the browser has to be open.')
+      busy('Test sent. Checking it reaches this device...')
+      // The two ways a sent test goes missing need different fixes, so say which it was.
+      if (await arrival) {
+        showOn('The test reached this device. If it didn\'t pop up, this device is hiding notifications: on Windows check Settings, System, Notifications (notifications on, Google Chrome on, Do not disturb off); on a Mac check System Settings, Notifications and that Focus is off.')
+      } else {
+        showOn("The test was sent but didn't reach this device. On a computer that's usually a firewall, antivirus or VPN blocking Chrome's notification connection, or Chrome running in a mode that can't get them (a guest or incognito window). Your phone will still get them through the GEMELEC app. (Just refreshed this page? Give it ten seconds and try the test once more first.)")
+      }
     } catch (error) {
       showOn(plain(error, 'The test did not go through. Try again in a moment.'))
     }
+  }
+
+  // Resolves true when sw.js reports the test push arrived on this device, false after ms.
+  function waitForArrival(ms) {
+    return new Promise(resolve => {
+      const onMessage = (e) => {
+        if (e.data && e.data.type === 'gemelec-push-received' && e.data.tag === 'gemelec-test') done(true)
+      }
+      const timer = setTimeout(() => done(false), ms)
+      function done(arrived) {
+        clearTimeout(timer)
+        navigator.serviceWorker.removeEventListener('message', onMessage)
+        resolve(arrived)
+      }
+      navigator.serviceWorker.addEventListener('message', onMessage)
+      // Messages from the worker queue until this is called (or the page finishes loading).
+      if (navigator.serviceWorker.startMessages) navigator.serviceWorker.startMessages()
+    })
   }
 
   async function turnOff() {
