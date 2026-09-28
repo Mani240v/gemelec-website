@@ -1,4 +1,5 @@
 const crypto = require('node:crypto')
+const { setSession, matchSecret } = require('./_lib/staff-session')
 
 // Access check for the field portal at /tech.
 //
@@ -50,8 +51,11 @@ module.exports = async function handler(req, res) {
   }
 
   let provided = ''
+  let name = ''
   try {
-    provided = JSON.parse(body || '{}').code || ''
+    const parsed = JSON.parse(body || '{}')
+    provided = parsed.code || ''
+    name = parsed.name || ''
   } catch {
     provided = ''
   }
@@ -61,6 +65,10 @@ module.exports = async function handler(req, res) {
     return res.end(JSON.stringify({ ok: false, message: 'Wrong code.' }))
   }
 
+  // Since 2026-09-29 the portal signs in through /api/staff-session. This endpoint stays for
+  // a phone still running the older script, and now also sets the staff cookie so that
+  // phone is remembered from here on.
+  setSession(res, matchSecret(provided) || 'tech', name)
   res.statusCode = 200
   return res.end(JSON.stringify({ ok: true }))
 }

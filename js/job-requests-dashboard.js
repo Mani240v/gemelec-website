@@ -1,6 +1,10 @@
-// Job requests dashboard: password gate + list/edit/save. No frameworks, no
-// session/JWT machinery — the password is just carried as a header on every
-// request (sessionStorage), checked server-side with a constant-time compare.
+// Job requests dashboard: password gate + list/edit/save. No frameworks.
+//
+// Sign-in is the HttpOnly staff cookie from /api/staff-session (api/_lib/staff-session.js),
+// shared with the field portal and remembered for months. Until 2026-09-29 the password sat
+// in sessionStorage and rode along as a header, so every new tab, including every "Review:"
+// link in a lead alert, asked for it again. The header is still sent when a password is in
+// sessionStorage, so a tab left open from before the change keeps working until it reloads.
 
 const STORAGE_KEY = 'gemelec_dashboard_password'
 
@@ -12,21 +16,19 @@ const loginError = document.getElementById('dash-login-error')
 const loadError = document.getElementById('dash-load-error')
 const emptyState = document.getElementById('dash-empty')
 const jobList = document.getElementById('job-list')
+const signOutBtn = document.getElementById('dash-signout')
 
 function getPassword() {
   return sessionStorage.getItem(STORAGE_KEY) || ''
 }
 
-function setPassword(value) {
-  sessionStorage.setItem(STORAGE_KEY, value)
-}
-
 async function apiFetch(path, options = {}) {
+  const legacy = getPassword()
   const response = await fetch(path, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      'X-Dashboard-Auth': getPassword()
+      ...(legacy ? { 'X-Dashboard-Auth': legacy } : {})
     }
   })
   return response
@@ -550,7 +552,9 @@ function renderCounts(requests) {
   bar.hidden = false
 }
 
-async function loadRequests() {
+// quiet: the load on opening the page. A 401 there just means "not signed in on this device
+// yet", which deserves the login form, not an "Incorrect password" nobody typed.
+async function loadRequests({ quiet = false } = {}) {
   loadError.style.display = 'none'
   loginError.style.display = 'none'
   const wasLoggedIn = contentPanel.style.display !== 'none'
@@ -562,8 +566,10 @@ async function loadRequests() {
     if (response.status === 401) {
       loginPanel.style.display = 'block'
       contentPanel.style.display = 'none'
-      loginError.textContent = 'Incorrect password.'
-      loginError.style.display = 'block'
+      if (!quiet) {
+        loginError.textContent = 'Signed out. Enter the password to carry on.'
+        loginError.style.display = 'block'
+      }
       sessionStorage.removeItem(STORAGE_KEY)
       return
     }
@@ -598,24 +604,61 @@ async function loadRequests() {
       loadError.textContent = message
       loadError.style.display = 'block'
     } else {
+      loginPanel.style.display = 'block' // hidden while the opening check runs
       loginError.textContent = message
       loginError.style.display = 'block'
     }
   }
 }
 
-loginBtn.addEventListener('click', () => {
+loginBtn.addEventListener('click', async () => {
   const value = passwordInput.value.trim()
   if (!value) return
-  setPassword(value)
   loginError.style.display = 'none'
-  loadRequests()
+  loginBtn.disabled = true
+  try {
+    const response = await fetch('/api/staff-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: value })
+    })
+    const result = await response.json().catch(() => ({}))
+    if (!response.ok || result.ok === false) {
+      loginError.textContent = response.status === 401 ? 'Incorrect password.' : (result.message || 'Could not sign in.')
+      loginError.style.display = 'block'
+      return
+    }
+    passwordInput.value = ''
+    loadRequests()
+  } catch {
+    loginError.textContent = 'No connection. Try again in a moment.'
+    loginError.style.display = 'block'
+  } finally {
+    loginBtn.disabled = false
+  }
 })
 
 passwordInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') loginBtn.click()
 })
 
-if (getPassword()) {
-  loadRequests()
-}
+signOutBtn.addEventListener('click', async () => {
+  if (!confirm('Sign out of the dashboard on this device?')) return
+  try {
+    const response = await fetch('/api/staff-session', { method: 'DELETE' })
+    if (!response.ok) throw new Error('sign-out failed')
+  } catch {
+    alert('Could not sign out right now. Check the connection and try again.')
+    return
+  }
+  sessionStorage.removeItem(STORAGE_KEY)
+  location.reload()
+})
+
+// Straight in if this device is signed in (the cookie rides on the list request), and keep
+// the cookie fresh so a device in regular use never reaches its 180-day expiry. The login
+// form stays hidden until that check says it's needed, so a signed-in device never sees it
+// flash up.
+loginPanel.style.display = 'none'
+loadRequests({ quiet: true })
+fetch('/api/staff-session', { cache: 'no-store' }).catch(() => {})
