@@ -395,7 +395,10 @@ a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-ra
   padding: 12px 16px;
   border: 1.5px solid var(--gray);
   border-radius: var(--radius);
-  font-size: 15px;
+  /* 16px exactly, not 15: iOS Safari zooms the whole page in when a focused control is
+     under 16px, so tapping Name on the contact or quote form shunts the layout sideways
+     mid-entry. Same reason and same value as the field portal and the costing table. */
+  font-size: 16px;
   color: var(--text);
   background: var(--white);
   transition: border-color 0.15s, box-shadow 0.15s;
