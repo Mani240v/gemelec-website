@@ -195,12 +195,16 @@
     box.hidden = true
     box.textContent = ''
     if (!supported) {
+      // Say why rather than show nothing: an owner who was told to look for this box and
+      // can't find it has no way to know the browser is the reason.
+      const { response } = await api('GET').catch(() => ({ response: { ok: false } }))
+      if (!response.ok) return
       if (isIOS && !installed) {
-        const { response } = await api('GET').catch(() => ({ response: { ok: false } }))
-        if (!response.ok) return
         draw(onPortal
           ? 'Want a notification for every website enquiry? On iPhone, add this page to your home screen first (Share, then Add to Home Screen), open GEMELEC from your home screen, and turn notifications on there.'
           : 'Want a notification for every website enquiry? On iPhone this works from the GEMELEC app: open gemelec.com.au/tech in Safari, tap Share, then Add to Home Screen, open GEMELEC from your home screen, sign in, and turn notifications on there.', [])
+      } else {
+        draw('This browser can\'t show notifications for new website enquiries. Open this page in Chrome, or in Safari on an up-to-date Mac or iPhone, and turn them on there.', [])
       }
       return
     }
