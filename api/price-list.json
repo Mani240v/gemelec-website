@@ -216,6 +216,48 @@
     "sell_price": 775.25
   },
   {
+    "item_code": "ACMG-ATTEND",
+    "description": "Site Attendance - Per Visit",
+    "unit_of_measure": "",
+    "sell_price": 150.0
+  },
+  {
+    "item_code": "ACMG-RCD-TEST",
+    "description": "RCD Testing (Trip Time + Push-Button Test) - Per RCD",
+    "unit_of_measure": "",
+    "sell_price": 20.0
+  },
+  {
+    "item_code": "ACMG-THERMO-BOARD",
+    "description": "Thermographic Switchboard Inspection - Per Board",
+    "unit_of_measure": "",
+    "sell_price": 270.0
+  },
+  {
+    "item_code": "ACMG-TANDT",
+    "description": "Portable Appliance Test & Tag - Per Item",
+    "unit_of_measure": "",
+    "sell_price": 7.5
+  },
+  {
+    "item_code": "ACMG-TANDT-LOGBOOK",
+    "description": "Test & Tag Register/Logbook (If Not Already On Site) - Per Site",
+    "unit_of_measure": "",
+    "sell_price": 50.0
+  },
+  {
+    "item_code": "ACMG-REPORT-STD",
+    "description": "Compliance Report - Up To 100 RCDs, Per Site",
+    "unit_of_measure": "",
+    "sell_price": 200.0
+  },
+  {
+    "item_code": "ACMG-REPORT-LRG",
+    "description": "Compliance Report - Over 100 RCDs, Per Site",
+    "unit_of_measure": "",
+    "sell_price": 500.0
+  },
+  {
     "item_code": "ALARM-KEYPAD-SI",
     "description": "Alarm Keypad Supply & Install",
     "unit_of_measure": "",
@@ -352,6 +394,12 @@
     "description": "Install CCTV Camera - Dome (Camera Supplied Separately)",
     "unit_of_measure": "",
     "sell_price": 205.66
+  },
+  {
+    "item_code": "CCTV-CAM-SI",
+    "description": "Supply & Install 1 x CCTV Camera (Single, No Cabling)",
+    "unit_of_measure": "",
+    "sell_price": 450.0
   },
   {
     "item_code": "CCTV-CAM-TURRET",

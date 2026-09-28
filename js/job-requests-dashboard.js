@@ -92,7 +92,10 @@ function discountOf(costing) {
 // old figure: removing the $250 line off a $400 job left "Your price: $280.00" on screen.
 // The notes on these drafts actively tell Mani to remove lines the job does not need, so
 // this was a documented path to quoting a number that was never recalculated.
-function buildCostingTable(costing, onChange = () => {}) {
+//
+// onRowAdded(tr) runs for every row as it goes in: the saved lines, "+ Add line", and a tapped
+// "Often added with" chip alike. renderCard uses it to hook up the price-book picker.
+function buildCostingTable(costing, onChange = () => {}, onRowAdded = () => {}) {
   const table = document.createElement('table')
   table.className = 'job-costing-table'
   table.innerHTML = `
@@ -116,6 +119,7 @@ function buildCostingTable(costing, onChange = () => {}) {
     `
     tr.querySelector('.job-line-remove').addEventListener('click', () => { tr.remove(); onChange() })
     tbody.appendChild(tr)
+    onRowAdded(tr)
     if (notify) onChange()
   }
 
@@ -256,6 +260,11 @@ function renderSummary(summary) {
 
 function renderCard(row) {
   const costing = parseCosting(row)
+  // Items a tech picked from the price book on site (pickedCosting in api/job-request.js)
+  // rather than an AI draft. Labelled as theirs, with none of the AI's range or confidence;
+  // editing, Save, your price and copying work exactly as for any costing. Save spreads the
+  // costing, so the label survives it.
+  const picked = Boolean(costing && costing.picked_on_site === true)
   const card = document.createElement('div')
   card.className = 'job-card'
   card.dataset.requestId = row.request_id
@@ -279,17 +288,19 @@ function renderCard(row) {
     ${photoRefs.length
       ? `<div class="job-photos" data-photos="${escapeAttr(photoRefs.join(','))}"></div>`
       : '<p class="job-photos-note">Photos were sent as attachments on the notification email for this request — check your inbox.</p>'}
-    <span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>
+    ${picked
+      ? `<span class="job-ai-label is-picked">Items picked on site by ${escapeHtml(costing.picked_by || 'the tech')}</span>`
+      : '<span class="job-ai-label">AI draft — review before quoting, not sent to customer</span>'}
     ${costing?.summary ? `<div class="job-ai-summary">${renderSummary(costing.summary)}</div>` : ''}
-    ${hasNumber(costing?.estimate_low) && hasNumber(costing?.estimate_high) ? `
+    ${!picked && hasNumber(costing?.estimate_low) && hasNumber(costing?.estimate_high) ? `
       <div class="job-ai-range">AI draft range: $${money(costing.estimate_low)}${Number(costing.estimate_high) !== Number(costing.estimate_low) ? ` – $${money(costing.estimate_high)}` : ''}
         ${costing.range_note ? `<span class="job-ai-range-note">${escapeHtml(costing.range_note)}</span>` : ''}
       </div>` : ''}
-    ${costing && costing.line_items.length && !hasNumber(costing.estimate_low) ? `
+    ${!picked && costing && costing.line_items.length && !hasNumber(costing.estimate_low) ? `
       <div class="job-ai-range">No AI range for this one — the items below are priced from your list, but the total is above the ceiling this system will put a number on. Total it yourself.</div>` : ''}
     <div class="job-costing-slot"></div>
     ${listBlock('job-flagged', 'Check these before you quote:', costing?.flagged_items || [])}
-    ${listBlock('job-notes', "Your own price-list rulings that applied here:", costing?.notes || [])}
+    ${listBlock('job-notes', picked ? 'About this costing:' : "Your own price-list rulings that applied here:", costing?.notes || [])}
     ${listBlock('job-unpriced', "The AI's own notes — not from your price list, and not checked by this system:", costing?.unpriced_items || [])}
     <div class="job-total-slot"></div>
     <div class="job-description-slot"></div>
@@ -305,19 +316,25 @@ function renderCard(row) {
 
   const costingSlot = card.querySelector('.job-costing-slot')
   const totalSlot = card.querySelector('.job-total-slot')
+  // "Often added with:" chips for the last price-book pick, directly under the table. Hidden
+  // until a pick has something to suggest (see showOften below).
+  const oftenBox = document.createElement('div')
+  oftenBox.className = 'gx-pb-often'
+  oftenBox.hidden = true
 
   let tableRef
 
   if (costing) {
-    const built = buildCostingTable(costing, () => refreshTotal())
+    const built = buildCostingTable(costing, () => refreshTotal(), wirePricebook)
     tableRef = built
     costingSlot.appendChild(built.table)
   } else {
     costingSlot.innerHTML = '<p class="job-no-costing">No AI draft available for this one — price manually.</p>'
-    const built = buildCostingTable({ line_items: [] }, () => refreshTotal())
+    const built = buildCostingTable({ line_items: [] }, () => refreshTotal(), wirePricebook)
     tableRef = built
     costingSlot.appendChild(built.table)
   }
+  costingSlot.appendChild(oftenBox)
 
   function refreshTotal() {
     const rows = [...card.querySelectorAll('.job-costing-table tbody tr')]
@@ -338,7 +355,7 @@ function renderCard(row) {
       cell.title = `${qty} x $${money(price * (1 - discount))} = $${money(qty * price * (1 - discount))}`
     })
     const pct = Number(costing?.confidence_pct)
-    const confidenceLine = Number.isFinite(pct)
+    const confidenceLine = !picked && Number.isFinite(pct)
       ? `<div class="job-confidence">AI confidence in these picks: ${pct}%${costing?.confidence ? ` (${escapeHtml(costing.confidence)})` : ''} — how likely the right items in the right quantities, not the prices.</div>`
       : ''
     if (!rows.length) {
@@ -353,6 +370,53 @@ function renderCard(row) {
         <span class="job-total-note">list is the worst case; your price is ${Math.round(discount * 100)}% off it</span>
       </div>
       ${confidenceLine}`
+  }
+
+  // Price-book picker (js/pricebook-picker.js): a dropdown on each row's Item box, and a code
+  // typed into the Code box fills in the rest when Mani leaves it. Optional: with the script
+  // missing or /api/price-book failing, these are the plain inputs they always were, and a
+  // line that isn't in the price book can always be typed in by hand.
+  function wirePricebook(tr) {
+    const pricebook = window.GxPricebook
+    if (!pricebook) return
+    pricebook.attach(tr.querySelector('.desc'), item => fillFromPricebook(tr, item))
+    const codeInput = tr.querySelector('.code')
+    codeInput.addEventListener('change', () => {
+      const typed = codeInput.value.trim()
+      if (!typed) return
+      pricebook.load().then(() => {
+        const item = pricebook.lookup(typed)
+        // Only if the box still says what was typed: it may have been edited while this loaded.
+        if (item && codeInput.value.trim() === typed) fillFromPricebook(tr, item)
+      }).catch(() => {})
+    })
+  }
+
+  // The list price is the RRP straight from the price book. Qty is left as it is (a new row
+  // already has 1). The input event is the one typing a price fires, so the listener below
+  // redoes the discounted column and both totals exactly as it does for a typed price.
+  function fillFromPricebook(tr, item) {
+    if (!tr.isConnected) return
+    tr.querySelector('.desc').value = item.description
+    tr.querySelector('.code').value = item.code
+    const qty = tr.querySelector('.qty')
+    if (!qty.value.trim()) qty.value = '1'
+    const price = tr.querySelector('.price')
+    price.value = String(item.price)
+    price.dispatchEvent(new Event('input', { bubbles: true }))
+    showOften(item.code)
+  }
+
+  // Up to six items often invoiced with the one just picked, leaving out any already in the
+  // table. A tap adds it as a new line through addRow, like "+ Add line" but filled in.
+  function showOften(code) {
+    const pricebook = window.GxPricebook
+    if (!pricebook) return
+    const inTable = [...card.querySelectorAll('.job-costing-table tbody .code')].map(input => input.value.trim())
+    pricebook.showCompanions(oftenBox, pricebook.companionsFor(code, inTable).slice(0, 6), item => {
+      tableRef.addRow({ description: item.description, item_code: item.code, qty: 1, sell_price: item.price }, true)
+      showOften(code)
+    })
   }
 
   card.addEventListener('input', (e) => {
@@ -605,6 +669,8 @@ async function loadRequests({ quiet = false } = {}) {
       jobList.appendChild(card)
       hydratePhotos(card)
     })
+    // Fetched now, so the first letter typed into an Item box already has a list to show.
+    if (window.GxPricebook) window.GxPricebook.load().catch(() => {})
   } catch (error) {
     if (loadingNote) loadingNote.style.display = 'none'
     // A dropped connection makes the fetch itself throw, with the browser's own text ("Load

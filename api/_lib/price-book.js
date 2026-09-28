@@ -319,7 +319,9 @@ const CATALOGUE_TEXT = (() => {
     emitted.add(code)
   }
 
-  lines.push('GEMELEC price list. These 207 items are the complete set you may choose from, and')
+  // The count is read from the list: it said 207 here while the file held 208, and the list
+  // keeps growing (216 on 2026-09-29, with the ACMG-* rates and CCTV-CAM-SI).
+  lines.push(`GEMELEC price list. These ${PRICE_LIST.length} items are the complete set you may choose from, and`)
   lines.push('these prices are the real ones. You do not need to repeat a price back — the')
   lines.push('application reads every price from this list itself.')
   lines.push('')

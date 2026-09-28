@@ -125,6 +125,22 @@
       <textarea id="t_description" rows="7" enterkeyhint="enter" required></textarea>
       <div class="tech-counter"><span id="t_desc_count">0</span> characters</div>
 
+      <!-- Price-book items, drawn by js/tech-portal.js with js/pricebook-picker.js. Sent as codes
+           and quantities only; the server prices them and they become the job's costing. -->
+      <h2 class="tech-section-title">Items (optional)</h2>
+      <label for="t_item_search">Search the price book</label>
+      <p class="tech-hint">Tap a match to add it. Can't find it? Write it in the description above and the office will price it.</p>
+      <!-- autocorrect off: iOS corrects on a space, and "gpo " becoming "go " searches for
+           something else. enterkeyhint "done": Return adds the top match (js/tech-portal.js). -->
+      <input type="text" id="t_item_search" placeholder="e.g. downlight, GPO, safety switch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+      <p class="tech-items-note" id="t_items_note" role="status" hidden></p>
+      <ul class="tech-items" id="t_items" aria-label="Items on this job" hidden></ul>
+      <div class="gx-pb-often tech-items-often" id="t_items_often" hidden></div>
+      <div class="tech-items-total" id="t_items_total" hidden>
+        <span>Total (RRP, ex GST)</span>
+        <strong id="t_items_total_value">$0.00</strong>
+      </div>
+
       <h2 class="tech-section-title">Photos</h2>
       <p class="tech-hint">Up to 5. Take them now, or pick ones you shot earlier — useful when there was no signal in the basement.</p>
       <input type="file" id="t_photos" accept="image/*" multiple>
@@ -149,11 +165,16 @@
         <dt>Phone</dt><dd id="rv-phone"></dd>
         <dt>Address</dt><dd id="rv-address"></dd>
         <dt>Photos</dt><dd id="rv-photos"></dd>
+        <dt>Items</dt><dd id="rv-items-count"></dd>
         <dt>Client</dt><dd id="rv-client"></dd>
       </dl>
       <p class="tech-review-label">The job, exactly as the office will read it:</p>
       <blockquote id="rv-description" class="tech-review-desc"></blockquote>
       <button type="button" id="rv-more" class="tech-review-more" hidden></button>
+      <div id="rv-items-wrap" hidden>
+        <p class="tech-review-label tech-review-items-label">Items you picked (RRP, ex GST):</p>
+        <ul id="rv-items" class="tech-review-items"></ul>
+      </div>
       <button type="button" id="tech-review-send" class="btn btn-primary tech-btn-block">Yes &mdash; it's accurate, send it</button>
       <button type="button" id="tech-review-back" class="tech-review-back">Go back and fix something</button>
     </div>
@@ -161,6 +182,10 @@
 
 </main>
 
+<!-- Before the portal, so window.GxPricebook exists when it starts. The portal works without it
+     (the items box says the price book is unavailable and the job still sends), so a failed
+     load here breaks nothing. -->
+<script src="/js/pricebook-picker.js"></script>
 <script src="/js/tech-portal.js"></script>
 <script src="/js/staff-push.js"></script>
 <!-- Same key and the same AU-only Places setup as the customer form. Loaded after

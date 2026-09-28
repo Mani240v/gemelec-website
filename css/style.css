@@ -2898,3 +2898,200 @@ textarea:focus-visible {
 .staff-push-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
 .staff-push.is-compact .staff-push-link { min-height: 36px; padding: 6px 0; font-weight: 600; color: #55554f; }
 .staff-push.is-compact .staff-push-note { margin-top: 4px; }
+
+/* === ADDED 2026-09-29 — Price-book picker (js/pricebook-picker.js) === */
+/* The dropdown is appended to <body> and placed in page coordinates by the script, so no
+   table cell or scroll box on either staff page can clip it. Same z-index as the Google
+   Places dropdown above: clear of the portal's review overlay (50) and everything else. */
+.gx-pb-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #e6e4dd;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 20, 15, 0.14);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  text-align: left;
+}
+.gx-pb-list[hidden] { display: none; }
+/* 44px minimum: these get tapped with a thumb on site. */
+.gx-pb-option {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-top: 1px solid #f0eee7;
+  line-height: 1.3;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.gx-pb-option:first-child { border-top: 0; }
+.gx-pb-option:hover { background: #faf9f5; }
+/* The option highlighted with the arrow keys (aria-activedescendant on the input). */
+.gx-pb-option[aria-selected="true"] { background: #fffbe0; box-shadow: inset 3px 0 0 #faed27; }
+.gx-pb-desc { font-size: 15px; }
+.gx-pb-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 12.5px; color: #55554f; }
+.gx-pb-code { font-family: 'IBM Plex Mono', ui-monospace, monospace; overflow-wrap: anywhere; }
+.gx-pb-price { font-variant-numeric: tabular-nums; font-weight: 700; color: #0d0d0d; white-space: nowrap; }
+/* The list's only line when there is nothing to pick: no match, still loading, or no price
+   book. Not an option to tap, so no hover and no pointer. */
+.gx-pb-message {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #55554f;
+  cursor: default;
+}
+
+/* 16px stops iOS zooming the page when the box is tapped. The dashboard's costing inputs are
+   13px on a wide screen and 16px only in its phone layout (700px and under), so this covers
+   any touch screen, an iPad included, without enlarging them for a mouse. The attribute is
+   only there to outrank the dashboard's own `.job-costing-table input`. */
+@media (pointer: coarse), (max-width: 700px) {
+  input.gx-pb-input[role="combobox"] { font-size: 16px; }
+}
+
+/* "Often added with:" chips, under the costing table after a pick. */
+.gx-pb-often { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+.gx-pb-often[hidden] { display: none; }
+.gx-pb-often-label { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #55554f; margin-right: 2px; }
+.gx-pb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1.5px solid #e6e4dd;
+  border-radius: 10px;
+  background: #fff;
+  font: 500 13.5px/1.3 'DM Sans', system-ui, sans-serif;
+  color: #1a1a1a;
+  text-align: left;
+  cursor: pointer;
+}
+.gx-pb-chip:hover { border-color: #faed27; background: #fffdf0; }
+.gx-pb-chip:focus-visible { outline: 2px solid #0d0d0d; outline-offset: 2px; }
+.gx-pb-chip-desc { min-width: 0; overflow-wrap: anywhere; }
+.gx-pb-chip-price { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: #0d0d0d; }
+/* One chip per line on a phone, price on the right, like the stacked costing rows above. */
+@media (max-width: 700px) {
+  .gx-pb-often-label { flex: 1 1 100%; }
+  .gx-pb-chip { width: 100%; justify-content: space-between; font-size: 14px; }
+}
+
+/* === ADDED 2026-09-29 — Field portal: price-book items, and the dashboard's "picked on site" label === */
+/* The tech's list under the job description (js/tech-portal.js). RRP only: no discount is
+   ever shown on a tech's phone. 44px on every button, 16px on the quantity box (iOS zooms
+   below that), same card look as the checkboxes above. */
+.tech-items-note {
+  margin: 10px 0 0;
+  padding: 9px 12px;
+  background: #fdf6d8;
+  border-left: 3px solid #caa60a;
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #5c4a05;
+}
+/* The same box confirming a pick ("Added: ... (now 2)"), so a tap that changed nothing on
+   screen above a phone's keyboard still says what it did. Green: news, not a warning. */
+.tech-items-note.is-added { background: #e7f4ee; border-left-color: #2f7a57; color: #1d4536; }
+.tech-items { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tech-item {
+  background: #fff;
+  border: 1.5px solid #c9c9c2;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.tech-item-desc { display: block; font-size: 15.5px; line-height: 1.4; color: #1a1a1a; overflow-wrap: anywhere; }
+.tech-item-meta { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 3px; font-size: 13px; color: #6b6b66; font-variant-numeric: tabular-nums; }
+.tech-item-code { font-family: 'IBM Plex Mono', ui-monospace, monospace; overflow-wrap: anywhere; }
+.tech-item-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.tech-qty { display: inline-flex; align-items: center; gap: 6px; }
+.tech-qty-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid #c9c9c2;
+  border-radius: 10px;
+  background: #f4f4f2;
+  font: 700 22px/1 'DM Sans', system-ui, sans-serif;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+.tech-qty-btn:disabled { opacity: 0.35; cursor: default; }
+.tech-qty-btn:focus-visible { outline: 2px solid #1a1a1a; outline-offset: 2px; }
+/* Outranks `.tech-panel input[type="text"]`, which would make it full width. */
+.tech-panel .tech-qty input.tech-qty-input {
+  width: 64px;
+  height: 44px;
+  padding: 0 6px;
+  text-align: center;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.tech-item-remove {
+  background: none;
+  border: 0;
+  min-height: 44px;
+  padding: 10px 2px;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #8c2418;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tech-items-often { margin: 12px 0 0; }
+.tech-items-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  border-left: 4px solid #faed27;
+  border-radius: 8px;
+  font-size: 14.5px;
+  color: #55554f;
+}
+.tech-items-total strong {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 24px;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The same list on the read-back sheet. */
+.tech-review-items-label { margin-top: 18px; }
+.tech-review-items { list-style: none; margin: 0; padding: 0; font-size: 14.5px; color: #1a1a1a; }
+.tech-review-items li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid #ecebe6;
+}
+.tech-review-items li span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.tech-review-items li span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tech-review-items .tech-review-items-total { border-bottom: 0; font-weight: 700; }
+
+/* Dashboard: a costing a tech picked on site, not an AI draft, so not the AI's amber. */
+.job-ai-label.is-picked { color: #1d4536; background: #e7f4ee; border-color: #b7dcc9; }
