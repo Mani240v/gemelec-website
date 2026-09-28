@@ -703,6 +703,8 @@ async function boot() {
         body: JSON.stringify({ password: legacy, scope: 'office' })
       })
       if (response.ok || response.status === 401) sessionStorage.removeItem(STORAGE_KEY)
+      // The notifications box checked the sign-in while this was still in flight.
+      if (response.ok && window.gxPushRefresh) window.gxPushRefresh()
     } catch {}
   }
   loadRequests({ quiet: true })
@@ -744,9 +746,10 @@ function showNewBanner(count) {
     banner.append(text, show)
     contentPanel.insertBefore(banner, contentPanel.firstChild)
   }
+  // "Job request", not "enquiry": this also counts jobs a tech logged on site.
   banner.querySelector('span').textContent = count === 1
-    ? 'A new enquiry has come in since this page opened.'
-    : `${count} new enquiries have come in since this page opened.`
+    ? 'A new job request has come in since this page opened.'
+    : `${count} new job requests have come in since this page opened.`
 }
 
 async function checkForNew() {

@@ -183,12 +183,17 @@
     } catch {}
     store(KEY_STORE, null)
   }
-  window.gxPushSignOut = unsubscribeHere
+  // Capped at four seconds: on a stalled connection sign-out mustn't sit there doing nothing.
+  window.gxPushSignOut = () => Promise.race([unsubscribeHere(), new Promise(resolve => setTimeout(resolve, 4000))])
 
   // On opening: only for an office sign-in, and keep a subscribed device registered. The
   // re-save on every open matters: after the password changes the server drops old records,
   // and this is how a device that's signed in again gets back on the list.
   async function init() {
+    // Start hidden every time: this also runs after a sign-in, and a box drawn for the last
+    // person (say, an office user whose session lapsed before a tech unlocked) mustn't linger.
+    box.hidden = true
+    box.textContent = ''
     if (!supported) {
       if (isIOS && !installed) {
         const { response } = await api('GET').catch(() => ({ response: { ok: false } }))

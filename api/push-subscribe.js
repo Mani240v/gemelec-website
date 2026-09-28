@@ -61,12 +61,18 @@ module.exports = async function handler(req, res) {
 
   try {
     if (body.test) {
-      const status = await sendOne(sub, {
-        title: 'Notifications are on',
-        body: "This is a test. You'll get one like this for every website enquiry.",
-        url: '/job-requests',
-        tag: 'gemelec-test'
-      })
+      let status
+      try {
+        status = await sendOne(sub, {
+          title: 'Notifications are on',
+          body: "This is a test. You'll get one like this for every website enquiry.",
+          url: '/job-requests',
+          tag: 'gemelec-test'
+        })
+      } catch (error) {
+        console.error('Push test send failed:', error.message)
+        return send(res, 502, { ok: false, message: "Couldn't reach the notification service. Try the test again in a moment." })
+      }
       if (status < 200 || status >= 300) {
         console.error(`Push test to ${new URL(sub.endpoint).hostname} failed with ${status}`)
         return send(res, 502, { ok: false, message: `The notification service refused it (${status}). Try turning notifications off and on again.` })

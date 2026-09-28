@@ -196,6 +196,8 @@ async function sendOne(sub, payload, keys = vapidKeys()) {
     },
     body: encryptPayload(JSON.stringify(payload), sub.keys)
   })
+  // Nothing in the body is needed, but undici holds the connection until it's consumed.
+  if (response.body) await response.body.cancel().catch(() => {})
   return response.status
 }
 
