@@ -1,6 +1,10 @@
-// Job requests dashboard: password gate + list/edit/save. No frameworks, no
-// session/JWT machinery — the password is just carried as a header on every
-// request (sessionStorage), checked server-side with a constant-time compare.
+// Job requests dashboard: password gate + list/edit/save. No frameworks.
+//
+// Sign-in is the HttpOnly staff cookie from /api/staff-session (api/_lib/staff-session.js),
+// shared with the field portal and remembered for months. Until 2026-09-29 the password sat
+// in sessionStorage and rode along as a header, so every new tab, including every "Review:"
+// link in a lead alert, asked for it again. The header is still sent when a password is in
+// sessionStorage, so a tab left open from before the change keeps working until it reloads.
 
 const STORAGE_KEY = 'gemelec_dashboard_password'
 
@@ -12,21 +16,20 @@ const loginError = document.getElementById('dash-login-error')
 const loadError = document.getElementById('dash-load-error')
 const emptyState = document.getElementById('dash-empty')
 const jobList = document.getElementById('job-list')
+const signOutBtn = document.getElementById('dash-signout')
+const loadingNote = document.getElementById('dash-loading')
 
 function getPassword() {
   return sessionStorage.getItem(STORAGE_KEY) || ''
 }
 
-function setPassword(value) {
-  sessionStorage.setItem(STORAGE_KEY, value)
-}
-
 async function apiFetch(path, options = {}) {
+  const legacy = getPassword()
   const response = await fetch(path, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      'X-Dashboard-Auth': getPassword()
+      ...(legacy ? { 'X-Dashboard-Auth': legacy } : {})
     }
   })
   return response
@@ -550,20 +553,27 @@ function renderCounts(requests) {
   bar.hidden = false
 }
 
-async function loadRequests() {
+// quiet: the load on opening the page. A 401 there just means "not signed in on this device
+// yet", which deserves the login form, not an "Incorrect password" nobody typed.
+async function loadRequests({ quiet = false } = {}) {
   loadError.style.display = 'none'
   loginError.style.display = 'none'
   const wasLoggedIn = contentPanel.style.display !== 'none'
+  let reachedServer = false
 
   try {
     const response = await apiFetch('/api/job-requests-list')
+    reachedServer = true
     const result = await response.json().catch(() => ({}))
+    if (loadingNote) loadingNote.style.display = 'none'
 
     if (response.status === 401) {
       loginPanel.style.display = 'block'
       contentPanel.style.display = 'none'
-      loginError.textContent = 'Incorrect password.'
-      loginError.style.display = 'block'
+      if (!quiet) {
+        loginError.textContent = 'Signed out. Enter the password to carry on.'
+        loginError.style.display = 'block'
+      }
       sessionStorage.removeItem(STORAGE_KEY)
       return
     }
@@ -589,7 +599,14 @@ async function loadRequests() {
       hydratePhotos(card)
     })
   } catch (error) {
-    const message = error.message || 'Could not load job requests.'
+    if (loadingNote) loadingNote.style.display = 'none'
+    // A dropped connection makes the fetch itself throw, with the browser's own text ("Load
+    // failed", "Failed to fetch"). On the login screen that reads like a sign-in failure, so
+    // say what actually happened. Only the fetch counts: an error after the server answered
+    // (a bad row in rendering, say) keeps its own message.
+    const message = !reachedServer
+      ? 'No connection. If this device is signed in it still is; reload once you have signal.'
+      : (error.message || 'Could not load job requests.')
     // A thrown network error (as opposed to a handled 401/non-ok response) means we
     // never got a chance to reveal contentPanel — if this happened before any
     // successful load, the error has to surface on the login screen instead, or it
@@ -598,24 +615,87 @@ async function loadRequests() {
       loadError.textContent = message
       loadError.style.display = 'block'
     } else {
+      loginPanel.style.display = 'block' // hidden while the opening check runs
       loginError.textContent = message
       loginError.style.display = 'block'
     }
   }
 }
 
-loginBtn.addEventListener('click', () => {
+loginBtn.addEventListener('click', async () => {
   const value = passwordInput.value.trim()
   if (!value) return
-  setPassword(value)
   loginError.style.display = 'none'
-  loadRequests()
+  loginBtn.disabled = true
+  try {
+    const response = await fetch('/api/staff-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // scope: the server refuses a field-portal code here without touching this device's
+      // cookie, rather than signing it in as a tech the dashboard would then reject.
+      body: JSON.stringify({ password: value, scope: 'office' })
+    })
+    const result = await response.json().catch(() => ({}))
+    if (!response.ok || result.ok === false) {
+      loginError.textContent = result.message && result.message !== 'Wrong password.'
+        ? result.message
+        : (response.status === 401 ? 'Incorrect password.' : 'Could not sign in.')
+      loginError.style.display = 'block'
+      return
+    }
+    passwordInput.value = ''
+    loadRequests()
+  } catch {
+    loginError.textContent = 'No connection. Try again in a moment.'
+    loginError.style.display = 'block'
+  } finally {
+    loginBtn.disabled = false
+  }
 })
 
 passwordInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') loginBtn.click()
 })
 
-if (getPassword()) {
-  loadRequests()
+signOutBtn.addEventListener('click', async () => {
+  if (!confirm('Sign out on this device? This also signs out the field portal (/tech) here.')) return
+  try {
+    const response = await fetch('/api/staff-session', { method: 'DELETE' })
+    if (!response.ok) throw new Error('sign-out failed')
+  } catch {
+    alert('Could not sign out right now. Check the connection and try again.')
+    return
+  }
+  sessionStorage.removeItem(STORAGE_KEY)
+  location.reload()
+})
+
+// Straight in if this device is signed in (the cookie rides on the list request), and keep
+// the cookie fresh so a device in regular use never reaches its 180-day expiry. The login
+// form stays hidden until that check says it's needed, so a signed-in device never sees it
+// flash up.
+//
+// A tab open from before 2026-09-29 still holds the password in sessionStorage. Trade it for
+// the cookie once and delete it, so it stops sitting in storage any script can read and the
+// next new tab (or alert link) doesn't ask again.
+async function boot() {
+  loginPanel.style.display = 'none'
+  const legacy = getPassword()
+  if (legacy) {
+    // Drop it once the server has given a real answer: 200 (the cookie is set now) or 401
+    // (it was wrong anyway). On no signal or a 5xx, keep it, so the header fallback in
+    // apiFetch still gets this tab in.
+    try {
+      const response = await fetch('/api/staff-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: legacy, scope: 'office' })
+      })
+      if (response.ok || response.status === 401) sessionStorage.removeItem(STORAGE_KEY)
+    } catch {}
+  }
+  loadRequests({ quiet: true })
+  fetch('/api/staff-session', { cache: 'no-store' }).catch(() => {})
 }
+
+boot()

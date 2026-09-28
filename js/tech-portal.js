@@ -6,7 +6,12 @@
 // load different scripts and there is no bundler in this repo, so sharing would mean a
 // third file loaded by both — worth doing if a third caller ever appears, not for two.
 
+// Sign-in lives in an HttpOnly cookie set by /api/staff-session (see api/_lib/staff-session.js),
+// so the phone stays signed in for months and no script can read the code. CODE_KEY is only
+// read now, to move a phone that signed in before 2026-09-29 onto the cookie; SIGNED_IN_KEY
+// just lets the portal open instantly, and offline, without asking the server first.
 const CODE_KEY = 'gemelec_tech_code'
+const SIGNED_IN_KEY = 'gemelec_tech_signed_in'
 const NAME_KEY = 'gemelec_tech_name'
 const DRAFT_KEY = 'gemelec_tech_draft'
 
@@ -77,24 +82,35 @@ async function unlock() {
   const code = codeInput.value.trim()
   const name = nameInput.value.trim()
 
-  if (!code) return showError(gateError, 'Enter the access code.')
+  if (!code && !nameOnly) return showError(gateError, 'Enter the access code.')
   if (!name) return showError(gateError, 'Enter your name so the office knows who took the job.')
 
   unlockBtn.disabled = true
   unlockBtn.textContent = 'Checking...'
   try {
-    const response = await fetch('/api/tech-auth', {
+    const response = await fetch('/api/staff-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      // Name only when the phone is already signed in; the server just renames the session.
+      body: JSON.stringify(code ? { password: code, name } : { name })
     })
     const result = await response.json().catch(() => ({}))
-    if (!response.ok || result.ok === false) {
-      throw new Error(result.message || 'Wrong code.')
+    if (response.status === 401 && nameOnly) {
+      // The sign-in lapsed between opening and now, so the name alone won't do: bring the
+      // code box back rather than say "Wrong code" about a box that isn't there.
+      nameOnly = false
+      codeInput.hidden = false
+      const codeLabel = document.querySelector('label[for="tech-code"]')
+      if (codeLabel) codeLabel.hidden = false
+      throw new Error('Signed out on this phone. Enter the access code too.')
     }
-    localStorage.setItem(CODE_KEY, code)
+    if (!response.ok || result.ok === false) {
+      throw new Error(response.status === 401 ? 'Wrong code.' : (result.message || 'Wrong code.'))
+    }
+    // The server has set the sign-in cookie; the code itself is never stored on the phone.
     localStorage.setItem(NAME_KEY, name)
-    shareCredentialWithDashboard()
+    localStorage.setItem(SIGNED_IN_KEY, '1')
+    localStorage.removeItem(CODE_KEY)
     enterApp()
   } catch (error) {
     // A network failure and a wrong code must not read the same, or a tech with no signal
@@ -114,12 +130,37 @@ unlockBtn.addEventListener('click', unlock)
   el.addEventListener('keydown', e => { if (e.key === 'Enter') unlock() })
 })
 
-whoBtn.addEventListener('click', () => {
-  if (!confirm(`Signed in as ${techName()}. Sign out on this phone?`)) return
+whoBtn.addEventListener('click', async () => {
+  if (!confirm(`Signed in as ${techName()}. Sign out on this phone? This also signs out the job requests page here.`)) return
+  // The cookie has to be cleared by the server. If that can't happen (no signal), don't
+  // pretend: the next open would find the cookie and sign straight back in.
+  try {
+    const response = await fetch('/api/staff-session', { method: 'DELETE' })
+    if (!response.ok) throw new Error('sign-out failed')
+  } catch {
+    alert('Could not sign out with no signal. Try again once you have a bar or two.')
+    return
+  }
   localStorage.removeItem(CODE_KEY)
+  localStorage.removeItem(SIGNED_IN_KEY)
   localStorage.removeItem(NAME_KEY)
   location.reload()
 })
+
+// Back to the gate without losing anything: the name stays filled in and the job draft is
+// still in localStorage, so it comes straight back after the code is entered again.
+function signOutLocally(message) {
+  try {
+    localStorage.removeItem(CODE_KEY)
+    localStorage.removeItem(SIGNED_IN_KEY)
+  } catch {}
+  app.hidden = true
+  whoBtn.hidden = true
+  document.getElementById('tech-to-office').hidden = true
+  nameInput.value = techName()
+  gate.hidden = false
+  if (message) showError(gateError, message)
+}
 
 // ---------------------------------------------------------------- photos
 
@@ -211,18 +252,12 @@ returningBox.addEventListener('change', saveDraft)
 
 // ---------------------------------------------------- jump to the office view
 
-// The dashboard reads its password from sessionStorage; the portal keeps the same secret in
-// localStorage. Copying it across means a tech who has unlocked the portal lands straight in
-// /job-requests instead of logging in twice, and the two screens feel like one app.
+// Nothing to hand over any more. The sign-in cookie is shared by both pages, so a tech who
+// has unlocked the portal lands straight in /job-requests. Until 2026-09-29 this copied the
+// code into the dashboard's sessionStorage instead.
 //
-// Harmless when the two secrets differ (TECH_ACCESS_CODE set): the dashboard gets a 401,
-// clears it and shows its own login exactly as it would have anyway.
-function shareCredentialWithDashboard() {
-  try {
-    const code = localStorage.getItem(CODE_KEY)
-    if (code) sessionStorage.setItem('gemelec_dashboard_password', code)
-  } catch {}
-}
+// When the two secrets differ (TECH_ACCESS_CODE set), the cookie carries the 'tech' role,
+// the dashboard's API answers 401 and it shows its own login, as it always has.
 
 // ---------------------------------------------------------------- draft
 
@@ -560,12 +595,81 @@ function setUpInstallPrompt() {
 }
 
 // ---------------------------------------------------------------- boot
+//
+// A phone that has signed in before opens straight into the app from localStorage, with no
+// round trip, so the portal still opens in a basement with no signal. The cookie is checked
+// in the background, and only a definite 401 (code changed, or 180 days unused) sends the
+// tech back to the gate. A phone with nothing in localStorage asks the server first, because
+// iPhone Safari wipes localStorage after a week unvisited but leaves the cookie alone.
 
-if (localStorage.getItem(CODE_KEY) && techName()) {
-  shareCredentialWithDashboard()
-  enterApp()
-} else {
+function signedInHere() {
+  return Boolean(techName() && (localStorage.getItem(SIGNED_IN_KEY) === '1' || localStorage.getItem(CODE_KEY)))
+}
+
+// Confirms the cookie, and moves a phone from before the cookie existed onto one: that phone
+// still holds the code in localStorage, so sign in with it once and then forget it.
+async function confirmSignIn() {
+  const legacyCode = localStorage.getItem(CODE_KEY)
+  let response
+  try {
+    response = legacyCode
+      ? await fetch('/api/staff-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: legacyCode, name: techName() })
+        })
+      : await fetch('/api/staff-session', { cache: 'no-store' })
+  } catch {
+    return // no signal: stay in, and check again next time
+  }
+  if (response.ok) {
+    try {
+      localStorage.setItem(SIGNED_IN_KEY, '1')
+      localStorage.removeItem(CODE_KEY)
+    } catch {}
+  } else if (response.status === 401) {
+    signOutLocally('This phone has been signed out, either because the access code changed or because someone signed out on the job requests page. Enter the code to carry on. Your job draft is still here.')
+  }
+  // Anything else (a 5xx, the server not set up): leave the tech in and try again next open.
+}
+
+// Bounded: on one bar of signal an unanswered fetch can hang for a minute, and until it
+// settles neither the gate nor the app is showing. Six seconds, then the gate.
+async function signInFromCookie() {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 6000)
+  try {
+    const response = await fetch('/api/staff-session', { cache: 'no-store', signal: controller.signal })
+    const result = await response.json().catch(() => ({}))
+    if (response.ok && result.ok && result.name) {
+      localStorage.setItem(NAME_KEY, result.name)
+      localStorage.setItem(SIGNED_IN_KEY, '1')
+      enterApp()
+      return
+    }
+    if (response.ok && result.ok) askNameOnly() // signed in (say, on the dashboard) but no name yet
+  } catch {
+  } finally {
+    clearTimeout(timer)
+  }
   gate.hidden = false
+}
+
+// Signed in already, so only the name is missing: hide the code box rather than make
+// someone retype a password the phone has already proved.
+let nameOnly = false
+function askNameOnly() {
+  nameOnly = true
+  codeInput.hidden = true
+  const codeLabel = document.querySelector('label[for="tech-code"]')
+  if (codeLabel) codeLabel.hidden = true
+}
+
+if (signedInHere()) {
+  enterApp()
+  confirmSignIn()
+} else {
+  signInFromCookie()
 }
 
 // After boot on purpose: whatever happens in here, the portal itself has already opened.

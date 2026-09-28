@@ -1,4 +1,5 @@
 const crypto = require('node:crypto')
+const { setSession, matchSecret } = require('./_lib/staff-session')
 
 // Access check for the field portal at /tech.
 //
@@ -23,6 +24,8 @@ function timingSafeEquals(a, b) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json')
+  // A success sets the 180-day staff cookie; never let a cache hold that response.
+  res.setHeader('Cache-Control', 'no-store')
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -50,8 +53,11 @@ module.exports = async function handler(req, res) {
   }
 
   let provided = ''
+  let name = ''
   try {
-    provided = JSON.parse(body || '{}').code || ''
+    const parsed = JSON.parse(body || '{}')
+    provided = parsed.code || ''
+    name = parsed.name || ''
   } catch {
     provided = ''
   }
@@ -61,6 +67,12 @@ module.exports = async function handler(req, res) {
     return res.end(JSON.stringify({ ok: false, message: 'Wrong code.' }))
   }
 
+  // Since 2026-09-29 the portal signs in through /api/staff-session. This endpoint stays for
+  // a phone still running the older script, and now also sets the staff cookie so that
+  // phone is remembered from here on. If sessions can't be signed (no DASHBOARD_PASSWORD
+  // on a portal-only setup), setSession sets nothing and this still answers ok, on purpose:
+  // the old script keeps the code in localStorage and doesn't need the cookie.
+  setSession(res, matchSecret(provided) || 'tech', name)
   res.statusCode = 200
   return res.end(JSON.stringify({ ok: true }))
 }
