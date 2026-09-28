@@ -205,6 +205,8 @@
 
 <div id="dash-content" class="dash-wrap" style="display:none;">
   <p class="dash-back"><a href="/tech">&larr; Log a job from site</a> <button type="button" id="dash-signout" class="dash-signout">Sign out</button></p>
+  <!-- New-enquiry notifications for this device; drawn by js/staff-push.js. -->
+  <div id="staff-push" class="staff-push" hidden></div>
   <div id="dash-counts" class="dash-counts" hidden></div>
   <div class="form-error" id="dash-load-error" role="alert"></div>
   <p id="dash-empty" style="display:none; color: var(--text-secondary);">No job requests yet.</p>
@@ -212,5 +214,6 @@
 </div>
 
 <script src="js/job-requests-dashboard.js?v=20260929a"></script>
+<script src="/js/staff-push.js"></script>
 </body>
 </html>

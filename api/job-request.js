@@ -5,6 +5,7 @@ const { draftCosting } = require('./_lib/anthropic')
 const { money, SUBTOTAL_CAP } = require('./_lib/price-book')
 const { sendNotification } = require('./_lib/email')
 const { sendWhatsAppNotification } = require('./_lib/whatsapp')
+const { notifyAll } = require('./_lib/web-push')
 const { waitUntil } = require('@vercel/functions')
 
 const HEADERS = [
@@ -126,6 +127,22 @@ function appendedRowNumber(appendResult) {
 // Photos ride along as email attachments on every alert, including the sheet-failure one.
 // This is the archive: the Blob copy behind the dashboard is purged after 14 days, the
 // mailbox is not.
+// Phone/desktop notification to staff devices for a new website enquiry (api/_lib/web-push.js).
+// Customer form only: a tech logging a job on site is already talking to the office. It goes
+// out the moment the row is saved, not after the AI costing like the email, because getting
+// to the lead sooner is the whole point. notifyAll never throws.
+function enquiryPush(row, description, requestId, note) {
+  if (row.source !== 'website') return Promise.resolve()
+  const firstName = String(row.full_name || '').trim().split(/\s+/)[0] || 'Someone'
+  const snippet = description.length > 110 ? `${description.slice(0, 107)}...` : description
+  return notifyAll({
+    title: note ? `New website enquiry (${note})` : 'New website enquiry',
+    body: `${firstName}: ${snippet}`,
+    url: '/job-requests',
+    tag: requestId
+  })
+}
+
 function photoAttachmentsFor(photos) {
   return photos.map((photo, index) => ({
     filename: `photo-${index + 1}.${photo.mimeType.split('/')[1] || 'jpg'}`,
@@ -397,7 +414,7 @@ module.exports = async function handler(req, res) {
 
       // A send still going at the deadline is kept alive past the response rather than frozen
       // with the invocation, so a slow one can still land.
-      waitUntil(Promise.allSettled([emailAlert, whatsAppAlert]))
+      waitUntil(Promise.allSettled([emailAlert, whatsAppAlert, enquiryPush(row, description, requestId, 'not in sheet')]))
       const alertDeadlineMs = Math.min(FALLBACK_ALERT_MS, Math.max(3000, remainingMs()))
       const [emailSent, whatsAppSent] = await Promise.all([
         withDeadline(emailAlert, alertDeadlineMs, 'Sheet-failure email alert'),
@@ -450,6 +467,9 @@ module.exports = async function handler(req, res) {
     // budget it always was — the work is not given more time, the customer just is not
     // made to watch it.
     return waitUntil((async () => {
+      // Started first and awaited last, so the notification lands in a second or two while
+      // the costing (up to a minute) carries on behind it.
+      const pushed = enquiryPush(row, description, requestId)
       try {
         // Every failure mode inside draftCosting — a 400 on a parameter Opus 5 rejects, a
         // refusal, a truncation, a timeout, a total outside the plausible band — throws and is
@@ -595,6 +615,7 @@ module.exports = async function handler(req, res) {
         // what is lost is the draft costing and possibly the alerts, hence the loud log.
         console.error('Job request post-response work failed:', requestId, error)
       }
+      await pushed
     })())
   } catch (error) {
     console.error('Job request submit failed:', error)
