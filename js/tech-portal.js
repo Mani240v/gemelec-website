@@ -112,6 +112,7 @@ async function unlock() {
     localStorage.setItem(SIGNED_IN_KEY, '1')
     localStorage.removeItem(CODE_KEY)
     enterApp()
+    if (window.gxPushRefresh) window.gxPushRefresh() // the notifications box (js/staff-push.js)
   } catch (error) {
     // A network failure and a wrong code must not read the same, or a tech with no signal
     // spends five minutes retyping a code that was right all along.
@@ -132,6 +133,9 @@ unlockBtn.addEventListener('click', unlock)
 
 whoBtn.addEventListener('click', async () => {
   if (!confirm(`Signed in as ${techName()}. Sign out on this phone? This also signs out the job requests page here.`)) return
+  // Stop this phone's enquiry notifications first, while the cookie still exists to
+  // authorise it (js/staff-push.js).
+  if (window.gxPushSignOut) await window.gxPushSignOut()
   // The cookie has to be cleared by the server. If that can't happen (no signal), don't
   // pretend: the next open would find the cookie and sign straight back in.
   try {

@@ -131,16 +131,42 @@ function appendedRowNumber(appendResult) {
 // Customer form only: a tech logging a job on site is already talking to the office. It goes
 // out the moment the row is saved, not after the AI costing like the email, because getting
 // to the lead sooner is the whole point. notifyAll never throws.
-function enquiryPush(row, description, requestId, note) {
+//
+// Capped like the AI step (per warm instance, since the form has no rate limit): past 20 an
+// hour, a flood of scripted submissions collapses into one repeating "lots arriving"
+// notification instead of burying the phone. The email still carries every lead.
+const PUSHES_PER_WINDOW = 20
+const PUSH_WINDOW_MS = 60 * 60 * 1000
+const pushTimes = []
+
+function enquiryPush(row, description, requestId, { notInSheet = false } = {}) {
   if (row.source !== 'website') return Promise.resolve()
+  const now = Date.now()
+  while (pushTimes.length && now - pushTimes[0] > PUSH_WINDOW_MS) pushTimes.shift()
+  pushTimes.push(now)
+  if (pushTimes.length > PUSHES_PER_WINDOW) {
+    return notifyAll({
+      title: 'Lots of website enquiries arriving',
+      body: 'More than 20 in the last hour. Check the job requests page and your email.',
+      url: '/job-requests',
+      tag: 'gemelec-burst'
+    })
+  }
   const firstName = String(row.full_name || '').trim().split(/\s+/)[0] || 'Someone'
   const snippet = description.length > 110 ? `${description.slice(0, 107)}...` : description
-  return notifyAll({
-    title: note ? `New website enquiry (${note})` : 'New website enquiry',
-    body: `${firstName}: ${snippet}`,
-    url: '/job-requests',
-    tag: requestId
-  })
+  return notifyAll(notInSheet
+    ? {
+        title: 'New website enquiry: check your email',
+        body: `${firstName}: ${snippet} (Not on the job requests page; the email has the full details.)`,
+        url: '/job-requests',
+        tag: requestId
+      }
+    : {
+        title: 'New website enquiry',
+        body: `${firstName}: ${snippet}`,
+        url: '/job-requests',
+        tag: requestId
+      })
 }
 
 function photoAttachmentsFor(photos) {
@@ -414,7 +440,7 @@ module.exports = async function handler(req, res) {
 
       // A send still going at the deadline is kept alive past the response rather than frozen
       // with the invocation, so a slow one can still land.
-      waitUntil(Promise.allSettled([emailAlert, whatsAppAlert, enquiryPush(row, description, requestId, 'not in sheet')]))
+      waitUntil(Promise.allSettled([emailAlert, whatsAppAlert, enquiryPush(row, description, requestId, { notInSheet: true })]))
       const alertDeadlineMs = Math.min(FALLBACK_ALERT_MS, Math.max(3000, remainingMs()))
       const [emailSent, whatsAppSent] = await Promise.all([
         withDeadline(emailAlert, alertDeadlineMs, 'Sheet-failure email alert'),
@@ -469,7 +495,10 @@ module.exports = async function handler(req, res) {
     return waitUntil((async () => {
       // Started first and awaited last, so the notification lands in a second or two while
       // the costing (up to a minute) carries on behind it.
+      // The .catch is belt and braces: notifyAll doesn't throw, but an unhandled rejection
+      // sitting here through a minute of costing could take the invocation, and the email, down.
       const pushed = enquiryPush(row, description, requestId)
+        .catch(error => console.error('Enquiry push failed:', requestId, error.message))
       try {
         // Every failure mode inside draftCosting — a 400 on a parameter Opus 5 rejects, a
         // refusal, a truncation, a timeout, a total outside the plausible band — throws and is

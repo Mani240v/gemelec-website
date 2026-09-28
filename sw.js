@@ -91,14 +91,20 @@ self.addEventListener('push', (event) => {
   )
 })
 
-// Tap -> the job requests page: focus it if it's already open, otherwise open it.
+// Tap -> the job requests page. If it's already open, bring it forward and tell it to reload
+// its list, since it only fetched the list when it opened and the new lead isn't in it yet
+// (js/job-requests-dashboard.js listens for 'gemelec-refresh'). Otherwise open it.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const target = (event.notification.data && event.notification.data.url) || '/job-requests'
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
       for (const client of windows) {
-        if (new URL(client.url).pathname === target && 'focus' in client) return client.focus()
+        if (new URL(client.url).pathname === target && 'focus' in client) {
+          return client.focus().then(focused => {
+            ;(focused || client).postMessage({ type: 'gemelec-refresh' })
+          })
+        }
       }
       return self.clients.openWindow(target)
     })

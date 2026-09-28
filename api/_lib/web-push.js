@@ -1,5 +1,6 @@
 const crypto = require('node:crypto')
 const { put, get, list, del } = require('@vercel/blob')
+const { credentialTag } = require('./staff-session')
 
 // Push notifications to staff devices for new website enquiries (added 2026-09-29).
 //
@@ -21,6 +22,12 @@ const { put, get, list, del } = require('@vercel/blob')
 // Subscriptions live in the private Blob store under PREFIX, one JSON file per device,
 // named by a hash of the endpoint so re-subscribing overwrites rather than duplicates. The
 // photo purge only ever lists job-photos/, so it can't touch these.
+//
+// Each one records credentialTag() from api/_lib/staff-session.js. When the staff password
+// changes, the tag changes, and notifyAll deletes every subscription that doesn't match. So
+// the lost-phone lever (change the password) also stops that phone's notifications; devices
+// still signed in re-register themselves the next time a staff page opens. Signing out on a
+// device also unsubscribes it (js/staff-push.js, gxPushSignOut).
 
 const PREFIX = 'push-subs/'
 const SUB_PATHNAME_RE = /^push-subs\/[a-f0-9]{64}\.json$/
@@ -110,16 +117,22 @@ function validEndpoint(endpoint) {
   if (typeof endpoint !== 'string') return false
   let url
   try { url = new URL(endpoint) } catch { return false }
-  return url.protocol === 'https:' && PUSH_HOST_RE.test(url.hostname)
+  return url.protocol === 'https:' && url.port === '' && url.username === '' && url.password === '' &&
+    PUSH_HOST_RE.test(url.hostname)
 }
 
-// A browser PushSubscription.toJSON(), checked before anything is stored or posted to.
+// A browser PushSubscription.toJSON(), checked before anything is stored or posted to. The
+// device key must be a real P-256 point, or every later send would throw on it and the bad
+// record would never be pruned.
 function validSubscription(sub) {
   if (!sub || typeof sub !== 'object' || !validEndpoint(sub.endpoint)) return false
   const keys = sub.keys || {}
   try {
-    return Buffer.from(String(keys.p256dh || ''), 'base64url').length === 65 &&
-      Buffer.from(String(keys.auth || ''), 'base64url').length === 16
+    const p256dh = Buffer.from(String(keys.p256dh || ''), 'base64url')
+    if (p256dh.length !== 65 || p256dh[0] !== 4) return false
+    if (Buffer.from(String(keys.auth || ''), 'base64url').length !== 16) return false
+    crypto.createECDH('prime256v1').computeSecret(p256dh) // throws if it isn't on the curve
+    return true
   } catch {
     return false
   }
@@ -134,6 +147,7 @@ async function saveSubscription(sub, name) {
     endpoint: sub.endpoint,
     keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
     name: String(name || '').slice(0, 60),
+    tag: credentialTag(),
     savedAt: new Date().toISOString()
   }
   await put(pathnameFor(sub.endpoint), JSON.stringify(record), {
@@ -160,6 +174,10 @@ async function sendOne(sub, payload, keys = vapidKeys()) {
   if (!keys) throw new Error('Push is not configured: no server secret')
   const response = await fetch(sub.endpoint, {
     method: 'POST',
+    // The allow-list only vouches for this URL, so never follow a redirect off it; and a
+    // push service that hangs mustn't hold the invocation open.
+    redirect: 'manual',
+    signal: AbortSignal.timeout(10000),
     headers: {
       Authorization: vapidAuthorization(sub.endpoint, keys),
       TTL: '86400',
@@ -177,11 +195,12 @@ async function sendOne(sub, payload, keys = vapidKeys()) {
 // push service reports as gone (404/410) is removed, which is how uninstalled apps and
 // revoked permissions get cleaned up.
 async function notifyAll(payload) {
-  const keys = vapidKeys()
-  if (!keys || !process.env.BLOB_READ_WRITE_TOKEN) return { sent: 0, failed: 0 }
   let sent = 0
   let failed = 0
   try {
+    const keys = vapidKeys()
+    const tag = credentialTag()
+    if (!keys || !tag || !process.env.BLOB_READ_WRITE_TOKEN) return { sent, failed }
     const pathnames = []
     let cursor
     do {
@@ -194,6 +213,12 @@ async function notifyAll(payload) {
       try {
         const sub = await readSubscription(pathname)
         if (!sub || !validSubscription(sub)) return
+        // Saved under different credentials: the password has changed since, so this device
+        // no longer gets customer details. It re-registers if it's still signed in.
+        if (sub.tag !== tag) {
+          await del(pathname)
+          return
+        }
         const status = await sendOne(sub, payload, keys)
         if (status >= 200 && status < 300) {
           sent += 1
