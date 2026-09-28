@@ -2836,3 +2836,32 @@ textarea:focus-visible {
 .wechat-dialog .wechat-id { color: #0d0d0d; font-size: 15px; }
 .wechat-copy { margin-left: 6px; padding: 6px 12px; min-height: 32px; border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 6px; background: #fff; font: 600 13px 'DM Sans', sans-serif; color: #0d0d0d; cursor: pointer; }
 .wechat-copy:hover { border-color: #0d0d0d; }
+
+/* === ADDED 2026-09-28 — Field portal: add-to-home-screen box (js/tech-portal.js) === */
+.tech-install {
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.tech-install strong { font-weight: 700; }
+.tech-install > strong { display: block; font-size: 16px; margin-bottom: 4px; }
+.tech-install p { margin: 0 0 10px; color: rgba(255, 255, 255, 0.8); }
+.tech-install-steps { margin: 0 0 12px; padding-left: 22px; }
+.tech-install-steps li { margin-bottom: 6px; }
+.tech-install-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.tech-install-actions .btn { min-height: 48px; }
+.tech-install-dismiss {
+  background: none;
+  border: 0;
+  padding: 12px 4px;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  cursor: pointer;
+}

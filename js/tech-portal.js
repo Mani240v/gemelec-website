@@ -481,6 +481,72 @@ function initTechAutocomplete() {
   }
 }
 
+// ---------------------------------------------------------------- add to home screen
+//
+// Techs use this all day, so it should live on the home screen like an app. Android Chrome
+// fires beforeinstallprompt once the page is installable (manifest + 192/512 icons + service
+// worker), and that event is the only way to offer a one-tap Install button. iPhone has no
+// such event or API: Safari installs only from its own Share menu, so there the box lists
+// the taps instead. Browsers that never fire the event (Samsung Internet, Firefox) get the
+// menu steps. Hidden when already running installed, and for good once dismissed here.
+
+const INSTALL_DISMISSED_KEY = 'gemelec_tech_install_dismissed'
+const installBox = document.getElementById('tech-install')
+const installBtn = document.getElementById('tech-install-btn')
+let installPrompt = null
+
+function runningInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+}
+
+function installDismissed() {
+  try { return localStorage.getItem(INSTALL_DISMISSED_KEY) === '1' } catch { return false }
+}
+
+function isIOS() {
+  // iPadOS reports itself as a Mac; the touch points give it away.
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+}
+
+// mode: 'button' (Android one-tap), 'ios' (Share-menu steps) or 'menu' (browser-menu steps)
+function showInstall(mode) {
+  if (runningInstalled() || installDismissed()) return
+  document.getElementById('tech-install-ios').hidden = mode !== 'ios'
+  document.getElementById('tech-install-menu').hidden = mode !== 'menu'
+  installBtn.hidden = mode !== 'button'
+  installBox.hidden = false
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault()
+  installPrompt = e
+  showInstall('button')
+})
+
+installBtn.addEventListener('click', async () => {
+  if (!installPrompt) return
+  const prompt = installPrompt
+  installPrompt = null // the event can only be used once
+  prompt.prompt()
+  const choice = await prompt.userChoice.catch(() => null)
+  if (choice && choice.outcome === 'accepted') installBox.hidden = true
+  else showInstall('menu')
+})
+
+window.addEventListener('appinstalled', () => { installBox.hidden = true })
+
+document.getElementById('tech-install-dismiss').addEventListener('click', () => {
+  installBox.hidden = true
+  try { localStorage.setItem(INSTALL_DISMISSED_KEY, '1') } catch {}
+})
+
+if (isIOS()) {
+  showInstall('ios')
+} else if (window.matchMedia('(pointer: coarse)').matches) {
+  // Give Chrome a moment to decide the page is installable before falling back to the steps.
+  setTimeout(() => { if (!installPrompt && installBox.hidden) showInstall('menu') }, 4000)
+}
+
 // ---------------------------------------------------------------- boot
 
 if (localStorage.getItem(CODE_KEY) && techName()) {
