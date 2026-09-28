@@ -19,6 +19,18 @@ const { put, get, list, del } = require('@vercel/blob')
 //    the bytes are only reachable through api/job-photo.js, behind the dashboard password.
 const PREFIX = 'job-photos/'
 
+// The exact shape putPhoto writes: PREFIX, then one segment of letters, digits, _ and -
+// (the request id, the photo number and Blob's random suffix), then .jpg. This replaced a
+// startsWith(PREFIX) plus includes('..') check, which a double-encoded '%2e%2e' got past:
+// the blob client builds a URL from the pathname and the URL parser decodes it back into
+// '..'. With no '.', '/' or '%' allowed in the segment there is nothing to decode. Keep this
+// in step with PREFIX and the name built in putPhoto.
+const PHOTO_PATHNAME_RE = /^job-photos\/[A-Za-z0-9_-]+\.jpg$/
+
+function isPhotoPathname(pathname) {
+  return typeof pathname === 'string' && PHOTO_PATHNAME_RE.test(pathname)
+}
+
 // Blob is the convenience copy for the dashboard, not the archive. The alert email carries
 // the photos as attachments on every submission and keeps them for as long as the mailbox
 // does, which is why deleting here is safe.
@@ -63,7 +75,7 @@ async function getPhoto(pathname) {
   // Refuse anything outside the photo prefix. Without this the dashboard password would be
   // enough to read every blob in the store by guessing a pathname, including blobs belonging
   // to any future feature that shares it.
-  if (typeof pathname !== 'string' || !pathname.startsWith(PREFIX) || pathname.includes('..')) {
+  if (!isPhotoPathname(pathname)) {
     return null
   }
   return get(pathname, { access: 'private' })
@@ -103,8 +115,7 @@ async function purgeOldPhotos(now = Date.now()) {
 // the prefix like everything else here, so a pathname from a corrupted row cannot be used to
 // delete something outside the photo store.
 async function deletePhotos(pathnames) {
-  const safe = (Array.isArray(pathnames) ? pathnames : [])
-    .filter(p => typeof p === 'string' && p.startsWith(PREFIX) && !p.includes('..'))
+  const safe = (Array.isArray(pathnames) ? pathnames : []).filter(isPhotoPathname)
   if (!safe.length) return { deleted: 0 }
   await del(safe)
   return { deleted: safe.length }

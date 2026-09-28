@@ -14,12 +14,12 @@
   <link rel="icon" type="image/png" href="/images/favicon.png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <title>Contact Gemelec | Sydney Electrician Quote 24/7</title>
-  <meta name="description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Same-day quotes, no call-out fee, licensed and insured.">
+  <meta name="description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Free, no-obligation quotes. Licensed and insured.">
   <link rel="canonical" href="https://www.gemelec.com.au/contact">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Contact Gemelec | Sydney Electrician Quote 24/7">
-  <meta property="og:description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Same-day quotes, no call-out fee, licensed and insured.">
+  <meta property="og:description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Free, no-obligation quotes. Licensed and insured.">
   <meta property="og:image" content="https://www.gemelec.com.au/images/manus/Gemelec-Home_87cd9a88.webp">
   <meta property="og:url" content="https://www.gemelec.com.au/contact">
   <meta property="og:type" content="website">
@@ -28,7 +28,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Contact Gemelec | Sydney Electrician Quote 24/7">
-  <meta name="twitter:description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Same-day quotes, no call-out fee, licensed and insured.">
+  <meta name="twitter:description" content="Get a free quote from Sydney's local electrician. Call 0498 351 351 or fill out the form. Free, no-obligation quotes. Licensed and insured.">
   <meta name="twitter:image" content="https://www.gemelec.com.au/images/manus/Gemelec-Home_87cd9a88.webp">
 
   <!-- Preconnect -->
@@ -121,13 +121,17 @@
   .nav-phone svg { flex-shrink: 0; }
   .skip-link { position: absolute; left: -9999px; top: 0; background: #faed27; color: #0d0d0d; padding: 12px 20px; font-weight: 700; z-index: 9999; text-decoration: none; }
   .skip-link:focus { left: 8px; top: 8px; }
-  .form-help { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.5; }
 
   /* Contact page architecture */
   .contact-hero { background: #0d0d0d; padding: 64px 0; }
   .contact-hero .eyebrow { color: #3cb0b2; font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 16px; }
   .contact-hero h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: clamp(36px, 5vw, 48px); line-height: 1.1; color: #fff; margin: 0 0 18px; letter-spacing: -0.01em; }
   .contact-hero .sub { color: rgba(255,255,255,0.65); font-size: 17px; line-height: 1.6; max-width: 640px; margin: 0; }
+  .contact-hero .gx-hero-cta { margin-top: 28px; }
+
+  /* Failure message is built by js/job-request.js; its call and WhatsApp links must look tappable. */
+  .form-error p + p { margin-top: 8px; }
+  .form-error a { text-decoration: underline; font-weight: 700; }
 
   .contact-section { background: #faf8f3; padding: 96px 0; }
   .contact-grid-new { display: grid; grid-template-columns: 1.5fr 1fr; gap: 64px; align-items: start; }
@@ -181,6 +185,9 @@
     .form-card { padding: 28px; border-radius: 16px; }
     .contact-section { padding: 56px 0; }
     .contact-hero { padding: 56px 0; }
+  }
+  @media (max-width: 480px) {
+    .contact-hero .gx-hero-cta a { flex: 1 1 100%; justify-content: center; }
   }
   </style>
 </head>
@@ -242,7 +249,17 @@
   <div class="container">
     <span class="eyebrow">Get a quote</span>
     <h1>Tell us about the job.</h1>
-    <p class="sub">Send the form and we will reply within two hours during business hours. If the power is out or something is sparking, skip the form and call the 24/7 line below.</p>
+    <p class="sub">Send the form and we will reply within two hours during business hours. If the power is out or something is sparking, skip the form and call the 24/7 line now.</p>
+    <div class="gx-hero-cta">
+      <a href="tel:0498351351" class="gx-btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        Call 0498 351 351
+      </a>
+      <a href="https://wa.me/61498351351?text=Hi%20Gemelec%2C%20I%20have%20an%20urgent%20electrical%20problem" class="gx-btn-whatsapp" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 5L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.81-.11-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.15-4.9-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1.01-2.4.26-.29.57-.36.76-.36.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.57.81 1.98.88 2.12.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.17-.19.71-.83.9-1.11.19-.28.37-.24.63-.14.26.09 1.65.78 1.93.92.28.14.47.21.54.33.07.12.07.68-.17 1.36z"/></svg>
+        WhatsApp
+      </a>
+    </div>
   </div>
 </section>
 
@@ -262,10 +279,10 @@
 
         <div class="form-error" id="form-error" role="alert"></div>
 
-        <form id="job-request-form">
+        <form id="job-request-form" method="post">
           <div class="lead-honeypot" aria-hidden="true">
-            <label for="company_website">Company website</label>
-            <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+            <label for="gx_check">Leave this field empty</label>
+            <input type="text" id="gx_check" name="gx_check" tabindex="-1" autocomplete="off">
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -273,8 +290,8 @@
               <input type="text" id="first_name" name="first_name" placeholder="John" autocomplete="given-name" required>
             </div>
             <div class="form-group">
-              <label for="last_name">Last Name *</label>
-              <input type="text" id="last_name" name="last_name" placeholder="Smith" autocomplete="family-name" required>
+              <label for="last_name">Last Name (optional)</label>
+              <input type="text" id="last_name" name="last_name" placeholder="Smith" autocomplete="family-name">
             </div>
           </div>
           <div class="form-row">
@@ -298,8 +315,8 @@
           </div>
           <div class="form-group">
             <label for="photos">Photos (optional, up to 5)</label>
-            <input type="file" id="photos" name="photos" accept="image/*" multiple>
-            <div id="photos-help" class="form-help">Optional, but a photo or two helps us give a more accurate quote. Take new ones or choose from your gallery. We compress these automatically before sending.</div>
+            <input type="file" id="photos" name="photos" accept="image/*" multiple aria-describedby="photos-help">
+            <div id="photos-help" class="form-help" aria-live="polite">Optional, but a photo or two helps us give a more accurate quote. Take new ones or choose from your gallery. We compress these automatically before sending.</div>
             <div class="job-photo-preview" id="photo-preview"></div>
           </div>
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">Send Enquiry</button>
@@ -439,14 +456,14 @@
         <a href="mailto:info@gemelec.sydney">info@gemelec.sydney</a>
         <a href="https://www.google.com/maps/search/?api=1&amp;query=GEMELEC%20Electrical%20Services%20587%20Bunnerong%20Road%2C%20Matraville%20NSW%202036" target="_blank" rel="noopener">Google Business Profile</a>
         <p style="font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6;">587 Bunnerong Rd<br>Matraville NSW 2036</p>
-        <p style="font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 12px;">Available 24/7</p>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 12px;">Available 24/7</p>
       </div>
     </div>
     <div class="footer-bottom">
       <p>© 2026 Gemelec Electrical Services. All rights reserved.</p>
       <div class="footer-bottom-links">
         <a href="/privacy-policy">Privacy Policy</a>
-        <a href="#">Sitemap</a>
+        <a href="/sitemap.xml">Sitemap</a>
       </div>
     </div>
   </div>
@@ -457,9 +474,7 @@
 </a>
 
 <script src="js/main.js"></script>
-<script src="js/job-request.js?v=20260730b"></script>
-<!-- Key restricted by HTTP referrer to gemelec.com.au in Google Cloud Console; see VERCEL_SETUP.md. -->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqpQOGjoHUGCe1EJeJVBETvXI1Y02yVYM&libraries=places&callback=initAddressAutocomplete"></script>
+<script src="js/job-request.js?v=20260928a"></script>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
