@@ -2893,3 +2893,8 @@ textarea:focus-visible {
   cursor: pointer;
 }
 .staff-push-note { margin: 10px 0 0; font-size: 13.5px; color: #55554f; }
+/* Compact: the "on" state (and "off" after Not now) is one small line, not a card. */
+.staff-push.is-compact { background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 14px; font-size: 13.5px; color: #55554f; }
+.staff-push-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
+.staff-push.is-compact .staff-push-link { min-height: 36px; padding: 6px 0; font-weight: 600; color: #55554f; }
+.staff-push.is-compact .staff-push-note { margin-top: 4px; }

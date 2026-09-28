@@ -14,6 +14,8 @@
   if (!box) return
 
   const KEY_STORE = 'gemelec_push_key' // the server key this device subscribed with
+  const DISMISS_STORE = 'gemelec_push_dismissed' // "Not now" tapped: keep the prompt to one line
+  let noteTimer = null
   const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
   const installed = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
@@ -30,25 +32,33 @@
   }
 
   // Everything in the box is built from DOM nodes; server messages go in as text only.
-  function draw(lead, buttons, note) {
+  //
+  // compact: one small line (the "on" state, and "off" after Not now) instead of a card.
+  // Mani, 2026-09-29: the full card took up the whole top of the screen every time the page
+  // opened, long after it had done its job.
+  function draw(lead, buttons, note, compact) {
+    clearTimeout(noteTimer)
     box.textContent = ''
-    const p = document.createElement('p')
-    p.className = 'staff-push-lead'
-    p.textContent = lead
-    box.appendChild(p)
-    if (buttons.length) {
-      const row = document.createElement('div')
-      row.className = 'staff-push-actions'
-      buttons.forEach(([label, action, primary]) => {
-        const b = document.createElement('button')
-        b.type = 'button'
-        b.className = primary ? 'btn btn-primary' : 'staff-push-link'
-        b.textContent = label
-        b.addEventListener('click', action)
-        row.appendChild(b)
-      })
-      box.appendChild(row)
+    box.classList.toggle('is-compact', Boolean(compact))
+    const line = document.createElement(compact ? 'div' : 'p')
+    line.className = compact ? 'staff-push-line' : 'staff-push-lead'
+    if (lead) {
+      const text = document.createElement('span')
+      text.textContent = lead
+      line.appendChild(text)
     }
+    const row = compact ? line : document.createElement('div')
+    if (!compact) row.className = 'staff-push-actions'
+    buttons.forEach(([label, action, primary]) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.className = primary && !compact ? 'btn btn-primary' : 'staff-push-link'
+      b.textContent = label
+      b.addEventListener('click', action)
+      row.appendChild(b)
+    })
+    box.appendChild(line)
+    if (!compact && buttons.length) box.appendChild(row)
     if (note) {
       const n = document.createElement('p')
       n.className = 'staff-push-note'
@@ -57,6 +67,16 @@
       box.appendChild(n)
     }
     box.hidden = false
+  }
+
+  // A confirmation ("Test sent...") only needs to be read once: let it go after a while so
+  // the box shrinks back to its one line.
+  function fadeNote(ms) {
+    clearTimeout(noteTimer)
+    noteTimer = setTimeout(() => {
+      const n = box.querySelector('.staff-push-note')
+      if (n) n.remove()
+    }, ms)
   }
 
   function busy(label) {
@@ -120,13 +140,29 @@
   }
 
   function showOff(note) {
+    if (stored(DISMISS_STORE) === '1' && !note) {
+      return draw('', [['Turn on notifications for new enquiries', turnOn, false]], null, true)
+    }
     draw('Get a notification on this device the moment a website enquiry comes in.',
-      [['Turn on notifications', turnOn, true]], note)
+      [['Turn on notifications', turnOn, true], ['Not now', notNow, false]], note)
+  }
+
+  function notNow() {
+    store(DISMISS_STORE, '1')
+    showOff()
   }
 
   function showOn(note) {
-    draw('Notifications are on for this device. Every website enquiry pops up here.',
-      [['Send a test', sendTest, false], ['Turn off', turnOff, false]], note)
+    draw('Notifications on for this device.',
+      [['Send a test', sendTest, false], ['Turn off', turnOff, false]], note, true)
+    if (note) fadeNote(15000)
+  }
+
+  // Information the owner can't act on from here (iPhone tab, unsupported browser, blocked):
+  // shown once, with a way to put it away for good on this device.
+  function showInfo(text) {
+    if (stored(DISMISS_STORE) === '1') return
+    draw(text, [['Hide', () => { store(DISMISS_STORE, '1'); box.hidden = true }, false]], null, false)
   }
 
   async function turnOn() {
@@ -143,21 +179,34 @@
       const { response, result } = await api('GET')
       if (!response.ok) throw ours(result.message || 'Sign in with the office password first.')
       await subscribe(result.publicKey)
+      store(DISMISS_STORE, null)
       showOn('Done. Tap "Send a test" to check one arrives.')
     } catch (error) {
       showOff(plain(error, 'This browser could not turn notifications on. Try again in a moment, or use Chrome or Safari.'))
     }
   }
 
-  async function sendTest() {
-    busy('Sending a test...')
+  // retried: the push service said this device's sign-up was gone (410), so it was signed up
+  // afresh and this is the one retry. A second "gone" means the browser itself isn't taking
+  // pushes, and no amount of re-subscribing will fix that.
+  async function sendTest(retried) {
+    busy(retried === true ? 'Signing this device up again and resending...' : 'Sending a test...')
     try {
       const reg = await registration()
       const sub = await reg.pushManager.getSubscription()
       if (!sub) return showOff('This device is not signed up any more. Turn notifications on again.')
       const { response, result } = await api('POST', { subscription: sub.toJSON(), test: true })
+      if (response.status === 410 && result.gone) {
+        if (retried === true) {
+          return showOff("This browser keeps dropping its notification sign-up, so it can't receive them. In the browser's settings, check notifications are allowed for gemelec.com.au, then turn them on here again. On Windows also check Settings, System, Notifications is on for the browser. If it still won't, use your phone.")
+        }
+        const key = await api('GET')
+        if (!key.response.ok) throw ours(key.result.message || 'Sign in with the office password first.')
+        await subscribe(key.result.publicKey)
+        return sendTest(true)
+      }
       if (!response.ok) throw ours(result.message || 'The test did not go through.')
-      showOn('Test sent. It should pop up in a few seconds. Nothing? Check this device allows notifications from the browser (on a Mac: System Settings, Notifications) and that Do Not Disturb or Focus is off. On a computer, the browser has to be open.')
+      showOn('Test sent. It should pop up in a few seconds. Nothing? Check this device allows notifications from the browser (on a Mac: System Settings, Notifications; on Windows: Settings, System, Notifications) and that Do Not Disturb or Focus is off. On a computer, the browser has to be open.')
     } catch (error) {
       showOn(plain(error, 'The test did not go through. Try again in a moment.'))
     }
@@ -200,11 +249,11 @@
       const { response } = await api('GET').catch(() => ({ response: { ok: false } }))
       if (!response.ok) return
       if (isIOS && !installed) {
-        draw(onPortal
+        showInfo(onPortal
           ? 'Want a notification for every website enquiry? On iPhone, add this page to your home screen first (Share, then Add to Home Screen), open GEMELEC from your home screen, and turn notifications on there.'
-          : 'Want a notification for every website enquiry? On iPhone this works from the GEMELEC app: open gemelec.com.au/tech in Safari, tap Share, then Add to Home Screen, open GEMELEC from your home screen, sign in, and turn notifications on there.', [])
+          : 'Want a notification for every website enquiry? On iPhone this works from the GEMELEC app: open gemelec.com.au/tech in Safari, tap Share, then Add to Home Screen, open GEMELEC from your home screen, sign in, and turn notifications on there.')
       } else {
-        draw('This browser can\'t show notifications for new website enquiries. Open this page in Chrome, or in Safari on an up-to-date Mac or iPhone, and turn them on there.', [])
+        showInfo('This browser can\'t show notifications for new website enquiries. Open this page in Chrome, or in Safari on an up-to-date Mac or iPhone, and turn them on there.')
       }
       return
     }
@@ -218,7 +267,7 @@
     if (!server.response.ok) return // not an office sign-in on this device
 
     if (Notification.permission === 'denied') {
-      return draw('Notifications are blocked for this site. Allow them in your phone or browser settings to get an alert for every website enquiry.', [])
+      return showInfo('Notifications are blocked for this site. Allow them in your phone or browser settings to get an alert for every website enquiry.')
     }
     let sub = null
     try {

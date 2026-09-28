@@ -73,6 +73,14 @@ module.exports = async function handler(req, res) {
         console.error('Push test send failed:', error.message)
         return send(res, 502, { ok: false, message: "Couldn't reach the notification service. Try the test again in a moment." })
       }
+      if (status === 404 || status === 410) {
+        // The push service has dropped this device's sign-up (browsers reset them after site
+        // data is cleared or the permission is toggled). Forget it here; js/staff-push.js
+        // signs the device up again and retries once on seeing `gone`.
+        console.error(`Push test to ${new URL(sub.endpoint).hostname} got ${status}: subscription gone`)
+        await removeSubscription(sub.endpoint).catch(() => {})
+        return send(res, 410, { ok: false, gone: true, message: "This device's notification sign-up had expired." })
+      }
       if (status < 200 || status >= 300) {
         console.error(`Push test to ${new URL(sub.endpoint).hostname} failed with ${status}`)
         return send(res, 502, { ok: false, message: `The notification service refused it (${status}). Try turning notifications off and on again.` })
