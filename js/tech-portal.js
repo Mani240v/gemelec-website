@@ -489,10 +489,18 @@ function initTechAutocomplete() {
 // such event or API: Safari installs only from its own Share menu, so there the box lists
 // the taps instead. Browsers that never fire the event (Samsung Internet, Firefox) get the
 // menu steps. Hidden when already running installed, and for good once dismissed here.
+//
+// It runs after boot and stands down if its markup is missing. A phone can still hold a
+// cached tech.html from before this box existed (the v1 service worker served its cache on
+// any network failure) next to a fresh copy of this script; that phone must still get a
+// working portal, just without the prompt. So nothing here may throw on a missing element.
 
 const INSTALL_DISMISSED_KEY = 'gemelec_tech_install_dismissed'
 const installBox = document.getElementById('tech-install')
 const installBtn = document.getElementById('tech-install-btn')
+const installIosSteps = document.getElementById('tech-install-ios')
+const installMenuSteps = document.getElementById('tech-install-menu')
+const installDismissBtn = document.getElementById('tech-install-dismiss')
 let installPrompt = null
 
 function runningInstalled() {
@@ -511,40 +519,44 @@ function isIOS() {
 // mode: 'button' (Android one-tap), 'ios' (Share-menu steps) or 'menu' (browser-menu steps)
 function showInstall(mode) {
   if (runningInstalled() || installDismissed()) return
-  document.getElementById('tech-install-ios').hidden = mode !== 'ios'
-  document.getElementById('tech-install-menu').hidden = mode !== 'menu'
+  installIosSteps.hidden = mode !== 'ios'
+  installMenuSteps.hidden = mode !== 'menu'
   installBtn.hidden = mode !== 'button'
   installBox.hidden = false
 }
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault()
-  installPrompt = e
-  showInstall('button')
-})
+function setUpInstallPrompt() {
+  if (!installBox || !installBtn || !installIosSteps || !installMenuSteps || !installDismissBtn) return
 
-installBtn.addEventListener('click', async () => {
-  if (!installPrompt) return
-  const prompt = installPrompt
-  installPrompt = null // the event can only be used once
-  prompt.prompt()
-  const choice = await prompt.userChoice.catch(() => null)
-  if (choice && choice.outcome === 'accepted') installBox.hidden = true
-  else showInstall('menu')
-})
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    installPrompt = e
+    showInstall('button')
+  })
 
-window.addEventListener('appinstalled', () => { installBox.hidden = true })
+  installBtn.addEventListener('click', async () => {
+    if (!installPrompt) return
+    const prompt = installPrompt
+    installPrompt = null // the event can only be used once
+    prompt.prompt()
+    const choice = await prompt.userChoice.catch(() => null)
+    if (choice && choice.outcome === 'accepted') installBox.hidden = true
+    else showInstall('menu')
+  })
 
-document.getElementById('tech-install-dismiss').addEventListener('click', () => {
-  installBox.hidden = true
-  try { localStorage.setItem(INSTALL_DISMISSED_KEY, '1') } catch {}
-})
+  window.addEventListener('appinstalled', () => { installBox.hidden = true })
 
-if (isIOS()) {
-  showInstall('ios')
-} else if (window.matchMedia('(pointer: coarse)').matches) {
-  // Give Chrome a moment to decide the page is installable before falling back to the steps.
-  setTimeout(() => { if (!installPrompt && installBox.hidden) showInstall('menu') }, 4000)
+  installDismissBtn.addEventListener('click', () => {
+    installBox.hidden = true
+    try { localStorage.setItem(INSTALL_DISMISSED_KEY, '1') } catch {}
+  })
+
+  if (isIOS()) {
+    showInstall('ios')
+  } else if (window.matchMedia('(pointer: coarse)').matches) {
+    // Give Chrome a moment to decide the page is installable before falling back to the steps.
+    setTimeout(() => { if (!installPrompt && installBox.hidden) showInstall('menu') }, 4000)
+  }
 }
 
 // ---------------------------------------------------------------- boot
@@ -555,3 +567,6 @@ if (localStorage.getItem(CODE_KEY) && techName()) {
 } else {
   gate.hidden = false
 }
+
+// After boot on purpose: whatever happens in here, the portal itself has already opened.
+setUpInstallPrompt()

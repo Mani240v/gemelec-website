@@ -92,9 +92,14 @@ function buildWechatDialog () {
   } else {
     copy.hidden = true
   }
+  // The dialog is built once and reused, so reset the button for the next opening.
+  dialog.addEventListener('close', () => { copy.textContent = 'Copy' })
   // Close on a backdrop click. The backdrop reports the dialog as the target, so check
-  // the point is actually outside the box rather than on its padding.
+  // the point is actually outside the box rather than on its padding. Clicks on the
+  // buttons inside are skipped first: one fired from the keyboard reports 0,0, which
+  // would otherwise read as outside and close the dialog before "Copied" shows.
   dialog.addEventListener('click', (e) => {
+    if (e.target !== dialog) return
     const r = dialog.getBoundingClientRect()
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close()
   })
