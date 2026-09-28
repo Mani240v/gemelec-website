@@ -19,6 +19,11 @@ const jobList = document.getElementById('job-list')
 const signOutBtn = document.getElementById('dash-signout')
 const loadingNote = document.getElementById('dash-loading')
 
+// For the "new since opening" banner near the end of this file. Declared up here because
+// loadRequests, which sets latestShown, runs before the end of the file is reached.
+let latestShown = ''
+let lastHidden = 0
+
 function getPassword() {
   return sessionStorage.getItem(STORAGE_KEY) || ''
 }
@@ -585,6 +590,8 @@ async function loadRequests({ quiet = false } = {}) {
     loginPanel.style.display = 'none'
     contentPanel.style.display = 'block'
     jobList.innerHTML = ''
+    clearNewBanner()
+    latestShown = newestTimestamp(result.requests)
 
     if (!result.requests.length) {
       emptyState.style.display = 'block'
@@ -645,6 +652,7 @@ loginBtn.addEventListener('click', async () => {
     }
     passwordInput.value = ''
     loadRequests()
+    if (window.gxPushRefresh) window.gxPushRefresh() // the notifications box (js/staff-push.js)
   } catch {
     loginError.textContent = 'No connection. Try again in a moment.'
     loginError.style.display = 'block'
@@ -659,6 +667,9 @@ passwordInput.addEventListener('keydown', (e) => {
 
 signOutBtn.addEventListener('click', async () => {
   if (!confirm('Sign out on this device? This also signs out the field portal (/tech) here.')) return
+  // Stop this device's enquiry notifications first: that call needs the sign-in cookie, so
+  // it has to go before the cookie does (js/staff-push.js).
+  if (window.gxPushSignOut) await window.gxPushSignOut()
   try {
     const response = await fetch('/api/staff-session', { method: 'DELETE' })
     if (!response.ok) throw new Error('sign-out failed')
@@ -692,6 +703,8 @@ async function boot() {
         body: JSON.stringify({ password: legacy, scope: 'office' })
       })
       if (response.ok || response.status === 401) sessionStorage.removeItem(STORAGE_KEY)
+      // The notifications box checked the sign-in while this was still in flight.
+      if (response.ok && window.gxPushRefresh) window.gxPushRefresh()
     } catch {}
   }
   loadRequests({ quiet: true })
@@ -699,3 +712,68 @@ async function boot() {
 }
 
 boot()
+
+// ---------------------------------------------------------------- new since opening
+//
+// The list is fetched once, when the page opens. A tab left open all day, or the installed
+// app coming back from the background, would otherwise never show a lead that arrived since,
+// including the one a notification was just tapped for. Re-rendering the list automatically
+// would throw away a costing half-edited in a card, so check quietly and offer a banner
+// instead: the reload happens when Mani taps it.
+
+function newestTimestamp(requests) {
+  return (requests || []).reduce((max, r) => (r.submitted_at > max ? r.submitted_at : max), '')
+}
+
+function clearNewBanner() {
+  const banner = document.getElementById('dash-new')
+  if (banner) banner.remove()
+}
+
+function showNewBanner(count) {
+  let banner = document.getElementById('dash-new')
+  if (!banner) {
+    banner = document.createElement('div')
+    banner.id = 'dash-new'
+    banner.className = 'dash-new'
+    banner.setAttribute('role', 'status')
+    const text = document.createElement('span')
+    const show = document.createElement('button')
+    show.type = 'button'
+    show.className = 'btn btn-primary'
+    show.textContent = 'Show it'
+    show.addEventListener('click', () => loadRequests())
+    banner.append(text, show)
+    contentPanel.insertBefore(banner, contentPanel.firstChild)
+  }
+  // "Job request", not "enquiry": this also counts jobs a tech logged on site.
+  banner.querySelector('span').textContent = count === 1
+    ? 'A new job request has come in since this page opened.'
+    : `${count} new job requests have come in since this page opened.`
+}
+
+async function checkForNew() {
+  if (contentPanel.style.display === 'none') return
+  try {
+    const response = await apiFetch('/api/job-requests-list')
+    if (!response.ok) return
+    const result = await response.json()
+    const fresh = (result.requests || []).filter(r => r.submitted_at > latestShown).length
+    if (fresh) showNewBanner(fresh)
+  } catch {}
+}
+
+// A notification tap on this open page (sw.js posts 'gemelec-refresh').
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'gemelec-refresh') checkForNew()
+  })
+}
+// Coming back to the page after at least half a minute away.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    lastHidden = Date.now()
+  } else if (lastHidden && Date.now() - lastHidden > 30000) {
+    checkForNew()
+  }
+})

@@ -2865,3 +2865,31 @@ textarea:focus-visible {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* === ADDED 2026-09-29 — Staff new-enquiry notifications box (js/staff-push.js), both staff pages === */
+.staff-push {
+  background: #fff;
+  border: 1px solid #e6e4dd;
+  border-left: 4px solid #faed27;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+.staff-push-lead { margin: 0 0 10px; }
+.staff-push-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.staff-push-actions .btn { min-height: 48px; }
+.staff-push-link {
+  background: none;
+  border: 0;
+  padding: 10px 2px;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.staff-push-note { margin: 10px 0 0; font-size: 13.5px; color: #55554f; }

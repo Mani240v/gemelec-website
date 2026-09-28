@@ -13,8 +13,8 @@
 // Background Sync and careful thought about duplicates; until then js/tech-portal.js keeps
 // the typed text in localStorage and tells the tech to hit send again once they have a bar.
 // The honest failure is better than a queue that silently loses or double-sends a job.
-const CACHE = 'gemelec-tech-v2'
-const SHELL = ['/tech', '/job-requests', '/css/style.css', '/js/tech-portal.js', '/js/job-requests-dashboard.js', '/images/apple-touch-icon.png']
+const CACHE = 'gemelec-tech-v3'
+const SHELL = ['/tech', '/job-requests', '/css/style.css', '/js/tech-portal.js', '/js/job-requests-dashboard.js', '/js/staff-push.js', '/images/apple-touch-icon.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -63,5 +63,50 @@ self.addEventListener('fetch', (event) => {
         if (hit) return hit
         return request.mode === 'navigate' ? caches.match('/tech') : Response.error()
       }))
+  )
+})
+
+// ---------------------------------------------------------------- notifications
+//
+// New-enquiry pushes from api/_lib/web-push.js (added 2026-09-29). The payload arrives end-to-
+// end encrypted and the browser decrypts it before this runs. Every push must show a
+// notification (iPhone revokes the permission from a web app that receives pushes silently),
+// so a push that can't be read still shows a generic one rather than nothing.
+self.addEventListener('push', (event) => {
+  let data = {}
+  try {
+    data = event.data ? event.data.json() : {}
+  } catch {
+    data = {}
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'New website enquiry', {
+      body: data.body || 'Open the job requests page to see it.',
+      icon: '/images/tech-icon-192.png',
+      // One notification per enquiry: the request id keeps two quick enquiries from
+      // collapsing into one.
+      tag: data.tag || 'gemelec-enquiry',
+      data: { url: data.url || '/job-requests' }
+    })
+  )
+})
+
+// Tap -> the job requests page. If it's already open, bring it forward and tell it to reload
+// its list, since it only fetched the list when it opened and the new lead isn't in it yet
+// (js/job-requests-dashboard.js listens for 'gemelec-refresh'). Otherwise open it.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const target = (event.notification.data && event.notification.data.url) || '/job-requests'
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
+      for (const client of windows) {
+        if (new URL(client.url).pathname === target && 'focus' in client) {
+          return client.focus().then(focused => {
+            ;(focused || client).postMessage({ type: 'gemelec-refresh' })
+          })
+        }
+      }
+      return self.clients.openWindow(target)
+    })
   )
 })

@@ -57,6 +57,14 @@ function sessionsConfigured() {
   return signingKey() !== null
 }
 
+// A short fingerprint of the current credentials, for things that must stop working when the
+// password changes but can't carry the cookie themselves. Push subscriptions store it, so
+// changing the password (the lost-phone lever) also stops a lost phone's notifications.
+function credentialTag() {
+  const key = signingKey()
+  return key ? crypto.createHmac('sha256', key).update('push-subscriptions').digest('hex').slice(0, 16) : null
+}
+
 function sign(payload, key) {
   return crypto.createHmac('sha256', key).update(payload).digest('base64url')
 }
@@ -135,4 +143,4 @@ function sameOrigin(req) {
   return !site || site === 'same-origin'
 }
 
-module.exports = { getSession, setSession, clearSession, matchSecret, sessionsConfigured, sameOrigin }
+module.exports = { getSession, setSession, clearSession, matchSecret, sessionsConfigured, sameOrigin, credentialTag }

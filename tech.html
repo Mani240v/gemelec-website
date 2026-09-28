@@ -65,6 +65,9 @@
   <!-- Job entry -->
   <section id="tech-app" class="tech-panel" hidden>
 
+    <!-- New-enquiry notifications for this phone; drawn by js/staff-push.js. -->
+    <div id="staff-push" class="staff-push" hidden></div>
+
     <div id="tech-sent-banner" class="tech-sent" hidden>
       <strong id="tech-sent-title">Sent to the office</strong>
       <span id="tech-sent-detail"></span>
@@ -159,6 +162,7 @@
 </main>
 
 <script src="/js/tech-portal.js"></script>
+<script src="/js/staff-push.js"></script>
 <!-- Same key and the same AU-only Places setup as the customer form. Loaded after
      tech-portal.js so the callback below is defined by the time Maps calls it. -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqpQOGjoHUGCe1EJeJVBETvXI1Y02yVYM&libraries=places&callback=initTechAutocomplete"></script>
