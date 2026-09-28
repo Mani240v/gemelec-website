@@ -136,7 +136,11 @@ function validSubscription(sub) {
     const p256dh = Buffer.from(String(keys.p256dh || ''), 'base64url')
     if (p256dh.length !== 65 || p256dh[0] !== 4) return false
     if (Buffer.from(String(keys.auth || ''), 'base64url').length !== 16) return false
-    crypto.createECDH('prime256v1').computeSecret(p256dh) // throws if it isn't on the curve
+    // Throws if it isn't a point on the curve. The ECDH object needs its own key pair first,
+    // or computeSecret fails for every key, valid or not.
+    const probe = crypto.createECDH('prime256v1')
+    probe.generateKeys()
+    probe.computeSecret(p256dh)
     return true
   } catch {
     return false
