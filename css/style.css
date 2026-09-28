@@ -338,8 +338,8 @@ a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-ra
 .footer { background: var(--dark); color: rgba(255,255,255,0.65); padding: 60px 0 32px; }
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
 .footer-brand-desc { font-size: 14px; line-height: 1.75; margin-top: 16px; }
-.footer-license { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 12px; }
-.footer-col h4 { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+.footer-license { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 12px; }
+.footer-col h4 { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
 .footer-col a { display: block; font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 10px; transition: color 0.15s; }
 .footer-col a:hover { color: var(--white); }
 .footer-col .footer-phone { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
@@ -2210,7 +2210,7 @@ textarea:focus-visible {
   .gx-btn-primary:hover { background: #e0d420; border-color: #e0d420; }
   .gx-btn-outline { background: transparent; color: #fff; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; text-decoration: none; transition: border-color 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
   .gx-btn-outline:hover { border-color: #3cb0b2; color: #3cb0b2; }
-  .gx-btn-whatsapp { background: #25d366; color: #fff; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid #25d366; border-radius: 6px; text-decoration: none; transition: background 0.15s, border-color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+  .gx-btn-whatsapp { background: #25d366; color: #0d0d0d; padding: 16px 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; border: 1px solid #25d366; border-radius: 6px; text-decoration: none; transition: background 0.15s, border-color 0.15s; display: inline-flex; align-items: center; gap: 8px; }
   .gx-btn-whatsapp:hover { background: #1ebd5a; border-color: #1ebd5a; }
 
   /* ============ HERO (image bg) ============ */

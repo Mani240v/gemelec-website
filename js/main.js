@@ -14,18 +14,11 @@ if (hamburger && mobileMenu) {
 // Contact form is now the shared job-request form/handler (js/job-request.js),
 // loaded directly by contact.html.
 
-// Smooth anchor scroll
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', (e) => {
-    const target = document.querySelector(anchor.getAttribute('href'))
-    if (target) {
-      e.preventDefault()
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      if (mobileMenu) mobileMenu.classList.remove('open')
-      if (hamburger) hamburger.classList.remove('open')
-    }
-  })
-})
+// In-page anchors scroll smoothly through `scroll-behavior: smooth` in style.css,
+// which already backs off under prefers-reduced-motion. There used to be a JS
+// handler here as well; it called preventDefault on every href="#..." link, which
+// stopped the skip link from moving keyboard focus past the nav, and it threw a
+// SyntaxError on the bare href="#" footer links. Don't bring it back.
 
 // === ADDED 2026-09-07: GA4 lead tracking ===
 //
