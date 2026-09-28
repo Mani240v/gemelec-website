@@ -29,8 +29,13 @@ const { credentialTag } = require('./staff-session')
 // still signed in re-register themselves the next time a staff page opens. Signing out on a
 // device also unsubscribes it (js/staff-push.js, gxPushSignOut).
 
-const PREFIX = 'push-subs/'
-const SUB_PATHNAME_RE = /^push-subs\/[a-f0-9]{64}\.json$/
+// Kept apart per environment. Previews share the production Blob store and the same VAPID
+// keys, so without this a device turned on while testing a preview would also get every real
+// enquiry (a second notification that opens the preview), and a test enquiry sent through a
+// preview would buzz the owner's real phone.
+const ENV = process.env.VERCEL_ENV === 'production' ? 'production' : 'preview'
+const PREFIX = `push-subs/${ENV}/`
+const SUB_PATHNAME_RE = /^push-subs\/(production|preview)\/[a-f0-9]{64}\.json$/
 const P256_ORDER = BigInt('0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551')
 
 // Only the real browser push services. The endpoint comes from the browser, but the server
