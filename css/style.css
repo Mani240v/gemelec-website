@@ -2833,3 +2833,6 @@ textarea:focus-visible {
 .wechat-dialog p { font-size: 14px; line-height: 1.5; margin: 0 0 8px; color: rgba(0, 0, 0, 0.7); }
 .wechat-close { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; border: none; background: none; font-size: 30px; line-height: 1; color: #0d0d0d; cursor: pointer; }
 .wechat-close:focus-visible { outline: 2px solid #0d0d0d; outline-offset: -4px; }
+.wechat-dialog .wechat-id { color: #0d0d0d; font-size: 15px; }
+.wechat-copy { margin-left: 6px; padding: 6px 12px; min-height: 32px; border: 1px solid rgba(0, 0, 0, 0.25); border-radius: 6px; background: #fff; font: 600 13px 'DM Sans', sans-serif; color: #0d0d0d; cursor: pointer; }
+.wechat-copy:hover { border-color: #0d0d0d; }
