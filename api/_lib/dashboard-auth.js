@@ -1,5 +1,5 @@
 const crypto = require('node:crypto')
-const { getSession } = require('./staff-session')
+const { getSession, sameOrigin } = require('./staff-session')
 
 // One password Mani keeps, no user accounts. A request is let in by either:
 //   - the signed staff cookie from api/_lib/staff-session.js with the 'office' role (how the
@@ -7,7 +7,7 @@ const { getSession } = require('./staff-session')
 //   - the password itself in the X-Dashboard-Auth header, checked in constant time. Kept so
 //     a page still open from before the cookie existed keeps working until it reloads.
 function isAuthorized(req) {
-  const session = getSession(req)
+  const session = sameOrigin(req) ? getSession(req) : null
   if (session && session.role === 'office') return true
 
   const expected = process.env.DASHBOARD_PASSWORD

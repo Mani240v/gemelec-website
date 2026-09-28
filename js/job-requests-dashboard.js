@@ -17,6 +17,7 @@ const loadError = document.getElementById('dash-load-error')
 const emptyState = document.getElementById('dash-empty')
 const jobList = document.getElementById('job-list')
 const signOutBtn = document.getElementById('dash-signout')
+const loadingNote = document.getElementById('dash-loading')
 
 function getPassword() {
   return sessionStorage.getItem(STORAGE_KEY) || ''
@@ -562,6 +563,7 @@ async function loadRequests({ quiet = false } = {}) {
   try {
     const response = await apiFetch('/api/job-requests-list')
     const result = await response.json().catch(() => ({}))
+    if (loadingNote) loadingNote.style.display = 'none'
 
     if (response.status === 401) {
       loginPanel.style.display = 'block'
@@ -595,7 +597,13 @@ async function loadRequests({ quiet = false } = {}) {
       hydratePhotos(card)
     })
   } catch (error) {
-    const message = error.message || 'Could not load job requests.'
+    if (loadingNote) loadingNote.style.display = 'none'
+    // A dropped connection throws a TypeError whose text is the browser's ("Load failed",
+    // "Failed to fetch"). On the login screen that reads like a sign-in failure, so say what
+    // actually happened.
+    const message = error instanceof TypeError
+      ? 'No connection. If this device is signed in it still is; reload once you have signal.'
+      : (error.message || 'Could not load job requests.')
     // A thrown network error (as opposed to a handled 401/non-ok response) means we
     // never got a chance to reveal contentPanel — if this happened before any
     // successful load, the error has to surface on the login screen instead, or it
@@ -620,11 +628,15 @@ loginBtn.addEventListener('click', async () => {
     const response = await fetch('/api/staff-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: value })
+      // scope: the server refuses a field-portal code here without touching this device's
+      // cookie, rather than signing it in as a tech the dashboard would then reject.
+      body: JSON.stringify({ password: value, scope: 'office' })
     })
     const result = await response.json().catch(() => ({}))
     if (!response.ok || result.ok === false) {
-      loginError.textContent = response.status === 401 ? 'Incorrect password.' : (result.message || 'Could not sign in.')
+      loginError.textContent = result.message && result.message !== 'Wrong password.'
+        ? result.message
+        : (response.status === 401 ? 'Incorrect password.' : 'Could not sign in.')
       loginError.style.display = 'block'
       return
     }
@@ -643,7 +655,7 @@ passwordInput.addEventListener('keydown', (e) => {
 })
 
 signOutBtn.addEventListener('click', async () => {
-  if (!confirm('Sign out of the dashboard on this device?')) return
+  if (!confirm('Sign out on this device? This also signs out the field portal (/tech) here.')) return
   try {
     const response = await fetch('/api/staff-session', { method: 'DELETE' })
     if (!response.ok) throw new Error('sign-out failed')
@@ -659,6 +671,25 @@ signOutBtn.addEventListener('click', async () => {
 // the cookie fresh so a device in regular use never reaches its 180-day expiry. The login
 // form stays hidden until that check says it's needed, so a signed-in device never sees it
 // flash up.
-loginPanel.style.display = 'none'
-loadRequests({ quiet: true })
-fetch('/api/staff-session', { cache: 'no-store' }).catch(() => {})
+//
+// A tab open from before 2026-09-29 still holds the password in sessionStorage. Trade it for
+// the cookie once and delete it, so it stops sitting in storage any script can read and the
+// next new tab (or alert link) doesn't ask again.
+async function boot() {
+  loginPanel.style.display = 'none'
+  const legacy = getPassword()
+  if (legacy) {
+    try {
+      await fetch('/api/staff-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: legacy, scope: 'office' })
+      })
+    } catch {}
+    sessionStorage.removeItem(STORAGE_KEY)
+  }
+  loadRequests({ quiet: true })
+  fetch('/api/staff-session', { cache: 'no-store' }).catch(() => {})
+}
+
+boot()

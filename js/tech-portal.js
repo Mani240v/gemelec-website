@@ -82,7 +82,7 @@ async function unlock() {
   const code = codeInput.value.trim()
   const name = nameInput.value.trim()
 
-  if (!code) return showError(gateError, 'Enter the access code.')
+  if (!code && !nameOnly) return showError(gateError, 'Enter the access code.')
   if (!name) return showError(gateError, 'Enter your name so the office knows who took the job.')
 
   unlockBtn.disabled = true
@@ -91,7 +91,8 @@ async function unlock() {
     const response = await fetch('/api/staff-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: code, name })
+      // Name only when the phone is already signed in; the server just renames the session.
+      body: JSON.stringify(code ? { password: code, name } : { name })
     })
     const result = await response.json().catch(() => ({}))
     if (!response.ok || result.ok === false) {
@@ -618,14 +619,18 @@ async function confirmSignIn() {
       localStorage.removeItem(CODE_KEY)
     } catch {}
   } else if (response.status === 401) {
-    signOutLocally('This phone has been signed out, usually because the access code changed. Enter the code to carry on. Your job draft is still here.')
+    signOutLocally('This phone has been signed out, either because the access code changed or because someone signed out on the job requests page. Enter the code to carry on. Your job draft is still here.')
   }
   // Anything else (a 5xx, the server not set up): leave the tech in and try again next open.
 }
 
+// Bounded: on one bar of signal an unanswered fetch can hang for a minute, and until it
+// settles neither the gate nor the app is showing. Six seconds, then the gate.
 async function signInFromCookie() {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 6000)
   try {
-    const response = await fetch('/api/staff-session', { cache: 'no-store' })
+    const response = await fetch('/api/staff-session', { cache: 'no-store', signal: controller.signal })
     const result = await response.json().catch(() => ({}))
     if (response.ok && result.ok && result.name) {
       localStorage.setItem(NAME_KEY, result.name)
@@ -633,8 +638,22 @@ async function signInFromCookie() {
       enterApp()
       return
     }
-  } catch {}
+    if (response.ok && result.ok) askNameOnly() // signed in (say, on the dashboard) but no name yet
+  } catch {
+  } finally {
+    clearTimeout(timer)
+  }
   gate.hidden = false
+}
+
+// Signed in already, so only the name is missing: hide the code box rather than make
+// someone retype a password the phone has already proved.
+let nameOnly = false
+function askNameOnly() {
+  nameOnly = true
+  codeInput.hidden = true
+  const codeLabel = document.querySelector('label[for="tech-code"]')
+  if (codeLabel) codeLabel.hidden = true
 }
 
 if (signedInHere()) {

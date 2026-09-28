@@ -24,6 +24,8 @@ function timingSafeEquals(a, b) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json')
+  // A success sets the 180-day staff cookie; never let a cache hold that response.
+  res.setHeader('Cache-Control', 'no-store')
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')

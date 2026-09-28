@@ -13,9 +13,21 @@ const crypto = require('node:crypto')
 //     site can't ride it into the update/delete endpoints.
 //   - Server-set: Safari's 7-day purge applies to script-written storage, not to this.
 //
-// Token: v1.<expiry>.<role>.<name as base64url>.<HMAC-SHA256>. The key is derived from the
-// current staff passwords, so changing DASHBOARD_PASSWORD or TECH_ACCESS_CODE signs every
-// phone out. That is deliberate: rotating the password is how a lost phone is locked out.
+// Token: v1.<expiry>.<role>.<name as base64url>.<HMAC-SHA256>.
+//
+// The HMAC key is keyed by a long server-only secret AND mixed with the current staff
+// passwords. Both halves matter:
+//   - The secret: a key made from the passwords alone turns every cookie into an offline
+//     password checker. Anyone holding one (a subcontractor on TECH_ACCESS_CODE reading
+//     their own cookie, or whoever finds a lost phone) could guess DASHBOARD_PASSWORD at GPU
+//     speed with no rate limit. With a secret the server never reveals, a cookie says
+//     nothing about the password.
+//   - The passwords: changing DASHBOARD_PASSWORD or TECH_ACCESS_CODE changes the key, so
+//     every phone is signed out. That's the lost-phone lever.
+// The secret is STAFF_SESSION_SECRET if set (32+ random characters), otherwise the Google
+// service account's private key, which every deployment already has for the Sheets pipeline
+// and which is long, random and never leaves the server. Rotating whichever one is used
+// also signs everyone out.
 // GET /api/staff-session re-issues the cookie, so a phone in regular use never expires.
 
 const COOKIE = 'gx_staff'
@@ -24,13 +36,19 @@ const ROLES = ['office', 'tech']
 
 function signingKey() {
   const office = process.env.DASHBOARD_PASSWORD
-  // Fail closed: with no password configured there is nothing to sign with, so no session
-  // can be issued or accepted.
-  if (!office) return null
+  const secret = process.env.STAFF_SESSION_SECRET || process.env.GOOGLE_PRIVATE_KEY
+  // Fail closed: without a password to check or a secret to sign with, no session can be
+  // issued or accepted.
+  if (!office || !secret || secret.length < 32) return null
   return crypto
-    .createHash('sha256')
-    .update(`gemelec-staff-session|${office}|${process.env.TECH_ACCESS_CODE || ''}`)
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(['gemelec-staff-session-v1', office, process.env.TECH_ACCESS_CODE || '']))
     .digest()
+}
+
+// Can sessions be issued at all? The endpoints answer 503 rather than a false "ok" if not.
+function sessionsConfigured() {
+  return signingKey() !== null
 }
 
 function sign(payload, key) {
@@ -101,4 +119,14 @@ function clearSession(res) {
   res.setHeader('Set-Cookie', cookie('', 0))
 }
 
-module.exports = { getSession, setSession, clearSession, matchSecret }
+// The cookie is only trusted on the site's own requests. SameSite=Strict already keeps other
+// sites out; this also refuses same-site origins that aren't this one (the apex, any other
+// *.gemelec.com.au host), now that an ambient cookie can reach the delete/update endpoints
+// where the custom header used to force a CORS preflight. Browsers too old to send
+// Sec-Fetch-Site are let through, as they were before.
+function sameOrigin(req) {
+  const site = req.headers['sec-fetch-site']
+  return !site || site === 'same-origin'
+}
+
+module.exports = { getSession, setSession, clearSession, matchSecret, sessionsConfigured, sameOrigin }

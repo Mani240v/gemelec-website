@@ -17,6 +17,7 @@
   .dash-login { max-width: 420px; margin: 80px auto; background: #fff; border: 1px solid #e6e4dd; border-radius: 16px; padding: 36px; text-align: center; }
   .dash-login h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 24px; margin-bottom: 20px; }
   .dash-login .form-group { text-align: left; margin-bottom: 16px; }
+  .dash-loading { text-align: center; margin: 80px auto; color: var(--text-secondary, #55554f); font-size: 15px; }
   .dash-back { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .dash-signout { background: none; border: 0; padding: 10px 0; min-height: 44px; font: inherit; font-size: 14px; color: var(--text-secondary, #55554f); text-decoration: underline; cursor: pointer; }
 
@@ -188,7 +189,11 @@
   </div>
 </nav>
 
-<div id="dash-login" class="dash-login">
+<p id="dash-loading" class="dash-loading">Loading job requests&hellip;</p>
+
+<!-- Hidden until js/job-requests-dashboard.js finds this device isn't signed in, so a
+     signed-in phone never sees the password box flash up while the script loads. -->
+<div id="dash-login" class="dash-login" style="display:none;">
   <h1>Enter dashboard password</h1>
   <div class="form-group">
     <label for="dash-password">Password</label>
