@@ -44,6 +44,11 @@ one AI-drafted rough costing, one dashboard, and email + WhatsApp alerts.
    `job-request.html` and `contact.html`. Replace the placeholder `GOOGLE_MAPS_API_KEY` in each
    page's Maps script tag with the real key. It's meant to be public (that's what the referrer
    restriction is for), same as any client-side Maps JS key.
+   **Use the `/*` wildcards, not a list of pages.** `tech.html` (the field portal, `/tech`) loads
+   the same key for its two address boxes. On 2026-09-29 the key's live restriction allowed the
+   contact form but not `/tech`, so the portal's address search showed nothing while the console
+   logged `RefererNotAllowedMapError ... Your site URL to be authorized: https://www.gemelec.com.au/tech`.
+   Any new page that uses the key needs to be covered by the restriction too.
 8. **WhatsApp alerts (optional, via Twilio).** Sign up at twilio.com, grab the Account SID and
    Auth Token from the console. For testing, join the Twilio WhatsApp **Sandbox** (send the join
    code from Mani's WhatsApp to the sandbox number) — this gives you a working sender in minutes,

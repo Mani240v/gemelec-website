@@ -257,7 +257,11 @@ const PUSH_WINDOW_MS = 60 * 60 * 1000
 const pushTimes = []
 
 function enquiryPush(row, description, requestId, { notInSheet = false } = {}) {
-  if (row.source !== 'website') return Promise.resolve()
+  if (row.source !== 'website') {
+    // Logged so "why no notification?" has an answer: portal jobs are skipped on purpose.
+    console.log('Push notify:', requestId, 'skipped, not a website enquiry (entered on the field portal)')
+    return Promise.resolve()
+  }
   const now = Date.now()
   while (pushTimes.length && now - pushTimes[0] > PUSH_WINDOW_MS) pushTimes.shift()
   pushTimes.push(now)
