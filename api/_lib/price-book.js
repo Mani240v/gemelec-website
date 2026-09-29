@@ -171,20 +171,23 @@ const FAMILIES = [
     codes: ['LED5M', 'STRIP-LIGHT-PM'],
     note: 'Two defensible prices for identical work — a 5 m bundle or a per-metre rate. Pick one and say why. Never both.'
   },
+  // The ACMG-* lines (added 2026-09-29) are the compliance-client rates: commercial test & tag
+  // and compliance visits. The older lines stay for residential one-off jobs (Mani,
+  // 2026-09-29: "RCD test can stay as that's for residential one off clients").
   {
-    heading: 'RCD testing',
-    codes: ['RCD-TEST-BOARD', 'RCD-TEST-EACH'],
-    note: 'Per board or per RCD, never both for the same board.'
+    heading: 'RCD testing — residential one-off rate vs compliance-client rate',
+    codes: ['RCD-TEST-BOARD', 'RCD-TEST-EACH', 'ACMG-RCD-TEST'],
+    note: 'Per board or per RCD, never both for the same board. RCD-TEST-EACH / RCD-TEST-BOARD are for residential one-off jobs. ACMG-RCD-TEST ($20 per RCD, trip time + push-button) is the rate for commercial compliance and test & tag clients. A home or a single call-out job uses the residential lines; if it is unclear which kind of client this is, use the residential line and say so in "why". The same split applies to ACMG-TANDT (compliance clients) vs TANDT (one-off), same $7.50 per item, never both for the same items, and ACMG-TANDT-LOGBOOK / ACMG-REPORT-* are compliance-client lines only.'
   },
   {
-    heading: 'Switchboard thermal testing',
-    codes: ['BOARD-THERMAL-TEST', 'THERMO-SCAN-BOARD'],
-    note: 'These look like the same job at the same $185. Pick either, never both.'
+    heading: 'Switchboard thermal testing — residential one-off vs compliance-client rate',
+    codes: ['BOARD-THERMAL-TEST', 'THERMO-SCAN-BOARD', 'ACMG-THERMO-BOARD'],
+    note: 'BOARD-THERMAL-TEST and THERMO-SCAN-BOARD look like the same job at the same $185: residential one-off, pick either. ACMG-THERMO-BOARD ($270 per board) is for commercial compliance clients. Never more than one line per board.'
   },
   {
     heading: 'Labour and callout',
-    codes: ['LABOUR', '2LAB', 'T+A', 'L2', 'LAH', 'SUBC', 'L2-ASP-WORKS', 'Travel / Callout'],
-    note: 'Only L2-ASP-WORKS states a time basis ("Per Hour"). For the rest the price list does not record whether the rate is per hour, per visit or per day, so keep qty at 1 unless the job clearly needs more, and say in "why" which reading you used. L2 is "Labour 2 x Tradesman" — it is NOT Level 2 / ASP work, which is L2-ASP-WORKS.'
+    codes: ['LABOUR', '2LAB', 'T+A', 'L2', 'LAH', 'SUBC', 'L2-ASP-WORKS', 'Travel / Callout', 'ACMG-ATTEND'],
+    note: 'Only L2-ASP-WORKS states a time basis ("Per Hour"). For the rest the price list does not record whether the rate is per hour, per visit or per day, so keep qty at 1 unless the job clearly needs more, and say in "why" which reading you used. L2 is "Labour 2 x Tradesman" — it is NOT Level 2 / ASP work, which is L2-ASP-WORKS. ACMG-ATTEND ($150 per visit) is the visit charge on a commercial compliance / test & tag client job, used INSTEAD of Travel / Callout there, never both on one visit.'
   }
 ]
 
