@@ -62,18 +62,6 @@ module.exports = async function handler(req, res) {
   const session = sameOrigin(req) ? getSession(req) : null
   try {
     if (body.test) {
-      // The test posts straight to the subscription this device hands over, but a real
-      // enquiry goes to the saved list (notifyAll). So check this device is on that list
-      // first, and put it back if not, or a passing test would say nothing about whether
-      // the next enquiry reaches this device (added 2026-09-29, after one didn't).
-      let listed = 'unknown'
-      try {
-        listed = await listStatus(sub.endpoint)
-        if (listed !== 'listed') await saveSubscription(sub, session ? session.name : '')
-      } catch (error) {
-        console.error('Push test list check failed:', error.message)
-      }
-      console.log(`Push test to ${new URL(sub.endpoint).hostname}: device was ${listed}`)
       let status
       try {
         status = await sendOne(sub, {
@@ -98,9 +86,49 @@ module.exports = async function handler(req, res) {
         console.error(`Push test to ${new URL(sub.endpoint).hostname} failed with ${status}`)
         return send(res, 502, { ok: false, message: `The notification service refused it (${status}). Try turning notifications off and on again.` })
       }
-      // relisted: it had dropped off the enquiry list and was only just put back, so any
-      // enquiry before now would have missed this device. js/staff-push.js says so.
-      return send(res, 200, { ok: true, relisted: listed === 'missing' || listed === 'signed-out' })
+      // The test went straight to the subscription this device handed over, but a real
+      // enquiry goes to the saved list (notifyAll), so a passing test used to say nothing
+      // about whether the next enquiry reaches this device (added 2026-09-29, after one
+      // didn't). Check the list now, and put the device back if it's off it. Done after the
+      // send, so Blob can't delay the push while js/staff-push.js's arrival timer runs, and
+      // capped at five seconds. `list` is reported only from what actually happened:
+      //   listed               already on it
+      //   relisted-missing     wasn't on it; enquiries since it dropped off missed it
+      //   relisted-signed-out  on it under an old password, which the next enquiry would
+      //                        have deleted (one already sent would have, so none were missed)
+      //   not-listed           off it and couldn't be put back
+      //   unknown              couldn't check in time
+      let listed = 'unknown'
+      let list = 'unknown'
+      const check = (async () => {
+        listed = await listStatus(sub.endpoint)
+        if (listed === 'listed') {
+          list = 'listed'
+          return
+        }
+        list = 'not-listed'
+        await saveSubscription(sub, session ? session.name : '')
+        list = listed === 'signed-out' ? 'relisted-signed-out' : 'relisted-missing'
+      })()
+      let timer
+      let timedOut = false
+      try {
+        await Promise.race([
+          check,
+          new Promise((resolve, reject) => {
+            timer = setTimeout(() => { timedOut = true; reject(new Error('timed out after 5s')) }, 5000)
+          })
+        ])
+      } catch (error) {
+        console.error('Push test list check failed:', error.message)
+      } finally {
+        clearTimeout(timer)
+      }
+      check.catch(() => {})
+      // A save still running at the deadline may yet land, so that is "unknown", not "not-listed".
+      if (timedOut) list = 'unknown'
+      console.log(`Push test to ${new URL(sub.endpoint).hostname}: device was ${listed}, now ${list}`)
+      return send(res, 200, { ok: true, list })
     }
     await saveSubscription(sub, session ? session.name : '')
     return send(res, 200, { ok: true })

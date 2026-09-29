@@ -211,8 +211,19 @@ async function sendOne(sub, payload, keys = vapidKeys()) {
 // skips (a pruned device, an unreadable record, no devices at all), so when an enquiry
 // didn't reach Mani's phone the logs could not say whether it was ever sent. The line holds
 // staff device names and push-service hosts only, never the customer's details.
+// Removing a dead device must not count as a failed send: the device is already tallied
+// as expired or signed out, and the push itself never went out.
+async function prune(pathname, label, outcome) {
+  try {
+    await del(pathname)
+  } catch (error) {
+    outcome.pruneFailed = (outcome.pruneFailed || 0) + 1
+    console.error(`Push prune of ${label} failed:`, error.message)
+  }
+}
+
 async function notifyAll(payload) {
-  const outcome = { devices: 0, sent: 0, failed: 0, expired: 0, signedOut: 0, unreadable: 0, to: [] }
+  const outcome ={ devices: 0, sent: 0, failed: 0, expired: 0, signedOut: 0, unreadable: 0, to: [] }
   try {
     const keys = vapidKeys()
     const tag = credentialTag()
@@ -242,7 +253,7 @@ async function notifyAll(payload) {
         // no longer gets customer details. It re-registers if it's still signed in.
         if (sub.tag !== tag) {
           outcome.signedOut += 1
-          await del(pathname)
+          await prune(pathname, label, outcome)
           return
         }
         const status = await sendOne(sub, payload, keys)
@@ -251,14 +262,15 @@ async function notifyAll(payload) {
           outcome.to.push(label)
         } else if (status === 404 || status === 410) {
           outcome.expired += 1
-          await del(pathname)
+          await prune(pathname, label, outcome)
         } else {
           outcome.failed += 1
           console.error(`Push to ${label} failed with ${status}`)
         }
       } catch (error) {
+        // A read (Blob get) or a send; a failed delete is counted by prune instead.
         outcome.failed += 1
-        console.error(`Push send to ${label} failed:`, error.message)
+        console.error(`Push to ${label} failed:`, error.message)
       }
     }))
   } catch (error) {
