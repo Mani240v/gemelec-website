@@ -205,13 +205,21 @@ async function sendOne(sub, payload, keys = vapidKeys()) {
 // a notification failure must not disturb the rest of the job-request work. A device the
 // push service reports as gone (404/410) is removed, which is how uninstalled apps and
 // revoked permissions get cleaned up.
+//
+// Every call ends in one "Push notify" log line saying who it went to and what was skipped
+// (added 2026-09-29). Until then a success logged nothing and neither did any of the quiet
+// skips (a pruned device, an unreadable record, no devices at all), so when an enquiry
+// didn't reach Mani's phone the logs could not say whether it was ever sent. The line holds
+// staff device names and push-service hosts only, never the customer's details.
 async function notifyAll(payload) {
-  let sent = 0
-  let failed = 0
+  const outcome = { devices: 0, sent: 0, failed: 0, expired: 0, signedOut: 0, unreadable: 0, to: [] }
   try {
     const keys = vapidKeys()
     const tag = credentialTag()
-    if (!keys || !tag || !process.env.BLOB_READ_WRITE_TOKEN) return { sent, failed }
+    if (!keys || !tag || !process.env.BLOB_READ_WRITE_TOKEN) {
+      outcome.skipped = !keys ? 'no server secret' : !tag ? 'no staff password set' : 'no Blob token'
+      return outcome
+    }
     const pathnames = []
     let cursor
     do {
@@ -219,34 +227,58 @@ async function notifyAll(payload) {
       page.blobs.forEach(blob => pathnames.push(blob.pathname))
       cursor = page.hasMore ? page.cursor : undefined
     } while (cursor)
+    outcome.devices = pathnames.length
 
     await Promise.all(pathnames.map(async pathname => {
+      let label = 'unknown device'
       try {
         const sub = await readSubscription(pathname)
-        if (!sub || !validSubscription(sub)) return
+        if (!sub || !validSubscription(sub)) {
+          outcome.unreadable += 1
+          return
+        }
+        label = `${sub.name || 'unnamed'} @ ${new URL(sub.endpoint).hostname}`
         // Saved under different credentials: the password has changed since, so this device
         // no longer gets customer details. It re-registers if it's still signed in.
         if (sub.tag !== tag) {
+          outcome.signedOut += 1
           await del(pathname)
           return
         }
         const status = await sendOne(sub, payload, keys)
         if (status >= 200 && status < 300) {
-          sent += 1
+          outcome.sent += 1
+          outcome.to.push(label)
+        } else if (status === 404 || status === 410) {
+          outcome.expired += 1
+          await del(pathname)
         } else {
-          failed += 1
-          if (status === 404 || status === 410) await del(pathname)
-          else console.error(`Push to ${new URL(sub.endpoint).hostname} failed with ${status}`)
+          outcome.failed += 1
+          console.error(`Push to ${label} failed with ${status}`)
         }
       } catch (error) {
-        failed += 1
-        console.error('Push send failed:', error.message)
+        outcome.failed += 1
+        console.error(`Push send to ${label} failed:`, error.message)
       }
     }))
   } catch (error) {
+    outcome.error = error.message
     console.error('Push notify failed:', error.message)
+  } finally {
+    console.log('Push notify:', payload.tag || '', JSON.stringify(outcome))
   }
-  return { sent, failed }
+  return outcome
 }
 
-module.exports = { publicKey, validEndpoint, validSubscription, saveSubscription, removeSubscription, sendOne, notifyAll }
+// Is this endpoint on the list that enquiry notifications go to, under the current sign-in?
+// 'listed', 'missing', or 'signed-out' (saved under a password that has since changed, which
+// the next notifyAll would delete). "Send a test" checks this, because the test posts to the
+// subscription the device hands it and never reads the list, so a passing test used to prove
+// nothing about whether a real enquiry would reach the same device.
+async function listStatus(endpoint) {
+  const sub = await readSubscription(pathnameFor(endpoint))
+  if (!sub || sub.endpoint !== endpoint) return 'missing'
+  return sub.tag === credentialTag() ? 'listed' : 'signed-out'
+}
+
+module.exports = { publicKey, validEndpoint, validSubscription, saveSubscription, removeSubscription, sendOne, notifyAll, listStatus }

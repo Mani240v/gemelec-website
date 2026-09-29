@@ -210,11 +210,16 @@
       }
       if (!response.ok) throw ours(result.message || 'The test did not go through.')
       busy('Test sent. Checking it reaches this device...')
+      // The server also checked this device is on the list real enquiries go to (the test
+      // itself never reads that list), and put it back if not.
+      const relisted = result.relisted
+        ? 'This device had dropped off the list for real enquiries, so any before now missed it. It\'s back on. '
+        : ''
       // The two ways a sent test goes missing need different fixes, so say which it was.
       if (await arrival) {
-        showOn('The test reached this device. If it didn\'t pop up, this device is hiding notifications: on Windows check Settings, System, Notifications (notifications on, Google Chrome on, Do not disturb off); on a Mac check System Settings, Notifications and that Focus is off.')
+        showOn(relisted + 'The test reached this device. If it didn\'t pop up, this device is hiding notifications: on Windows check Settings, System, Notifications (notifications on, Google Chrome on, Do not disturb off); on a Mac check System Settings, Notifications and that Focus is off.')
       } else {
-        showOn("The test was sent but didn't reach this device. On a computer that's usually a firewall, antivirus or VPN blocking Chrome's notification connection, or Chrome running in a mode that can't get them (a guest or incognito window). Your phone will still get them through the GEMELEC app. (Just refreshed this page? Give it ten seconds and try the test once more first.)")
+        showOn(relisted + "The test was sent but didn't reach this device. On a computer that's usually a firewall, antivirus or VPN blocking Chrome's notification connection, or Chrome running in a mode that can't get them (a guest or incognito window). Your phone will still get them through the GEMELEC app. (Just refreshed this page? Give it ten seconds and try the test once more first.)")
       }
     } catch (error) {
       showOn(plain(error, 'The test did not go through. Try again in a moment.'))

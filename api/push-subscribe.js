@@ -1,6 +1,6 @@
 const { isAuthorized } = require('./_lib/dashboard-auth')
 const { getSession, sameOrigin } = require('./_lib/staff-session')
-const { publicKey, validEndpoint, validSubscription, saveSubscription, removeSubscription, sendOne } = require('./_lib/web-push')
+const { publicKey, validEndpoint, validSubscription, saveSubscription, removeSubscription, sendOne, listStatus } = require('./_lib/web-push')
 
 // Sign a staff device up for (or off) new-enquiry notifications. See api/_lib/web-push.js.
 //
@@ -59,8 +59,21 @@ module.exports = async function handler(req, res) {
   const sub = body.subscription
   if (!validSubscription(sub)) return send(res, 400, { ok: false, message: 'That device sent an unusable subscription.' })
 
+  const session = sameOrigin(req) ? getSession(req) : null
   try {
     if (body.test) {
+      // The test posts straight to the subscription this device hands over, but a real
+      // enquiry goes to the saved list (notifyAll). So check this device is on that list
+      // first, and put it back if not, or a passing test would say nothing about whether
+      // the next enquiry reaches this device (added 2026-09-29, after one didn't).
+      let listed = 'unknown'
+      try {
+        listed = await listStatus(sub.endpoint)
+        if (listed !== 'listed') await saveSubscription(sub, session ? session.name : '')
+      } catch (error) {
+        console.error('Push test list check failed:', error.message)
+      }
+      console.log(`Push test to ${new URL(sub.endpoint).hostname}: device was ${listed}`)
       let status
       try {
         status = await sendOne(sub, {
@@ -85,9 +98,10 @@ module.exports = async function handler(req, res) {
         console.error(`Push test to ${new URL(sub.endpoint).hostname} failed with ${status}`)
         return send(res, 502, { ok: false, message: `The notification service refused it (${status}). Try turning notifications off and on again.` })
       }
-      return send(res, 200, { ok: true })
+      // relisted: it had dropped off the enquiry list and was only just put back, so any
+      // enquiry before now would have missed this device. js/staff-push.js says so.
+      return send(res, 200, { ok: true, relisted: listed === 'missing' || listed === 'signed-out' })
     }
-    const session = sameOrigin(req) ? getSession(req) : null
     await saveSubscription(sub, session ? session.name : '')
     return send(res, 200, { ok: true })
   } catch (error) {
