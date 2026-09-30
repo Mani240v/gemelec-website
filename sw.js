@@ -85,7 +85,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'New website enquiry', {
       body: data.body || 'Open the job requests page to see it.',
-      icon: '/images/tech-icon-192.png',
+      icon: '/images/app-icon-g-192.png',
       // One notification per enquiry: the request id keeps two quick enquiries from
       // collapsing into one.
       tag,
