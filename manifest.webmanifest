@@ -11,25 +11,25 @@
   "theme_color": "#1a1a1a",
   "icons": [
     {
-      "src": "/images/tech-icon-192.png",
+      "src": "/images/app-icon-g-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/tech-icon-512.png",
+      "src": "/images/app-icon-g-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/tech-icon-512-maskable.png",
+      "src": "/images/app-icon-g-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/images/tech-icon-180.png",
+      "src": "/images/app-icon-g-180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
