@@ -34,30 +34,53 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ElectricalContractor",
-    "name": "Gemelec Electrical Services",
-    "telephone": "+61498351351",
-    "email": "info@gemelec.sydney",
-    "url": "https://www.gemelec.com.au/electrician/kingsford",
-    "image": "https://www.gemelec.com.au/images/manus/Gemelecswitchboard_8205abc2.webp",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "587 Bunnerong Rd",
-      "addressLocality": "Matraville",
-      "addressRegion": "NSW",
-      "postalCode": "2036",
-      "addressCountry": "AU"
-    },
-    "areaServed": {
-      "@type": "City",
-      "name": "Kingsford",
-      "containedInPlace": "Sydney, NSW, Australia"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "88"
-    }
+    "@graph": [
+      {
+        "@type": "Electrician",
+        "@id": "https://www.gemelec.com.au/#business",
+        "name": "Gemelec Electrical Services",
+        "url": "https://www.gemelec.com.au/",
+        "telephone": "+61498351351",
+        "email": "info@gemelec.sydney",
+        "image": "https://www.gemelec.com.au/images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "587 Bunnerong Rd",
+          "addressLocality": "Matraville",
+          "addressRegion": "NSW",
+          "postalCode": "2036",
+          "addressCountry": "AU"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "07:00",
+            "closes": "18:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "08:00",
+            "closes": "16:00"
+          }
+        ]
+      },
+      {
+        "@type": "Service",
+        "name": "Electrician in Kingsford",
+        "serviceType": "Electrician",
+        "url": "https://www.gemelec.com.au/electrician/kingsford",
+        "image": "https://www.gemelec.com.au/images/manus/Gemelecswitchboard_8205abc2.webp",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "Place",
+          "name": "Kingsford, NSW"
+        }
+      }
+    ]
   }
   </script>
   <script type="application/ld+json">
@@ -194,7 +217,7 @@
         </div>
       </div>
       <div>
-        <img src="../images/manus/Gemelecswitchboard_8205abc2.webp" srcset="../images/manus/Gemelecswitchboard_8205abc2-700w.webp 700w, ../images/manus/Gemelecswitchboard_8205abc2.webp 1600w" sizes="(max-width: 860px) calc(100vw - 32px), 522px" alt="Switchboard upgrade in a Kingsford home" width="1600" height="1100" fetchpriority="high">
+        <img src="../images/manus/Gemelecswitchboard_8205abc2.webp" srcset="../images/manus/Gemelecswitchboard_8205abc2-700w.webp 700w, ../images/manus/Gemelecswitchboard_8205abc2.webp 1600w" sizes="(max-width: 860px) calc(100vw - 32px), 522px" alt="Gemelec electrician working at a meter box on a brick building" width="1600" height="1100" fetchpriority="high">
       </div>
     </div>
   </div>
@@ -281,14 +304,9 @@
 
 <section class="testimonial-block">
   <div class="container">
-    <div class="testimonial-inner" itemscope itemtype="https://schema.org/Review">
-      <meta itemprop="itemReviewed" content="Gemelec Electrical Services">
-      <blockquote itemprop="reviewBody">"Very prompt service, coming within 2 hours of calling to fix the circuit breaker for our hot water tank! Friendly and efficient electricians."</blockquote>
-      <cite itemprop="author">— Jacque Morrison, Kingsford</cite>
-      <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" style="display:none;">
-        <meta itemprop="ratingValue" content="5">
-        <meta itemprop="bestRating" content="5">
-      </div>
+    <div class="testimonial-inner">
+      <blockquote>"Very prompt service, coming within 2 hours of calling to fix the circuit breaker for our hot water tank! Friendly and efficient electricians."</blockquote>
+      <cite>— Jacque Morrison</cite>
     </div>
   </div>
 </section>

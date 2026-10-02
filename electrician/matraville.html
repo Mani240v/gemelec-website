@@ -34,30 +34,53 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ElectricalContractor",
-    "name": "Gemelec Electrical Services",
-    "telephone": "+61498351351",
-    "email": "info@gemelec.sydney",
-    "url": "https://www.gemelec.com.au/electrician/matraville",
-    "image": "https://www.gemelec.com.au/images/manus/Gemelec-Home_87cd9a88.webp",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "587 Bunnerong Rd",
-      "addressLocality": "Matraville",
-      "addressRegion": "NSW",
-      "postalCode": "2036",
-      "addressCountry": "AU"
-    },
-    "areaServed": {
-      "@type": "City",
-      "name": "Matraville",
-      "containedInPlace": "Sydney, NSW, Australia"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "88"
-    }
+    "@graph": [
+      {
+        "@type": "Electrician",
+        "@id": "https://www.gemelec.com.au/#business",
+        "name": "Gemelec Electrical Services",
+        "url": "https://www.gemelec.com.au/",
+        "telephone": "+61498351351",
+        "email": "info@gemelec.sydney",
+        "image": "https://www.gemelec.com.au/images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "587 Bunnerong Rd",
+          "addressLocality": "Matraville",
+          "addressRegion": "NSW",
+          "postalCode": "2036",
+          "addressCountry": "AU"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "07:00",
+            "closes": "18:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "08:00",
+            "closes": "16:00"
+          }
+        ]
+      },
+      {
+        "@type": "Service",
+        "name": "Electrician in Matraville",
+        "serviceType": "Electrician",
+        "url": "https://www.gemelec.com.au/electrician/matraville",
+        "image": "https://www.gemelec.com.au/images/manus/Gemelec-Home_87cd9a88.webp",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "Place",
+          "name": "Matraville, NSW"
+        }
+      }
+    ]
   }
   </script>
   <script type="application/ld+json">
@@ -201,7 +224,7 @@
       <div>
         <span class="eyebrow">Electrician in Matraville</span>
         <h1>Your Matraville electrician, on call 24/7</h1>
-        <p class="sub">Gemelec is based right here on Bunnerong Road. If you're in Matraville and something's gone wrong, we're minutes away and can get to you the same day. No call-out fee for quotes during business hours.</p>
+        <p class="sub">Gemelec is based right here on Bunnerong Road. If you're in Matraville and something's gone wrong, we're minutes away and can get to you the same day. Quotes are free during business hours.</p>
         <div class="cta-row">
           <a href="tel:0498351351" class="btn btn-primary btn-lg">Call 0498 351 351</a>
           <a href="../contact.html" class="btn btn-outline btn-lg">Get a Free Quote</a>
@@ -230,6 +253,22 @@
     <p>Matraville is our home base. Mani grew the business out of 587 Bunnerong Road, and a good chunk of our weekly work happens within a 2km radius of the workshop. The suburb is a mix of post-war brick homes, newer townhouses, and a steady run of light industrial along Beauchamp Road and the back of Botany Bay, so we see everything from tired old fuse boxes to three-phase upgrades for workshops.</p>
     <p>The older homes around Anzac Parade and the streets running off Maroubra Road often still have ceramic fuses, two-wire installs without earthing, or switchboards that were last touched 30 years ago. We replace these to current AS/NZS standards with proper RCD protection. On the newer end, a lot of Matraville families are adding EV chargers, retrofitting downlights, or wiring up rear granny flats and pools.</p>
     <p>Closer to Bunnerong Road and the Port Botany corridor, we look after small commercial sites: workshops, warehouses, cafes, automotive shops. Three-phase faults, dedicated machinery circuits, exit/emergency lighting, and switchboard rebuilds are bread-and-butter work for our team here. Being five minutes away means we can usually drop in same-day for anything urgent.</p>
+    <p>The same workshop covers the rest of the 2036 postcode: Hillsdale, Malabar, Little Bay, Chifley, La Perouse, Phillip Bay, Port Botany and Eastgardens, plus Pagewood just over the border.</p>
+    <div class="gx-glance">
+      <h3>Gemelec at a glance</h3>
+      <dl>
+        <dt>Business</dt><dd>Gemelec Electrical Services</dd>
+        <dt>Owner</dt><dd>Emmanuel "Mani" Gemelas, on the tools since 2010</dd>
+        <dt>Founded</dt><dd>2018</dd>
+        <dt>Workshop</dt><dd>587 Bunnerong Road, Matraville NSW 2036</dd>
+        <dt>Licence</dt><dd>NSW Electrical Contractor Licence 376553C</dd>
+        <dt>ABN</dt><dd>92 647 631 267</dd>
+        <dt>Office hours</dt><dd>Mon–Fri 7am–6pm, Sat 8am–4pm</dd>
+        <dt>Emergencies</dt><dd>24/7 on <a href="tel:0498351351">0498 351 351</a></dd>
+        <dt>In Matraville</dt><dd>Most local jobs reached in under 15 minutes during business hours</dd>
+        <dt>Google rating</dt><dd>4.9 from 88 reviews (August 2026)</dd>
+      </dl>
+    </div>
   </div>
 </section>
 
@@ -287,11 +326,11 @@
       </div>
       <div class="why-item">
         <div class="why-tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d0d0d" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div><h3>No call-out fee for quotes</h3><p>During business hours, quotes are free and the price we agree is the price you pay.</p></div>
+        <div><h3>Free quotes, fixed price</h3><p>During business hours, quotes are free and the price we agree is the price you pay. Once a job goes ahead a call-out fee applies, and we confirm it before we come out.</p></div>
       </div>
       <div class="why-item">
         <div class="why-tick"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d0d0d" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <div><h3>4.9/5 from 88 Google reviews</h3><p>Local Matraville customers leave honest reviews. Have a read before you call.</p></div>
+        <div><h3>4.9/5 from 88 Google reviews</h3><p>Our rating on Google as at August 2026. Have a read of the reviews before you call.</p></div>
       </div>
     </div>
   </div>
@@ -300,14 +339,9 @@
 <!-- TESTIMONIAL -->
 <section class="testimonial-block">
   <div class="container">
-    <div class="testimonial-inner" itemscope itemtype="https://schema.org/Review">
-      <meta itemprop="itemReviewed" content="Gemelec Electrical Services">
-      <blockquote itemprop="reviewBody">"Shout out to Mani and the team at GEMELEC — after all the rain we had water inundation and power outages. The team were onsite quickly, tested electrical faults quickly and ultimately found the source of the problem. Nathan and Mani were both on point with their advice and suggestions to resolve it. Would recommend and will use again for sure!"</blockquote>
-      <cite itemprop="author">— Andrew Cole, Matraville</cite>
-      <div itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating" style="display:none;">
-        <meta itemprop="ratingValue" content="5">
-        <meta itemprop="bestRating" content="5">
-      </div>
+    <div class="testimonial-inner">
+      <blockquote>"Shout out to Mani and the team at GEMELEC — after all the rain we had water inundation and power outages. The team were onsite quickly, tested electrical faults quickly and ultimately found the source of the problem. Nathan and Mani were both on point with their advice and suggestions to resolve it. Would recommend and will use again for sure!"</blockquote>
+      <cite>— Andrew Cole</cite>
     </div>
   </div>
 </section>

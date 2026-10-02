@@ -1,8 +1,8 @@
 # Adding Google reviews to the site
 
-Everything to do with reviews lives in **`index.html`** — the carousel is the only
-place review cards appear anywhere on the site. The review *count*, however, is
-duplicated across all 25 pages, so a count change is always a find-and-replace.
+Review cards live in the **`index.html`** carousel. Each of the 24 suburb pages
+also quotes one review (see Rules). The review *count* is visible text on 17
+pages, so a count change is always a find-and-replace.
 
 ## Current state
 
@@ -25,12 +25,20 @@ duplicated across all 25 pages, so a count change is always a find-and-replace.
    fallback. A script in `index.html` rewrites it to "3 weeks ago" on every page
    load, so ages never go stale and must never be hardcoded.
 
-3. **Update the count** if it changed. It appears in four different shapes —
+3. **Update the count** if it changed. It appears in several shapes, so
    grep for the old number and check each hit:
-   - `"reviewCount": "NN"` — JSON-LD, all 25 pages
-   - `<small>(NN)</small>` and `Google Rating (NN)` — homepage badge and stat
-   - `NN Google reviews` / `NN verified Google reviews` / `across NN reviews` —
-     visible prose, 13 suburb pages, worded differently on each
+   - `<small>(NN)</small>` and `Google Rating (NN)`: homepage badge and stat
+   - `4.9 from NN reviews (Month YYYY)`: the "Gemelec at a glance" box on
+     `index.html`, `about.html` and `electrician/matraville.html`
+   - `NN Google reviews` / `across NN reviews` / `from NN reviews`: visible
+     text on 15 suburb pages, worded differently on each. Where it carries a
+     date (`(August 2026)`, or `as at August 2026` on Matraville), update the
+     month together with the number.
+
+   No JSON-LD carries the rating any more. `aggregateRating` was removed from
+   every page on 2026-10-02: Google never shows stars for a business's own
+   rating on its own site, and its rules forbid copying ratings from another
+   site (Google) into the markup. Don't add it back.
 
    Beware of `587 Bunnerong Rd`, the `#2d8587` hover colour and
    `Gemelec-Home_87cd9a88.webp` — never blanket-replace a bare number.
@@ -79,5 +87,13 @@ too — so the count only changes on a trustworthy figure from the profile itsel
 - G A Tigani's review keeps the original "Manny" spelling. It is verbatim from
   Google and is the one intended exception to Manny→Mani.
 - Quote reviews as written. Fix nothing, tidy nothing.
+- **Suburb pages: never attach a suburb to a reviewer** unless the job record
+  (Tradify) shows the job was in that suburb. When `79c90ee` replaced the
+  fabricated quotes with real reviews it kept each page's suburb label ("Dave,
+  Matraville" became "Andrew Cole, Matraville"), so the labels described the
+  page, not the reviewer. They were removed on 2026-10-02; the credit is now
+  the reviewer's name only. Google reviews don't record a suburb.
+- No `schema.org/Review` microdata on the suburb-page quotes (removed
+  2026-10-02 for the same reason as `aggregateRating`).
 - Only 4- and 5-star reviews belong in the carousel. A lower-rated one is a
   reply-to-the-customer job, not a website job — raise it, don't publish it.

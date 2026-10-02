@@ -34,44 +34,52 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ElectricalContractor",
-    "name": "Gemelec Electrical Services",
-    "image": "https://www.gemelec.com.au/images/manus/GemelecManixTruck_d526ea25.webp",
-    "telephone": "0498 351 351",
-    "email": "info@gemelec.sydney",
-    "url": "https://www.gemelec.com.au/electrician/waterloo",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "587 Bunnerong Rd",
-      "addressLocality": "Matraville",
-      "addressRegion": "NSW",
-      "postalCode": "2036",
-      "addressCountry": "AU"
-    },
-    "areaServed": {
-      "@type": "City",
-      "name": "Waterloo",
-      "containedInPlace": {
-        "@type": "City",
-        "name": "Sydney",
-        "containedInPlace": {
-          "@type": "AdministrativeArea",
-          "name": "NSW",
-          "containedInPlace": {
-            "@type": "Country",
-            "name": "Australia"
+    "@graph": [
+      {
+        "@type": "Electrician",
+        "@id": "https://www.gemelec.com.au/#business",
+        "name": "Gemelec Electrical Services",
+        "url": "https://www.gemelec.com.au/",
+        "telephone": "+61498351351",
+        "email": "info@gemelec.sydney",
+        "image": "https://www.gemelec.com.au/images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "587 Bunnerong Rd",
+          "addressLocality": "Matraville",
+          "addressRegion": "NSW",
+          "postalCode": "2036",
+          "addressCountry": "AU"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+            "opens": "07:00",
+            "closes": "18:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "08:00",
+            "closes": "16:00"
           }
+        ]
+      },
+      {
+        "@type": "Service",
+        "name": "Electrician in Waterloo",
+        "serviceType": "Electrician",
+        "url": "https://www.gemelec.com.au/electrician/waterloo",
+        "image": "https://www.gemelec.com.au/images/manus/GemelecManixTruck_d526ea25.webp",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "Place",
+          "name": "Waterloo, NSW"
         }
       }
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "88"
-    },
-    "openingHoursSpecification": [
-      {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "18:00"},
-      {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "16:00"}
     ]
   }
   </script>
@@ -198,7 +206,7 @@
         </div>
       </div>
       <div class="suburb-hero-img">
-        <img src="../images/manus/GemelecManixTruck_d526ea25.webp" alt="Gemelec electrician truck in Waterloo Sydney" width="1600" height="1600" fetchpriority="high">
+        <img src="../images/manus/GemelecManixTruck_d526ea25.webp" alt="Gemelec ute with its toolbox open in a leafy driveway" width="1600" height="1600" fetchpriority="high">
       </div>
     </div>
   </div>
@@ -277,7 +285,7 @@
     <div class="testimonial-card">
       <div class="stars" aria-label="5 out of 5 stars">★★★★★</div>
       <blockquote>"I have engaged Gemelec to complete some work for me. Manny was amazing, generous with his time and very professional. In fact he returned for FREE after I forgot to include some additional items. I cannot recommend Manny and his team enough."</blockquote>
-      <cite>G A Tigani, Waterloo</cite>
+      <cite>G A Tigani</cite>
     </div>
   </div>
 </section>
