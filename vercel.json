@@ -24,6 +24,13 @@
       "destination": "/job-request"
     }
   ],
+  "redirects": [
+    { "source": "/about-4", "destination": "/about", "permanent": true },
+    { "source": "/services-6", "destination": "/services", "permanent": true },
+    { "source": "/ev-chargers", "destination": "/services/ev-charger-installation", "permanent": true },
+    { "source": "/inner-west-electrician", "destination": "/electrician", "permanent": true },
+    { "source": "/north-sydney-electrician", "destination": "/electrician", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

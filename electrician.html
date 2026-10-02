@@ -44,14 +44,13 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ElectricalContractor",
+    "@type": "Electrician",
+    "@id": "https://www.gemelec.com.au/#business",
     "name": "Gemelec Electrical Services",
-    "description": "Licensed electricians in Sydney offering residential and commercial electrical services including switchboard upgrades, LED lighting, EV charger installation, and 24/7 emergency callouts.",
+    "url": "https://www.gemelec.com.au/",
     "telephone": "+61498351351",
     "email": "info@gemelec.sydney",
-    "url": "https://www.gemelec.com.au/",
     "image": "https://www.gemelec.com.au/images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp",
-    "priceRange": "$$",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "587 Bunnerong Rd",
@@ -60,34 +59,18 @@
       "postalCode": "2036",
       "addressCountry": "AU"
     },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": -33.9697,
-      "longitude": 151.2278
-    },
     "openingHoursSpecification": [
-      {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "18:00"},
-      {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "16:00"},
-      {"@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "description": "Emergency only"}
-    ],
-    "areaServed": {"@type": "City", "name": "Sydney"},
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "88"
-    },
-    "hasCredential": [
       {
-        "@type": "EducationalOccupationalCredential",
-        "credentialCategory": "Electrical Contractor Licence",
-        "recognizedBy": {"@type": "Organization", "name": "NSW Fair Trading"},
-        "identifier": "376553C"
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "07:00",
+        "closes": "18:00"
       },
       {
-        "@type": "EducationalOccupationalCredential",
-        "credentialCategory": "Security Master Licence",
-        "recognizedBy": {"@type": "Organization", "name": "NSW Police Force"},
-        "identifier": "000108133"
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "08:00",
+        "closes": "16:00"
       }
     ]
   }

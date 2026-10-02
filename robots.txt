@@ -2,20 +2,22 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-# AI crawlers - explicitly allowed
+# AI and search crawlers, named so it is explicit they are welcome. A crawler that
+# matches a named group ignores the * group entirely, so this group must repeat
+# every rule above (it used to say only "Allow: /", which re-opened /api/ to them).
 User-agent: GPTBot
-Allow: /
-
 User-agent: OAI-SearchBot
-Allow: /
-
+User-agent: ChatGPT-User
 User-agent: ClaudeBot
-Allow: /
-
+User-agent: Claude-SearchBot
+User-agent: Claude-User
 User-agent: PerplexityBot
-Allow: /
-
+User-agent: Perplexity-User
 User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Bingbot
 Allow: /
+Disallow: /api/
 
 Sitemap: https://www.gemelec.com.au/sitemap.xml

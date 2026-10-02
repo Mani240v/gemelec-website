@@ -3095,3 +3095,45 @@ textarea:focus-visible {
 
 /* Dashboard: a costing a tech picked on site, not an AI draft, so not the AI's amber. */
 .job-ai-label.is-picked { color: #1d4536; background: #e7f4ee; border-color: #b7dcc9; }
+
+/* === ADDED 2026-10-02: "At a glance" fact box (index, about, electrician/matraville) ===
+   The plain facts in one place, as visible text, so a reader or an AI assistant can
+   quote them without piecing them together from the footer and llms.txt. The three
+   copies are hand-kept in sync (no templating); see CLAUDE.md. */
+.gx-glance {
+  max-width: 820px;
+  margin: 32px 0 0;
+  padding: 28px 32px;
+  background: #fff;
+  border: 1px solid #ececea;
+  border-left: 4px solid #3cb0b2;
+  border-radius: 8px;
+  text-align: left;
+}
+.gx-glance h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  margin: 0 0 16px;
+  color: #0d0d0d;
+}
+.gx-glance dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 24px;
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.gx-glance dt { font-weight: 700; color: #0d0d0d; }
+.gx-glance dd { margin: 0; color: #3a3a38; }
+.gx-glance a { color: #2d8587; font-weight: 600; text-decoration: none; }
+.gx-glance a:hover { text-decoration: underline; }
+@media (max-width: 560px) {
+  .gx-glance { padding: 22px 20px; }
+  .gx-glance dl { grid-template-columns: 1fr; gap: 2px; }
+  .gx-glance dd { margin-bottom: 10px; }
+}

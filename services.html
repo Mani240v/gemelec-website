@@ -39,14 +39,112 @@
     "@context": "https://schema.org",
     "@type": "ItemList",
     "itemListElement": [
-      {"@type": "Service", "position": 1, "name": "Switchboard Upgrades", "description": "Fuse box replacement, safety switch (RCD) installation, three-phase upgrades for EV chargers and solar across Sydney.", "provider": {"@type": "LocalBusiness", "name": "Gemelec", "telephone": "0498351351", "address": {"@type": "PostalAddress", "streetAddress": "587 Bunnerong Rd", "addressLocality": "Matraville", "addressRegion": "NSW", "postalCode": "2036", "addressCountry": "AU"}}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 2, "name": "LED Lighting & Downlights", "description": "LED downlight installation, dimmer switches, smart lighting, outdoor lighting, commercial fitouts and retrofits.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 3, "name": "EV Charger Installation", "description": "Certified EV charger installation for Tesla, Ocular, Wallbox and all major brands. Single and three-phase, residential and commercial.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 4, "name": "24/7 Emergency Electrician", "description": "After-hours electrical emergencies across Sydney. Power outages, sparking outlets, burning smells, storm damage.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 5, "name": "Commercial Electrical", "description": "Strata, retail, hospitality and industrial electrical work. Planned maintenance and compliance.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 6, "name": "Security & Access Control", "description": "Inner Range Inception access control, CCTV, video intercom, electric gate and door automation.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 7, "name": "Ceiling Fan Installation", "description": "Supply and install ceiling fans across Sydney, including new wiring, smart controllers and outdoor weatherproof fans.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}},
-      {"@type": "Service", "position": 8, "name": "General Electrical Repairs", "description": "Power points, light fittings, exhaust fans, hot water systems and air conditioning electrical connections.", "provider": {"@type": "LocalBusiness", "name": "Gemelec"}, "areaServed": {"@type": "City", "name": "Sydney"}}
+      {
+        "@type": "Service",
+        "position": 1,
+        "name": "Switchboard Upgrades",
+        "description": "Fuse box replacement, safety switch (RCD) installation, three-phase upgrades for EV chargers and solar across Sydney.",
+        "provider": {
+          "@type": "Electrician",
+          "@id": "https://www.gemelec.com.au/#business",
+          "name": "Gemelec Electrical Services",
+          "url": "https://www.gemelec.com.au/",
+          "telephone": "+61498351351",
+          "email": "info@gemelec.sydney",
+          "image": "https://www.gemelec.com.au/images/manus/177688B0-4585-4E36-BAEB-C7F10B7C834D_1_105_c_f57ad175.webp",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "587 Bunnerong Rd",
+            "addressLocality": "Matraville",
+            "addressRegion": "NSW",
+            "postalCode": "2036",
+            "addressCountry": "AU"
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "07:00",
+              "closes": "18:00"
+            },
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": "Saturday",
+              "opens": "08:00",
+              "closes": "16:00"
+            }
+          ]
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      },
+      {
+        "@type": "Service",
+        "position": 2,
+        "name": "LED Lighting & Downlights",
+        "description": "LED downlight installation, dimmer switches, smart lighting, outdoor lighting, commercial fitouts and retrofits.",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      },
+      {
+        "@type": "Service",
+        "position": 3,
+        "name": "EV Charger Installation",
+        "description": "Certified EV charger installation for Tesla, Ocular, Wallbox and all major brands. Single and three-phase, residential and commercial.",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      },
+      {
+        "@type": "Service",
+        "position": 4,
+        "name": "24/7 Emergency Electrician",
+        "description": "After-hours electrical emergencies across Sydney. Power outages, sparking outlets, burning smells, storm damage.",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      },
+      {
+        "@type": "Service",
+        "position": 5,
+        "name": "Commercial Electrical",
+        "description": "Strata, retail, hospitality and industrial electrical work. Planned maintenance and compliance.",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      },
+      {
+        "@type": "Service",
+        "position": 6,
+        "name": "Security & Access Control",
+        "description": "Inner Range Inception access control, CCTV, video intercom, electric gate and door automation.",
+        "provider": {
+          "@id": "https://www.gemelec.com.au/#business"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Sydney"
+        }
+      }
     ]
   }
   </script>
